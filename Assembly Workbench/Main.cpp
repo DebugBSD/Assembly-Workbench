@@ -11,8 +11,9 @@ bool MyApp::OnInit()
     frame->Show(true);
     return true;
 }
-MainFrame::MainFrame()
-    : wxFrame(NULL, wxID_ANY, "Hello World", { 0,0 }, { 1280, 1000 })
+MainFrame::MainFrame(): 
+    wxFrame(NULL, wxID_ANY, "Hello World", { 0,0 }, { 1280, 1000 }),
+    m_pmgr{nullptr}
 {
     //ShowFullScreen(true); // Show the window maximized but, without any close, minimize or maximize button.
     Maximize(true); // Show the window maximized
@@ -28,13 +29,13 @@ MainFrame::MainFrame()
     menuBar->Append(menuHelp, "&Help");
     SetMenuBar(menuBar);
 
-    m_pmgr = new wxAuiManager(this);
+    //m_pmgr = new wxAuiManager(this);
 
     //wxPanel* pPanel = new wxPanel(this, wxID_ANY, { 0,0 }, GetSize() / 2);
     // Here is the TextBox
     wxTextCtrl* text = new wxTextCtrl(this, wxID_ANY, wxEmptyString, { 0, 0 }, {400, 400}, wxTE_MULTILINE | wxTE_RICH | wxTE_RICH2 | wxTE_AUTO_URL | wxHSCROLL);
-    m_pmgr->AddPane(text);
-    m_pmgr->Update();
+    //m_pmgr->AddPane(text, wxALL,"Text Editor");
+    //m_pmgr->Update();
     // Just for color format
     /*text->SetDefaultStyle(wxTextAttr(*wxRED));
     text->AppendText("Red text\n");
@@ -53,8 +54,7 @@ MainFrame::MainFrame()
 
 MainFrame::~MainFrame()
 {
-
-    m_pmgr->UnInit();
+    if(m_pmgr) m_pmgr->UnInit();
     delete m_pmgr;
 
 }
