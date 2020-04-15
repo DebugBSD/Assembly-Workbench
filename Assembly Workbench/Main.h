@@ -9,11 +9,51 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+
+
+/*****************************************************************************/
+// Menus
+//      File
+//          New
+//              File
+//              Project
+//          Close Project
+//          Recent Files
+//          Recent Solutions or Projects
+//          Exit
+//      Edit
+//          Undo
+//          Redo
+//          Cut
+//          Copy
+//          Paste
+//          Settings (wxDialog)
+//              Editor
+//              Build Preferences
+//          Search & Replace (wxFindReplaceDialog)
+//      View
+//          Files 
+//          Functions
+//          Variables
+//      Proyect
+//      Build
+//          Build Solution
+//          Rebuild Solution
+//          Clean Solution
+//      Debug
+//      Tools
+//          Hexadecimal Editor
+//          SCV
+//              git
+//          Graph Tool
+/*****************************************************************************/
+
 class MyApp : public wxApp
 {
 public:
     virtual bool OnInit();
 };
+
 class MainFrame : public wxFrame
 {
 public:
@@ -23,6 +63,7 @@ private:
     void OnHello(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
+    void OnResize(wxSizeEvent& event);
 
 public:
 #pragma region Public attributes
@@ -39,12 +80,14 @@ private:
 #pragma endregion
 
 #pragma region Private Methods
-
+    void CreateMenubar();
+    void CreateToolBar();
 #pragma endregion
 
-
+    wxDECLARE_EVENT_TABLE();
 };
 enum
 {
-    ID_Hello = 1
+    ID_Hello = 1,
+    ID_Size
 };
