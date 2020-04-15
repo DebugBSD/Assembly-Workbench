@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "CodeEditor.h"
+#include "SettingsDialog.h"
 #include "Main.h"
 
 wxIMPLEMENT_APP(MyApp);
@@ -32,7 +33,8 @@ MainFrame::MainFrame():
 {
     // Set Icon
     // SetIcon();
-
+    //SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
+    SetForegroundColour(wxColour(0x12, 0x12, 0x12));
     //ShowFullScreen(true); // Show the window maximized but, without any close, minimize or maximize button.
     Maximize(true); // Show the window maximized
     
@@ -119,5 +121,9 @@ void MainFrame::CreateToolBar()
 }
 void MainFrame::OnHello(wxCommandEvent& event)
 {
-    wxLogMessage("Hello world from wxWidgets!");
+    SettingsDialog* pSettings = new SettingsDialog(nullptr);
+    
+    pSettings->ShowModal();
+
+    pSettings->Destroy();
 }
