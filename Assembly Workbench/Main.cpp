@@ -19,6 +19,12 @@ bool MyApp::OnInit()
     return true;
 }
 
+int MyApp::OnExit()
+{
+
+    return EXIT_SUCCESS;
+}
+
 MainFrame::MainFrame(): 
     wxFrame(NULL, wxID_ANY, "Assembly Workbench", { 0,0 }, { 1280, 1000 }),
     m_pmgr{nullptr}
