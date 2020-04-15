@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "CodeEditor.h"
 #include "Main.h"
 
 wxIMPLEMENT_APP(MyApp);
@@ -39,6 +40,8 @@ MainFrame::MainFrame():
 
     CreateToolBar();
 
+    // Layout
+
 
     //m_pmgr = new wxAuiManager(this);
 
@@ -47,7 +50,7 @@ MainFrame::MainFrame():
 
     //wxPanel* pPanel = new wxPanel(this, wxID_ANY, { 0,0 }, GetSize() / 2);
     // Here is the TextBox
-    wxTextCtrl* text = new wxTextCtrl(this, wxID_ANY, wxEmptyString, { 0, 0 }, {400, 400}, wxTE_MULTILINE | wxTE_RICH | wxTE_RICH2 | wxTE_AUTO_URL | wxHSCROLL);
+    CodeEditor* text = new CodeEditor(this);
     
     //m_pmgr->AddPane(text, wxALL,"Text Editor");
     //m_pmgr->Update();

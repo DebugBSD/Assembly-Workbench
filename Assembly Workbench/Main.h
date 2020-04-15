@@ -65,7 +65,6 @@ private:
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
-
 public:
 #pragma region Public attributes
 
