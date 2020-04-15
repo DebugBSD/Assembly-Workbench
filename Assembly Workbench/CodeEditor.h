@@ -14,6 +14,9 @@ public:
 private:
 
 	void TextChanged(wxCommandEvent& event);
+	void OnKeyDown(wxKeyEvent& event);
+	void OnKeyUp(wxKeyEvent& event);
+	void OnKeyChar(wxKeyEvent& event);
 
 	wxDECLARE_EVENT_TABLE();
 };
