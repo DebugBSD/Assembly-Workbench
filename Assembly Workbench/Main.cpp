@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <sstream>
 #include "CodeEditor.h"
 #include "SettingsDialog.h"
 #include "Main.h"
@@ -50,7 +51,6 @@ MainFrame::MainFrame():
     // Look at the page 63 - Mini-Frames of the book of WxWidgets to see how to use wxMiniFrame or wxMDIParentFrame.
     // Look at samples/mdi
 
-    //wxPanel* pPanel = new wxPanel(this, wxID_ANY, { 0,0 }, GetSize() / 2);
     // Here is the TextBox
     CodeEditor* text = new CodeEditor(this);
     
@@ -126,4 +126,13 @@ void MainFrame::OnHello(wxCommandEvent& event)
     pSettings->ShowModal();
 
     pSettings->Destroy();
+
+    std::stringstream ss;
+    ss << "PATH=" << getenv("PATH");
+    //ss << ";" << plugin_path;
+    //ss << ";" << lib_path;
+    ss << '\0';
+    std::string env = ss.str();
+
+    wxExecute("explorer.exe");
 }

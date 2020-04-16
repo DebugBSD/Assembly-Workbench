@@ -3,9 +3,12 @@
 #include <wx/aui/framemanager.h>
 #include <wx/wxprec.h>
 #include <wx/utils.h>
+#include <wx/panel.h>
+#include <wx/stc/stc.h>
+#include <wx/sizer.h>
 
 class CodeEditor :
-	public wxTextCtrl
+	public wxStyledTextCtrl
 {
 public:
 	CodeEditor(wxWindow* parent);
@@ -18,7 +21,7 @@ private:
 	void OnKeyUp(wxKeyEvent& event);
 	void OnKeyChar(wxKeyEvent& event);
 
-	wxDECLARE_EVENT_TABLE();
+	//wxDECLARE_EVENT_TABLE();
 };
 
 enum
