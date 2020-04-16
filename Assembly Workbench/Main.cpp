@@ -33,8 +33,8 @@ MainFrame::MainFrame():
 {
     // Set Icon
     // SetIcon();
-    //SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
-    SetForegroundColour(wxColour(0x12, 0x12, 0x12));
+    SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
+    SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
     //ShowFullScreen(true); // Show the window maximized but, without any close, minimize or maximize button.
     Maximize(true); // Show the window maximized
     

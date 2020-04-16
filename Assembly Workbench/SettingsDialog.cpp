@@ -9,6 +9,8 @@ wxEND_EVENT_TABLE()
 SettingsDialog::SettingsDialog(wxWindow* parent):
 	wxDialog(parent, wxID_ANY, "Settings", { 0,0 }, { 600, 400 })
 {
+	SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
+	SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
 	new wxButton(this, wxID_OK, "OK", { 0,0 }, { 100, 25 });
 	new wxButton(this, wxID_CANCEL, "Cancel", { 100,0 }, { 100, 25 });
 }

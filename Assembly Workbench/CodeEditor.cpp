@@ -14,6 +14,8 @@ CodeEditor::CodeEditor(wxWindow* parent):
 {
 	wxFont f(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
 	SetFont(f);
+	SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
+	SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
 }
 
 CodeEditor::~CodeEditor()
