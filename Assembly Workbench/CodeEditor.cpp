@@ -1,79 +1,112 @@
 #include "stdafx.h"
 #include "CodeEditor.h"
+#include "Main.h"
 
-/*
-wxBEGIN_EVENT_TABLE(CodeEditor, wxStyledTextCtrl)
-	EVT_TEXT_ENTER(ID_TextChanged, CodeEditor::TextChanged)
-	//EVT_KEY_DOWN(CodeEditor::OnKeyDown)
-	//EVT_KEY_UP(CodeEditor::OnKeyUp)
-	//EVT_CHAR(CodeEditor::OnKeyChar)
-wxEND_EVENT_TABLE()*/
+
+wxBEGIN_EVENT_TABLE(CodeEditor, wxTextCtrl)
+	EVT_TEXT(wxID_ANY, CodeEditor::TextChanged)
+	EVT_TEXT_ENTER(wxID_ANY, CodeEditor::OnKeyEnter)
+	EVT_KEY_DOWN(CodeEditor::OnKeyDown)
+	EVT_KEY_UP(CodeEditor::OnKeyUp)
+	EVT_LEFT_DOWN(CodeEditor::OnMouseDown)
+	EVT_LEFT_UP(CodeEditor::OnMouseUp)
+wxEND_EVENT_TABLE()
 
 CodeEditor::CodeEditor(wxWindow* parent):
-    wxStyledTextCtrl(parent, wxID_ANY, { 0, 0 }, { 1000, 1000 }) // Base class
+	wxTextCtrl(parent, wxID_ANY, wxEmptyString, { 0, 0 }, { 200, 200 }, wxTE_MULTILINE | wxHSCROLL | wxVSCROLL | wxTE_RICH | wxTE_PROCESS_ENTER), // Base class
+	m_pMainFrame{ static_cast<MainFrame*>(parent) }
 {
-
-    // Set the lexer to the C++ lexer
-    SetLexer(wxSTC_LEX_ASM);
-
-    // Set the color to use for various elements
-    StyleSetForeground(wxSTC_C_COMMENTLINE, wxColor(60, 162, 2));
-    StyleSetForeground(wxSTC_C_PREPROCESSOR, wxColor(0, 0, 255));
-    StyleSetForeground(wxSTC_C_STRING, wxColor(255, 60, 10));
-    StyleSetForeground(wxSTC_C_WORD, wxColor(0, 0, 255));
-
-    // Give a list of keywords. They will be given the style specified for
-    // wxSTC_C_WORD items.
-    SetKeyWords(0, wxT("return int char"));
-
-    // Populate the wxStyledTextCtrl with a small C++ program
-    AddText("; Hello world of assembly language\n\n");
-    AddText("extrn ExitProcess:PROC\n");
-    AddText(".DATA\n\n");
-    AddText(".DATA?\n\n");
-    AddText(".CODE\n");
-    AddText("main PROC\n");
-    AddText("\n\n\n");
-    AddText("\tmov rcx, 0\n");
-    AddText("\tcall ExitProcess\n");
-    AddText("main ENDP\n");
-    AddText("END\n");
-
-    // Set up the sizer for the panel
-    /*wxBoxSizer* panelSizer = new wxBoxSizer(wxHORIZONTAL);
-    panelSizer->Add(styledTextCtrl, 1, wxEXPAND);
-    SetSizer(panelSizer);
-
-    // Set up the sizer for the frame and resize the frame
-    // according to its contents
-    wxBoxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
-    topSizer->Add(this, 1, wxEXPAND);
-    SetSizerAndFit(topSizer);*/
+    wxFont f(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
+	SetFont(f);
+    
+    
 }
 
 CodeEditor::~CodeEditor()
 {
 }
 
+void CodeEditor::GetCursorPosition(size_t& lnPos, size_t& colPos)
+{
+
+}
+
+void CodeEditor::SetCursorPosition(const EventType& evtType)
+{
+	switch (evtType)
+	{
+	case EventType::EVENT_LEFT:
+
+		break;
+	case EventType::EVENT_RIGHT:
+
+		break;
+	case EventType::EVENT_UP:
+
+		break;
+	case EventType::EVENT_DOWN:
+
+		break;
+	case EventType::EVENT_LMOUSE:
+
+		break;
+	}
+}
+
 void CodeEditor::TextChanged(wxCommandEvent& event)
 {
-    int stop = 1;
+	wxString text{ event.GetString() };
+	
+	int insertPosition = GetInsertionPoint();
+	int numberOfLines{ GetNumberOfLines() };
+	size_t colPos{ 0 }, lnPos{ 0 };
+
+	GetCursorPosition(lnPos, colPos);
+
+	// We update the status bar
+	m_pMainFrame->SetStatusBar(GetLastPosition(), numberOfLines, colPos, lnPos);
+}
+
+void CodeEditor::OnKeyEnter(wxCommandEvent& event)
+{
+	int stop = 1;
 }
 
 void CodeEditor::OnKeyDown(wxKeyEvent& event)
 {
-	int stop = 1;
-
-	event.Skip(); // We need to call this event because if not, the event EVT_CHAR will not happen!
+	event.Skip();
 }
 
 void CodeEditor::OnKeyUp(wxKeyEvent& event)
 {
-	int stop = 1;
+	switch (event.GetKeyCode())
+	{
+	case WXK_LEFT:
+		SetCursorPosition(EventType::EVENT_LEFT);
+		break;
+	case WXK_RIGHT:
+		SetCursorPosition(EventType::EVENT_RIGHT);
+		break;
+	case WXK_UP:
+		SetCursorPosition(EventType::EVENT_UP);
+		break;
+	case WXK_DOWN:
+		SetCursorPosition(EventType::EVENT_DOWN);
+		break;
+	}
+
 }
 
-void CodeEditor::OnKeyChar(wxKeyEvent& event)
+void CodeEditor::OnMouseDown(wxMouseEvent& event)
 {
 	int stop = 1;
-	//AppendText("Hola");
+	int pos = GetInsertionPoint();
+	event.Skip();
+}
+
+void CodeEditor::OnMouseUp(wxMouseEvent& event)
+{
+	int stop = 1;
+	int pos = GetInsertionPoint();
+	event.Skip();
 }

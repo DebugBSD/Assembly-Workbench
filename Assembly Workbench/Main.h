@@ -71,12 +71,14 @@ public:
 #pragma endregion
 
 #pragma region Public Methods
-
+    void SetStatusBar(const wxString& text) { m_pStatusBar->SetStatusText(text); }
+    void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
 #pragma endregion
 
 private:
 #pragma region Private attributes
     wxAuiManager* m_pmgr;
+    wxStatusBar* m_pStatusBar;
 #pragma endregion
 
 #pragma region Private Methods

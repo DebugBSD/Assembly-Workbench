@@ -65,8 +65,8 @@ MainFrame::MainFrame():
     text->AppendText("Blue on grey text\n");*/
     
 
-    CreateStatusBar();
-    SetStatusText("Welcome to wxWidgets!");
+    m_pStatusBar = CreateStatusBar();
+    m_pStatusBar->SetStatusText("Welcome to wxWidgets!");
     /*Bind(wxEVT_MENU, &MainFrame::OnHello, this, ID_Hello);
     Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &MainFrame::OnExit, this, wxID_EXIT);
@@ -94,6 +94,28 @@ void MainFrame::OnResize(wxSizeEvent& event)
 {
     int stop = 1;
     event.Skip();
+}
+
+void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t currentColumn, size_t currentLine)
+{
+    wxString statusText;
+
+    // Longitud total en caracteres
+    statusText << " Characters: " << totalChars;
+
+    // Longitud total en lineas
+    statusText << " Lines: " << totalLines;
+
+    // Linea actual del cursor
+    statusText << " Ln: " << currentLine;
+
+    // Columna actual del cursor
+    statusText << " Col: " << currentColumn;
+
+    // Caracter actual (sin tab)
+    // TODO
+
+    m_pStatusBar->SetStatusText(statusText);
 }
 
 void MainFrame::CreateMenubar()
