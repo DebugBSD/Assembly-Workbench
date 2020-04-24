@@ -11,43 +11,6 @@
 #endif
 
 
-/*****************************************************************************/
-// Menus
-//      File
-//          New
-//              File
-//              Project
-//          Close Project
-//          Recent Files
-//          Recent Solutions or Projects
-//          Exit
-//      Edit
-//          Undo
-//          Redo
-//          Cut
-//          Copy
-//          Paste
-//          Settings (wxDialog)
-//              Editor
-//              Build Preferences
-//          Search & Replace (wxFindReplaceDialog)
-//      View
-//          Files 
-//          Functions
-//          Variables
-//      Proyect
-//      Build
-//          Build Solution
-//          Rebuild Solution
-//          Clean Solution
-//      Debug
-//      Tools
-//          Hexadecimal Editor
-//          SCV
-//              git
-//          Graph Tool
-/*****************************************************************************/
-
 class MyApp : public wxApp
 {
 public:
@@ -90,6 +53,22 @@ private:
 };
 enum
 {
-    ID_Hello = 1,
-    ID_Size
+    ID_Hello = wxID_HIGHEST+1,
+    ID_Size,
+    ID_Clone,
+    ID_Close_Project,
+    ID_Save_Project,
+    ID_Recent_Files,
+    ID_Recent_Projects,
+    ID_Search_Replace,
+    ID_View_Files,
+    ID_View_Functions,
+    ID_View_Variables,
+    ID_View_Opcodes,
+    ID_Build_Build_Solution,
+    ID_Build_Rebuild_Solution,
+    ID_Build_Clean_Solution,
+    ID_Tools_Hex_Editor,
+    ID_Tools_CVS,
+    ID_Tool_Graph
 };
