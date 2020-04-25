@@ -2,17 +2,28 @@
 //
 
 #include "stdafx.h"
+// For compilers that support precompilation, includes "wx/wx.h".
+#include "wx/wxprec.h"
 #include <sstream>
 #include "CodeEditor.h"
 #include "SettingsDialog.h"
+#include "resource.h"
 #include "Main.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
 
 wxIMPLEMENT_APP(MyApp);
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(wxID_EXIT, MainFrame::OnExit)
     EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
-    EVT_MENU(ID_Hello, MainFrame::OnHello)
+    EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
+    EVT_MENU(wxID_SAVE, MainFrame::OnSave)
+    EVT_MENU(wxID_NEW, MainFrame::OnNew)
+    EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
+    EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
 
 bool MyApp::OnInit()
@@ -41,32 +52,20 @@ MainFrame::MainFrame():
     
     CreateMenubar();
 
-    CreateToolBar();
+    CreateMainToolBar();
 
     // Layout
-
-
     //m_pmgr = new wxAuiManager(this);
 
     // Look at the page 63 - Mini-Frames of the book of WxWidgets to see how to use wxMiniFrame or wxMDIParentFrame.
     // Look at samples/mdi
 
-    // Here is the TextBox
-    CodeEditor* text = new CodeEditor(this);
-    
-    //m_pmgr->AddPane(text, wxALL,"Text Editor");
-    //m_pmgr->Update();
-    // Just for color format
-    /*text->SetDefaultStyle(wxTextAttr(*wxRED));
-    text->AppendText("Red text\n");
-    text->SetDefaultStyle(wxTextAttr(wxNullColour, *wxLIGHT_GREY));
-    text->AppendText("Red on grey text\n");
-    text->SetDefaultStyle(wxTextAttr(*wxBLUE));
-    text->AppendText("Blue on grey text\n");*/
-    
+    // Here is the Editor
+    m_pCodeEditor = new CodeEditor(this) ;
 
     m_pStatusBar = CreateStatusBar();
     m_pStatusBar->SetStatusText("Welcome to wxWidgets!");
+
     /*Bind(wxEVT_MENU, &MainFrame::OnHello, this, ID_Hello);
     Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &MainFrame::OnExit, this, wxID_EXIT);
@@ -76,6 +75,7 @@ MainFrame::MainFrame():
 
 MainFrame::~MainFrame()
 {
+    delete m_pCodeEditor;
     if(m_pmgr) m_pmgr->UnInit();
     delete m_pmgr;
 
@@ -96,6 +96,99 @@ void MainFrame::OnResize(wxSizeEvent& event)
     event.Skip();
 }
 
+void MainFrame::OnSave(wxCommandEvent& event)
+{
+    wxFileDialog
+        saveFileDialog(this, _("Save Assembly file"), "", "",
+            "ASM files (*.asm)|*.asm", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+    if (saveFileDialog.ShowModal() == wxID_CANCEL)
+        return;     // the user changed idea...
+
+    // save the current contents in the file;
+    if (!m_pCodeEditor->SaveFile(saveFileDialog.GetPath()))
+    {
+        wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
+        return;
+    }
+}
+
+void MainFrame::OnOpen(wxCommandEvent& event)
+{
+
+    bool isModified = m_pCodeEditor->IsModified();
+    if (isModified)
+    {
+        if (wxMessageBox(_("Current content has not been saved! Proceed?"), _("Please confirm"),
+            wxICON_QUESTION | wxYES_NO, this) == wxNO)
+            return;
+        //else: proceed asking to the user the new file to open
+    }
+
+    wxFileDialog
+        openFileDialog(this, _("Open Assembly file"), "", "",
+            "ASM files (*.asm)|*.asm", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (openFileDialog.ShowModal() == wxID_CANCEL)
+        return;     // the user changed idea...
+
+    m_pCodeEditor->Destroy();
+    m_pCodeEditor = new CodeEditor(this, openFileDialog.GetPath());
+    if (!m_pCodeEditor->LoadFile(openFileDialog.GetPath()))
+    {
+        wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
+        return;
+    }
+}
+
+void MainFrame::OnNew(wxCommandEvent& event)
+{
+    if (!m_pCodeEditor->IsModified())
+    {
+        m_pCodeEditor->Clear();
+    }
+    else
+    {
+        if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
+            wxICON_QUESTION | wxYES_NO, this) == wxNO)
+            return;
+        //else: proceed asking to the user the new file to open
+        m_pCodeEditor->Clear();
+    }
+
+}
+
+void MainFrame::OnClose(wxCommandEvent& event)
+{
+    if (!m_pCodeEditor->IsModified())
+    {
+        m_pCodeEditor->Clear();
+    }
+    else
+    {
+        if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
+            wxICON_QUESTION | wxYES_NO, this) == wxNO)
+            return;
+        //else: proceed asking to the user the new file to open
+        m_pCodeEditor->Clear();
+    }
+}
+
+void MainFrame::OnExitProgram(wxCloseEvent& event)
+{
+    if (event.CanVeto() && m_pCodeEditor->IsModified())
+    {
+        if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
+            wxICON_QUESTION | wxYES_NO, this) == wxNO)
+        {
+            event.Veto();
+            return;
+        }
+        
+    }
+
+    Destroy();
+
+}
+
 void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t currentColumn, size_t currentLine)
 {
     wxString statusText;
@@ -114,8 +207,8 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 
     // Caracter actual (sin tab)
     // TODO
-
-    m_pStatusBar->SetStatusText(statusText);
+    if(m_pStatusBar)
+        m_pStatusBar->SetStatusText(statusText);
 }
 
 /*****************************************************************************/
@@ -142,13 +235,24 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 //          ---------------------------------------
 //          Settings (wxDialog)
 //              Editor
-//              Build Preferences
 //      View
 //          Files 
 //          Functions
 //          Variables
 //          Opcodes
-//      Proyect
+//      Project
+//          Assembler
+//              MASM (Only Windows)
+//              GAS
+//              NASM
+//              -----------------------------------
+//              Custom
+//          Linker
+//              ML
+//              -----------------------------------
+//              Custom
+//          ---------------------------------------
+//          Preferences
 //      Build
 //          Build Solution
 //          Rebuild Solution
@@ -162,6 +266,7 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 /*****************************************************************************/
 void MainFrame::CreateMenubar()
 {
+    
     wxMenu* menuFile = new wxMenu;
     /*menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
         "Help string shown in status bar for this menu item");*/
@@ -210,7 +315,15 @@ void MainFrame::CreateMenubar()
     menuView->Append(ID_View_Opcodes, "Opcodes", "View current opcodes");
 
     wxMenu* menuProject = new wxMenu;
-    // Todo
+    menuProject->Append(ID_Project_Assembler, "Assembler", "Assembler to use when building the project");
+    // TODO: Add assemblers.
+
+    menuProject->AppendSeparator();
+    menuProject->Append(ID_Project_Linker, "Linker", "Linker to use when building the project");
+    // TODO: Add linkers.
+
+    menuProject->AppendSeparator();
+    menuProject->Append(ID_Project_Preferences, "Preferences", "Edit project preferences");
 
     wxMenu* menuBuild = new wxMenu;
     menuBuild->Append(ID_Build_Build_Solution, "Build solution", "Build current solution");
@@ -242,11 +355,37 @@ void MainFrame::CreateMenubar()
     SetMenuBar(menuBar);
 }
 
-void MainFrame::CreateToolBar()
+void MainFrame::CreateMainToolBar()
 {
     // Create a Toolbar
+    HANDLE hndOpen = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON1), 1, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+    wxIcon iconOpen;
+    iconOpen.CreateFromHICON((WXHICON)hndOpen);
+
+    HANDLE hndSave = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON2), 1, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+    wxIcon iconSave;
+    iconSave.CreateFromHICON((WXHICON)hndSave);
+
+    HANDLE hndSaveAll = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON3), 1, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+    wxIcon iconSaveAll;
+    iconSaveAll.CreateFromHICON((WXHICON)hndSaveAll);
+
+    HANDLE hndNew = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON4), 1, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+    wxIcon iconNew;
+    iconNew.CreateFromHICON((WXHICON)hndNew);
+
+    int stop = 1;
+    //wxToolBar* pToolBar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize , wxTB_DEFAULT_STYLE);
+    //pToolBar->AddTool(wxID_OPEN, "Open", icon, "Open");
+    wxToolBar* pToolBar = CreateToolBar();
+    pToolBar->AddTool(wxID_NEW, "New", iconNew, "New file");
+    pToolBar->AddTool(wxID_OPEN, "Open", iconOpen, "Open");
+    pToolBar->AddTool(wxID_SAVE, "Save", iconSave, "Save current");
+    pToolBar->AddTool(ID_Save_Project, "Save Project", iconSaveAll, "Save current project");
     // CreateToolBar()
     // SetToolBar()
+    pToolBar->Realize();
+    SetToolBar(pToolBar);
 }
 
 void MainFrame::OnHello(wxCommandEvent& event)

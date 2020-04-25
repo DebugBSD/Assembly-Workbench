@@ -30,6 +30,12 @@
     <ClInclude Include="CodeEditor.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -41,5 +47,30 @@
     <ClCompile Include="CodeEditor.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Assembly Workbench.rc">
+      <Filter>Archivos de recursos</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="icon2.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="icon3.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="icon4.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="Open.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="SaveIcn.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
   </ItemGroup>
 </Project>

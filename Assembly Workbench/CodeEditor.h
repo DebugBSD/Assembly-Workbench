@@ -28,11 +28,13 @@ class CodeEditor :
 	public wxTextCtrl
 {
 public:
-	CodeEditor(wxWindow* parent);
+	CodeEditor(wxWindow* parent, const wxString &fileName = "");
 	~CodeEditor();
 
 private:
 	class MainFrame* m_pMainFrame;
+
+	wxString m_FileName;
 
 private:
 

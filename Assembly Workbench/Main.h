@@ -28,6 +28,11 @@ private:
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
+    void OnSave(wxCommandEvent& event);
+    void OnOpen(wxCommandEvent& event);
+    void OnNew(wxCommandEvent& event);
+    void OnClose(wxCommandEvent& event);
+    void OnExitProgram(wxCloseEvent& event);
 public:
 #pragma region Public attributes
 
@@ -42,11 +47,12 @@ private:
 #pragma region Private attributes
     wxAuiManager* m_pmgr;
     wxStatusBar* m_pStatusBar;
+    class CodeEditor* m_pCodeEditor;
 #pragma endregion
 
 #pragma region Private Methods
     void CreateMenubar();
-    void CreateToolBar();
+    void CreateMainToolBar();
 #pragma endregion
 
     wxDECLARE_EVENT_TABLE();
@@ -65,6 +71,11 @@ enum
     ID_View_Functions,
     ID_View_Variables,
     ID_View_Opcodes,
+    ID_Project_Assembler,
+    ID_Project_Linker,
+    ID_Project_Custom_Assembler,
+    ID_Project_Custom_Linker,
+    ID_Project_Preferences,
     ID_Build_Build_Solution,
     ID_Build_Rebuild_Solution,
     ID_Build_Clean_Solution,
