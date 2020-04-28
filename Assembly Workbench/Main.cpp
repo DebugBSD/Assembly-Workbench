@@ -23,6 +23,8 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(wxID_SAVE, MainFrame::OnSave)
     EVT_MENU(wxID_NEW, MainFrame::OnNew)
     EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
+    EVT_MENU(wxID_PREFERENCES, MainFrame::OnHello)
+    EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
     EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
 
@@ -189,6 +191,11 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
 
 }
 
+void MainFrame::OnCMDTool(wxCommandEvent& event)
+{
+    wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"");
+}
+
 void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t currentColumn, size_t currentLine)
 {
     wxString statusText;
@@ -218,6 +225,9 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 //              File
 //              Project
 //          Open
+//              File
+//              Project
+//              Binary File (exe, dll, so, o, elf, ...)
 //          Clone
 //          Close Project
 //          Recent Files
@@ -245,6 +255,9 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 //              MASM (Only Windows)
 //              GAS
 //              NASM
+//              Yasm
+//              Fasm
+//              Tasm
 //              -----------------------------------
 //              Custom
 //          Linker
@@ -257,8 +270,13 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 //          Build Solution
 //          Rebuild Solution
 //          Clean Solution
-//      Debug
+//      Debug - See Visual Studio
+//          Windows
+//              Memory
+//              Registers
+//              Call stack
 //      Tools
+//          Command Line Tool
 //          Hexadecimal Editor
 //          SCV
 //              git
@@ -334,6 +352,7 @@ void MainFrame::CreateMenubar()
 
 
     wxMenu* menuTools = new wxMenu;
+    menuTools->Append(ID_Tools_Command_Line, "Command Line Tool", "Open a command line tool");
     menuTools->Append(ID_Tools_Hex_Editor, "HexEditor", "Open an Hexadecimal Editor");
     menuTools->Append(ID_Tools_CVS, "CVS", "Open Control Version System window");
     menuTools->Append(ID_Tool_Graph, "Graph", "Open the Graph tool");
@@ -403,5 +422,4 @@ void MainFrame::OnHello(wxCommandEvent& event)
     ss << '\0';
     std::string env = ss.str();
 
-    wxExecute("explorer.exe");
 }

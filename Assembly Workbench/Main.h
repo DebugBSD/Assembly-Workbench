@@ -33,6 +33,7 @@ private:
     void OnNew(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
+    void OnCMDTool(wxCommandEvent& event);
 public:
 #pragma region Public attributes
 
@@ -79,6 +80,7 @@ enum
     ID_Build_Build_Solution,
     ID_Build_Rebuild_Solution,
     ID_Build_Clean_Solution,
+    ID_Tools_Command_Line,
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
     ID_Tool_Graph
