@@ -12,13 +12,15 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxTextCtrl)
 	EVT_LEFT_UP(CodeEditor::OnMouseUp)
 wxEND_EVENT_TABLE()
 
-CodeEditor::CodeEditor(wxWindow* parent):
-	wxTextCtrl(parent, wxID_ANY, wxEmptyString, { 0, 0 }, { 200, 200 }, wxTE_MULTILINE | wxHSCROLL | wxVSCROLL | wxTE_RICH | wxTE_PROCESS_ENTER), // Base class
-	m_pMainFrame{ static_cast<MainFrame*>(parent) }
+CodeEditor::CodeEditor(wxWindow* parent, const wxString& fileName):
+	wxTextCtrl(parent, wxID_ANY, wxEmptyString, { 0, 0 }, parent->GetClientSize(), wxTE_MULTILINE | wxHSCROLL | wxVSCROLL | wxTE_RICH | wxTE_PROCESS_ENTER), // Base class
+	m_pMainFrame{ static_cast<MainFrame*>(parent) },
+	m_FileName{ fileName }
 {
-    wxFont f(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
+    wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
 	SetFont(f);
-    
+	SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
+	SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
     
 }
 
@@ -62,6 +64,8 @@ void CodeEditor::TextChanged(wxCommandEvent& event)
 	size_t colPos{ 0 }, lnPos{ 0 };
 
 	GetCursorPosition(lnPos, colPos);
+
+	//SetModified(true);
 
 	// We update the status bar
 	m_pMainFrame->SetStatusBar(GetLastPosition(), numberOfLines, colPos, lnPos);

@@ -11,43 +11,6 @@
 #endif
 
 
-/*****************************************************************************/
-// Menus
-//      File
-//          New
-//              File
-//              Project
-//          Close Project
-//          Recent Files
-//          Recent Solutions or Projects
-//          Exit
-//      Edit
-//          Undo
-//          Redo
-//          Cut
-//          Copy
-//          Paste
-//          Settings (wxDialog)
-//              Editor
-//              Build Preferences
-//          Search & Replace (wxFindReplaceDialog)
-//      View
-//          Files 
-//          Functions
-//          Variables
-//      Proyect
-//      Build
-//          Build Solution
-//          Rebuild Solution
-//          Clean Solution
-//      Debug
-//      Tools
-//          Hexadecimal Editor
-//          SCV
-//              git
-//          Graph Tool
-/*****************************************************************************/
-
 class MyApp : public wxApp
 {
 public:
@@ -61,35 +24,68 @@ public:
     MainFrame();
     ~MainFrame();
 private:
+
+    class wxTreeCtrl* CreateTreeCtrl();
+    class wxAuiNotebook* CreateNotebook();
+
     void OnHello(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
+    void OnSave(wxCommandEvent& event);
+    void OnOpen(wxCommandEvent& event);
+    void OnNew(wxCommandEvent& event);
+    void OnClose(wxCommandEvent& event);
+    void OnExitProgram(wxCloseEvent& event);
+    void OnCMDTool(wxCommandEvent& event);
 public:
 #pragma region Public attributes
 
 #pragma endregion
 
 #pragma region Public Methods
-    void SetStatusBar(const wxString& text) { m_pStatusBar->SetStatusText(text); }
+    void SetStatusBar(const wxString& text) { GetStatusBar()->SetStatusText(text); }
     void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
 #pragma endregion
 
 private:
 #pragma region Private attributes
-    wxAuiManager* m_pmgr;
-    wxStatusBar* m_pStatusBar;
+    wxAuiManager m_mgr;
+    class CodeEditor* m_pCodeEditor;
+    long m_notebook_style;
 #pragma endregion
 
 #pragma region Private Methods
     void CreateMenubar();
-    void CreateToolBar();
+    class wxAuiToolBar * CreateMainToolBar();
 #pragma endregion
 
     wxDECLARE_EVENT_TABLE();
 };
 enum
 {
-    ID_Hello = 1,
-    ID_Size
+    ID_Hello = wxID_HIGHEST+1,
+    ID_Size,
+    ID_Clone,
+    ID_Close_Project,
+    ID_Save_Project,
+    ID_Recent_Files,
+    ID_Recent_Projects,
+    ID_Search_Replace,
+    ID_View_Files,
+    ID_View_Functions,
+    ID_View_Variables,
+    ID_View_Opcodes,
+    ID_Project_Assembler,
+    ID_Project_Linker,
+    ID_Project_Custom_Assembler,
+    ID_Project_Custom_Linker,
+    ID_Project_Preferences,
+    ID_Build_Build_Solution,
+    ID_Build_Rebuild_Solution,
+    ID_Build_Clean_Solution,
+    ID_Tools_Command_Line,
+    ID_Tools_Hex_Editor,
+    ID_Tools_CVS,
+    ID_Tool_Graph
 };
