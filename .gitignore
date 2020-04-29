@@ -348,8 +348,3 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-Assembly Workbench/SaveIcn.ico
-Assembly Workbench/Save All.ico
-Assembly Workbench/Open.ico
-Assembly Workbench/New.ico
-Assembly Workbench/resource.h
