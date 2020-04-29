@@ -72,5 +72,11 @@
     <Image Include="SaveIcn.ico">
       <Filter>Archivos de recursos</Filter>
     </Image>
+    <Image Include="Save All.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="New.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
   </ItemGroup>
 </Project>

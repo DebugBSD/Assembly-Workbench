@@ -17,7 +17,7 @@ CodeEditor::CodeEditor(wxWindow* parent, const wxString& fileName):
 	m_pMainFrame{ static_cast<MainFrame*>(parent) },
 	m_FileName{ fileName }
 {
-    wxFont f(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
+    wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
 	SetFont(f);
 	SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
 	SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));

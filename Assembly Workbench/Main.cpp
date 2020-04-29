@@ -4,6 +4,9 @@
 #include "stdafx.h"
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
+#include "wx/treectrl.h"
+#include "wx/artprov.h"
+#include "wx/aui/aui.h"
 #include <sstream>
 #include "CodeEditor.h"
 #include "SettingsDialog.h"
@@ -42,44 +45,138 @@ int MyApp::OnExit()
 }
 
 MainFrame::MainFrame(): 
-    wxFrame(NULL, wxID_ANY, "Assembly Workbench", { 0,0 }, { 1280, 1000 }),
-    m_pmgr{nullptr}
+    wxFrame(NULL, wxID_ANY, "Assembly Workbench", { 0,0 }, { 1280, 1000 })
 {
+    // Layout
+    m_mgr.SetManagedWindow(this);
+
     // Set Icon
     // SetIcon();
-    SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
-    SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
+
+    m_notebook_style = wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER;
+
+    //SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
+    //SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
     //ShowFullScreen(true); // Show the window maximized but, without any close, minimize or maximize button.
     Maximize(true); // Show the window maximized
     
     CreateMenubar();
 
-    CreateMainToolBar();
+    //CreateMainToolBar();
 
-    // Layout
-    //m_pmgr = new wxAuiManager(this);
+    CreateStatusBar();
+    GetStatusBar()->SetStatusText("Welcome to wxWidgets!");
 
-    // Look at the page 63 - Mini-Frames of the book of WxWidgets to see how to use wxMiniFrame or wxMDIParentFrame.
-    // Look at samples/mdi
+    m_mgr.AddPane(CreateTreeCtrl(), wxAuiPaneInfo().
+        Name("TreeControl").Caption("Tree Panel").
+        Left().Layer(1).Position(1).
+        CloseButton(true).MaximizeButton(true));
 
-    // Here is the Editor
-    m_pCodeEditor = new CodeEditor(this) ;
 
-    m_pStatusBar = CreateStatusBar();
-    m_pStatusBar->SetStatusText("Welcome to wxWidgets!");
+    wxWindow* wnd10 = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
+        wxPoint(0, 0), FromDIP(wxSize(150, 90)),
+        wxNO_BORDER | wxTE_MULTILINE);
+
+    m_mgr.AddPane(wnd10, wxAuiPaneInfo().
+        Name("test10").Caption("Text Pane with Hide Prompt").
+        Bottom().Layer(1).Position(1));
+
+    m_mgr.AddPane(CreateNotebook(), wxAuiPaneInfo().Name("notebook_content").
+        CenterPane().PaneBorder(false));
+
+    m_mgr.GetPane("TreeControl").Show().Left().Layer(0).Row(0).Position(0);
+    m_mgr.GetPane("test10").Show().Bottom().Layer(0).Row(0).Position(0);
+    m_mgr.GetPane("notebook_content").Show();
 
     /*Bind(wxEVT_MENU, &MainFrame::OnHello, this, ID_Hello);
     Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &MainFrame::OnExit, this, wxID_EXIT);
     Bind(wxEVT_SIZE, &MainFrame::OnResize, this);*/
 
+    // "commit" all changes made to wxAuiManager
+    m_mgr.Update();
+}
+
+wxTreeCtrl* MainFrame::CreateTreeCtrl()
+{
+    wxTreeCtrl* tree = new wxTreeCtrl(this, wxID_ANY,
+        wxPoint(0, 0),
+        FromDIP(wxSize(160, 250)),
+        wxTR_DEFAULT_STYLE | wxNO_BORDER);
+
+    wxSize size = FromDIP(wxSize(16, 16));
+    wxImageList* imglist = new wxImageList(size.x, size.y, true, 2);
+    imglist->Add(wxArtProvider::GetBitmap(wxART_FOLDER, wxART_OTHER, size));
+    imglist->Add(wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, size));
+    tree->AssignImageList(imglist);
+
+    wxTreeItemId root = tree->AddRoot("wxAUI Project", 0);
+    wxArrayTreeItemIds items;
+
+
+
+    items.Add(tree->AppendItem(root, "Item 1", 0));
+    items.Add(tree->AppendItem(root, "Item 2", 0));
+    items.Add(tree->AppendItem(root, "Item 3", 0));
+    items.Add(tree->AppendItem(root, "Item 4", 0));
+    items.Add(tree->AppendItem(root, "Item 5", 0));
+
+
+    int i, count;
+    for (i = 0, count = items.Count(); i < count; ++i)
+    {
+        wxTreeItemId id = items.Item(i);
+        tree->AppendItem(id, "Subitem 1", 1);
+        tree->AppendItem(id, "Subitem 2", 1);
+        tree->AppendItem(id, "Subitem 3", 1);
+        tree->AppendItem(id, "Subitem 4", 1);
+        tree->AppendItem(id, "Subitem 5", 1);
+    }
+
+
+    tree->Expand(root);
+
+    return tree;
+}
+
+wxAuiNotebook* MainFrame::CreateNotebook()
+{
+    // create the notebook off-window to avoid flicker
+    wxSize client_size = GetClientSize();
+
+    wxAuiNotebook* ctrl = new wxAuiNotebook(this, wxID_ANY,
+        wxPoint(client_size.x, client_size.y),
+        FromDIP(wxSize(430, 200)),
+        m_notebook_style);
+    ctrl->Freeze();
+
+    wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, FromDIP(wxSize(16, 16)));
+
+    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "main.asm");
+
+    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "Render.asm");
+
+    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "OpenGL.asm");
+
+
+    /*
+    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
+        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 1");
+
+    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
+        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 2");
+
+    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
+        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 3");
+    */
+    ctrl->Thaw();
+    return ctrl;
 }
 
 MainFrame::~MainFrame()
 {
-    delete m_pCodeEditor;
-    if(m_pmgr) m_pmgr->UnInit();
-    delete m_pmgr;
+    //delete m_pCodeEditor;
+    m_mgr.UnInit();
 
 }
 void MainFrame::OnExit(wxCommandEvent& event)
@@ -143,7 +240,7 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 
 void MainFrame::OnNew(wxCommandEvent& event)
 {
-    if (!m_pCodeEditor->IsModified())
+    /*if (!m_pCodeEditor->IsModified())
     {
         m_pCodeEditor->Clear();
     }
@@ -154,12 +251,27 @@ void MainFrame::OnNew(wxCommandEvent& event)
             return;
         //else: proceed asking to the user the new file to open
         m_pCodeEditor->Clear();
-    }
+    }*/
+
+    static int x = 0;
+    x += FromDIP(20);
+    wxPoint pt = ClientToScreen(wxPoint(0, 0));
+
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    ctrl->Freeze();
+
+    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "New File");
+    
+    ctrl->Thaw();
+
+    m_mgr.Update();
 
 }
 
 void MainFrame::OnClose(wxCommandEvent& event)
 {
+    if (m_pCodeEditor == nullptr) return;
+
     if (!m_pCodeEditor->IsModified())
     {
         m_pCodeEditor->Clear();
@@ -176,7 +288,7 @@ void MainFrame::OnClose(wxCommandEvent& event)
 
 void MainFrame::OnExitProgram(wxCloseEvent& event)
 {
-    if (event.CanVeto() && m_pCodeEditor->IsModified())
+    if (event.CanVeto() && m_pCodeEditor && m_pCodeEditor->IsModified())
     {
         if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
             wxICON_QUESTION | wxYES_NO, this) == wxNO)
@@ -214,8 +326,8 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 
     // Caracter actual (sin tab)
     // TODO
-    if(m_pStatusBar)
-        m_pStatusBar->SetStatusText(statusText);
+    //if(GetStatusBar())
+    //    GetStatusBar()->SetStatusText(statusText);
 }
 
 /*****************************************************************************/

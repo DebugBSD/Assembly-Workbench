@@ -182,7 +182,9 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_stc_vc_x64_custom.dll" "$(OutDir)" /
     <Image Include="icon2.ico" />
     <Image Include="icon3.ico" />
     <Image Include="icon4.ico" />
+    <Image Include="New.ico" />
     <Image Include="Open.ico" />
+    <Image Include="Save All.ico" />
     <Image Include="SaveIcn.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
