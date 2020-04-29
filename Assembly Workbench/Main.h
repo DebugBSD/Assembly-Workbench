@@ -57,7 +57,7 @@ private:
 
 #pragma region Private Methods
     void CreateMenubar();
-    void CreateMainToolBar();
+    class wxAuiToolBar * CreateMainToolBar();
 #pragma endregion
 
     wxDECLARE_EVENT_TABLE();

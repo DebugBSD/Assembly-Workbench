@@ -17,6 +17,9 @@
 #include "wx/wx.h"
 #endif
 
+// Size of icons into toolbars and wxWidgets.
+constexpr int ICON_SIZE = 16;
+
 wxIMPLEMENT_APP(MyApp);
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -62,17 +65,19 @@ MainFrame::MainFrame():
     
     CreateMenubar();
 
-    //CreateMainToolBar();
-
     CreateStatusBar();
     GetStatusBar()->SetStatusText("Welcome to wxWidgets!");
 
+    // Add toolbars
+    wxAuiToolBar* tb1 = CreateMainToolBar();
+
+    // Add panels
     m_mgr.AddPane(CreateTreeCtrl(), wxAuiPaneInfo().
         Name("TreeControl").Caption("Tree Panel").
         Left().Layer(1).Position(1).
         CloseButton(true).MaximizeButton(true));
 
-
+    // Create bottom panel
     wxWindow* wnd10 = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
         wxPoint(0, 0), FromDIP(wxSize(150, 90)),
         wxNO_BORDER | wxTE_MULTILINE);
@@ -81,12 +86,15 @@ MainFrame::MainFrame():
         Name("test10").Caption("Text Pane with Hide Prompt").
         Bottom().Layer(1).Position(1));
 
+    // create center panels
     m_mgr.AddPane(CreateNotebook(), wxAuiPaneInfo().Name("notebook_content").
         CenterPane().PaneBorder(false));
 
+    // add toolbars to the manager
     m_mgr.GetPane("TreeControl").Show().Left().Layer(0).Row(0).Position(0);
     m_mgr.GetPane("test10").Show().Bottom().Layer(0).Row(0).Position(0);
     m_mgr.GetPane("notebook_content").Show();
+    m_mgr.AddPane(tb1, wxAuiPaneInfo().Name("tb1").Caption("File Toolbar").ToolbarPane().Top());
 
     /*Bind(wxEVT_MENU, &MainFrame::OnHello, this, ID_Hello);
     Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
@@ -486,37 +494,36 @@ void MainFrame::CreateMenubar()
     SetMenuBar(menuBar);
 }
 
-void MainFrame::CreateMainToolBar()
+wxAuiToolBar* MainFrame::CreateMainToolBar()
 {
+    int width = ICON_SIZE, height = ICON_SIZE;
     // Create a Toolbar
-    HANDLE hndOpen = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON1), 1, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+    HANDLE hndOpen = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON1), 1, width, height, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
     wxIcon iconOpen;
     iconOpen.CreateFromHICON((WXHICON)hndOpen);
 
-    HANDLE hndSave = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON2), 1, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+    HANDLE hndSave = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON2), 1, width, height, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
     wxIcon iconSave;
     iconSave.CreateFromHICON((WXHICON)hndSave);
 
-    HANDLE hndSaveAll = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON3), 1, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+    HANDLE hndSaveAll = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON3), 1, width, height, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
     wxIcon iconSaveAll;
     iconSaveAll.CreateFromHICON((WXHICON)hndSaveAll);
 
-    HANDLE hndNew = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON4), 1, 0, 0, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
+    HANDLE hndNew = LoadImageA(wxGetInstance(), MAKEINTRESOURCEA(IDI_ICON4), 1, width, height, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
     wxIcon iconNew;
     iconNew.CreateFromHICON((WXHICON)hndNew);
 
-    int stop = 1;
-    //wxToolBar* pToolBar = new wxToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize , wxTB_DEFAULT_STYLE);
-    //pToolBar->AddTool(wxID_OPEN, "Open", icon, "Open");
-    wxToolBar* pToolBar = CreateToolBar();
-    pToolBar->AddTool(wxID_NEW, "New", iconNew, "New file");
-    pToolBar->AddTool(wxID_OPEN, "Open", iconOpen, "Open");
-    pToolBar->AddTool(wxID_SAVE, "Save", iconSave, "Save current");
-    pToolBar->AddTool(ID_Save_Project, "Save Project", iconSaveAll, "Save current project");
-    // CreateToolBar()
-    // SetToolBar()
-    pToolBar->Realize();
-    SetToolBar(pToolBar);
+    wxAuiToolBar* tb1 = new wxAuiToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+        wxAUI_TB_DEFAULT_STYLE);
+    tb1->SetToolBitmapSize(FromDIP(wxSize(width, height)));
+    tb1->AddTool(wxID_NEW, "New", iconNew);
+    tb1->AddTool(wxID_OPEN, "Open",iconOpen);
+    tb1->AddTool(wxID_SAVE, "Save", iconSave);
+    tb1->AddTool(ID_Save_Project, "Save Project", iconSaveAll);
+    tb1->Realize();
+
+    return tb1;
 }
 
 void MainFrame::OnHello(wxCommandEvent& event)
