@@ -29,55 +29,18 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#pragma once
+#include "stdafx.h"
+#include "Project.h"
 
-#include <wx/aui/framemanager.h>
-#include <wx/wxprec.h>
-#include <wx/utils.h>
-#include <wx/panel.h>
-#include <wx/stc/stc.h>
-#include <wx/sizer.h>
-
-
-enum
+Project::Project()
 {
-	ID_TextChanged = 1,
-	ID_KeyEnter
-};
+}
 
-enum class EventType
+bool Project::Build()
 {
-	EVENT_NONE = -1,
-	EVENT_LEFT,
-	EVENT_RIGHT,
-	EVENT_UP,
-	EVENT_DOWN,
-	EVENT_LMOUSE
-};
+	return false;
+}
 
-class CodeEditor :
-	public wxTextCtrl
+void Project::Clean()
 {
-public:
-	CodeEditor(wxWindow* parent, const wxString &fileName = "");
-	~CodeEditor();
-
-private:
-	class MainFrame* m_pMainFrame;
-
-	wxString m_FileName;
-
-private:
-
-	void GetCursorPosition(size_t &lnPos, size_t &colPos);
-	void SetCursorPosition(const EventType &evtType = EventType::EVENT_NONE);
-
-	void TextChanged(wxCommandEvent& event);
-	void OnKeyEnter(wxCommandEvent &event);
-	void OnKeyDown(wxKeyEvent& event);
-	void OnKeyUp(wxKeyEvent& event);
-	void OnMouseDown(wxMouseEvent& event);
-	void OnMouseUp(wxMouseEvent& event);
-
-	wxDECLARE_EVENT_TABLE();
-};
+}

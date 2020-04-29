@@ -162,6 +162,8 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_stc_vc_x64_custom.dll" "$(OutDir)" /
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CodeEditor.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="Project.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
     <ClInclude Include="SettingsDialog.h" />
@@ -171,7 +173,9 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_stc_vc_x64_custom.dll" "$(OutDir)" /
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CodeEditor.cpp" />
+    <ClCompile Include="File.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Project.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +186,9 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_stc_vc_x64_custom.dll" "$(OutDir)" /
     <Image Include="icon2.ico" />
     <Image Include="icon3.ico" />
     <Image Include="icon4.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assembly Workbench.licenseheader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

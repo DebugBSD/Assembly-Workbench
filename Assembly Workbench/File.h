@@ -31,53 +31,19 @@
  */
 #pragma once
 
-#include <wx/aui/framemanager.h>
-#include <wx/wxprec.h>
-#include <wx/utils.h>
-#include <wx/panel.h>
-#include <wx/stc/stc.h>
-#include <wx/sizer.h>
+#include <string>
 
-
-enum
-{
-	ID_TextChanged = 1,
-	ID_KeyEnter
-};
-
-enum class EventType
-{
-	EVENT_NONE = -1,
-	EVENT_LEFT,
-	EVENT_RIGHT,
-	EVENT_UP,
-	EVENT_DOWN,
-	EVENT_LMOUSE
-};
-
-class CodeEditor :
-	public wxTextCtrl
+class File
 {
 public:
-	CodeEditor(wxWindow* parent, const wxString &fileName = "");
-	~CodeEditor();
+	File(const std::string& file);
 
+
+
+	void Compile();
+
+	void Link();
 private:
-	class MainFrame* m_pMainFrame;
-
-	wxString m_FileName;
-
-private:
-
-	void GetCursorPosition(size_t &lnPos, size_t &colPos);
-	void SetCursorPosition(const EventType &evtType = EventType::EVENT_NONE);
-
-	void TextChanged(wxCommandEvent& event);
-	void OnKeyEnter(wxCommandEvent &event);
-	void OnKeyDown(wxKeyEvent& event);
-	void OnKeyUp(wxKeyEvent& event);
-	void OnMouseDown(wxMouseEvent& event);
-	void OnMouseUp(wxMouseEvent& event);
-
-	wxDECLARE_EVENT_TABLE();
+	std::string m_File;
 };
+
