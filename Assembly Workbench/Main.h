@@ -34,12 +34,15 @@
 // wxWidgets "Hello World" Program
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/aui/framemanager.h>
+#include <wx/aui/auibook.h>
 #include <wx/wxprec.h>
 #include <wx/utils.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+
+#include <unordered_map>
 
 
 class MyApp : public wxApp
@@ -69,6 +72,15 @@ private:
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
     void OnCMDTool(wxCommandEvent& event);
+
+    // Build Menu
+    void OnBuildSolution(wxCommandEvent& event);
+    void OnRebuildSolution(wxCommandEvent& event);
+    void OnCleanSolution(wxCommandEvent& event);
+
+    // Close tab
+    void OnCloseTab(wxAuiNotebookEvent& event);
+
 public:
 #pragma region Public attributes
 
@@ -84,11 +96,24 @@ private:
     wxAuiManager m_mgr;
     class CodeEditor* m_pCodeEditor;
     long m_notebook_style;
+    class AssemblerBase* m_pAssemblerBase;
+    class LinkerBase* m_pLinkerBase;
+    class CompilerBase* m_pCompilerBase;
+    // Create a map with assemblers, compilers and linkers.
+    // Then, set a default.
+    // On a new file created, set the default based on the file type.
+
+    // Map with File Editor so, we can know which file foes into a editor.
+    std::unordered_map<class File*, class CodeEditor*> m_Files;
+
 #pragma endregion
 
 #pragma region Private Methods
     void CreateMenubar();
+    void InitToolChain();
+    void UnInitToolChain();
     class wxAuiToolBar * CreateMainToolBar();
+    void CloseFile();
 #pragma endregion
 
     wxDECLARE_EVENT_TABLE();
@@ -118,5 +143,6 @@ enum
     ID_Tools_Command_Line,
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
-    ID_Tool_Graph
+    ID_Tool_Graph,
+    ID_Notebook
 };

@@ -59,14 +59,17 @@ class CodeEditor :
 	public wxTextCtrl
 {
 public:
-	CodeEditor(wxWindow* parent, const wxString &fileName = "");
+	CodeEditor(wxWindow* parent, class File *pFile);
 	~CodeEditor();
+
+    const class File* GetFile() const { return m_pFile; }
+    class File* GetFile() { return m_pFile; }
+    void SetFile(class File* pFile) { m_pFile = pFile; }
 
 private:
 	class MainFrame* m_pMainFrame;
 
-	wxString m_FileName;
-
+    class File* m_pFile;
 private:
 
 	void GetCursorPosition(size_t &lnPos, size_t &colPos);

@@ -101,9 +101,10 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS;__WXMSW__;_UNICODE;WXUSINGDLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,9 +143,10 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_stc_vc_x64_custom.dll" "$(OutDir)" 
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS;__WXMSW__;_UNICODE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,8 +163,13 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_stc_vc_x64_custom.dll" "$(OutDir)" /
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AssemblerBase.h" />
     <ClInclude Include="CodeEditor.h" />
+    <ClInclude Include="CompilerBase.h" />
     <ClInclude Include="File.h" />
+    <ClInclude Include="LinkerBase.h" />
+    <ClInclude Include="MASM.h" />
+    <ClInclude Include="MLINKER.h" />
     <ClInclude Include="Project.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
@@ -175,6 +182,8 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_stc_vc_x64_custom.dll" "$(OutDir)" /
     <ClCompile Include="CodeEditor.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MASM.cpp" />
+    <ClCompile Include="MLINKER.cpp" />
     <ClCompile Include="Project.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
   </ItemGroup>

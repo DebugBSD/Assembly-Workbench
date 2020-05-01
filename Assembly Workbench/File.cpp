@@ -30,8 +30,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "stdafx.h"
+#include "AssemblerBase.h"
+#include "LinkerBase.h"
+#include "CompilerBase.h"
 #include "File.h"
+#include "Project.h"
 
-File::File(const std::string& file)
+File::File(const std::string& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, Project* pProject):
+    m_FileName{file},
+    m_FilePath{""},
+    m_pAssembler{pAssemblerFile},
+    m_pLinker{pLinkerFile},
+    m_pCompiler{pCompiler},
+    m_pProject{pProject}
 {
+    if (m_pProject) m_pProject->AddFile(this);
+}
+
+File::File(const std::string& fileName, const std::string& filePath, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, Project* pProject) :
+    m_FileName{ fileName },
+    m_FilePath{ filePath },
+    m_pAssembler{ pAssemblerFile },
+    m_pLinker{ pLinkerFile },
+    m_pCompiler{ pCompiler },
+    m_pProject{ pProject }
+{
+    if (m_pProject) m_pProject->AddFile(this);
+}
+
+File::~File()
+{
+}
+
+void File::Assemble()
+{
+    if (m_pAssembler && m_FilePath != "")
+    {
+        m_pAssembler->AssembleFile(m_FilePath+'/'+m_FileName);
+    }
+}
+
+void File::Compile()
+{
+    if (m_pCompiler && m_FilePath != "")
+    {
+        m_pCompiler->Compile(m_FilePath + '/' + m_FileName);
+    }
+}
+
+void File::Link()
+{
+    if (m_pLinker && m_FilePath != "")
+    {
+        m_pLinker->Link(m_FilePath + '/' + m_FileName);
+    }
 }

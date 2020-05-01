@@ -30,49 +30,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-
+#include "AssemblerBase.h"
 #include <string>
 
-enum class FileType
-{
-    FT_NONE = -1,
-    FT_ASSEMBLER,
-    FT_C,
-    FT_CPP
-};
-
-class File
+class MASM :
+	public AssemblerBase
 {
 public:
-    
-	File(const std::string& file, class AssemblerBase*pAssemblerFile = nullptr, class LinkerBase *pLinkerFile = nullptr, class CompilerBase *pCompiler = nullptr, class Project *pProject = nullptr);
-    File(const std::string& fileName, const std::string &filePath, class AssemblerBase* pAssemblerFile = nullptr, class LinkerBase* pLinkerFile = nullptr, class CompilerBase* pCompiler = nullptr, class Project* pProject = nullptr);
-    ~File();
+    MASM();
 
-    void Assemble(); // Just for assembly files.
+    ~MASM();
 
-	void Compile(); // For C/C++ files.
+    void AssembleFile(const std::string &file) override;
 
-	void Link(); // For object files. (ASM objects and C/C++ objects)
-
-    void SetFileName(const std::string file) { m_FileName = file; }
-    const std::string& GetFileName() const { return m_FileName; }
-
-    void SetFile(const std::string file) { m_FilePath = file; }
-    const std::string& GetFile() const { return m_FilePath; }
-    void SetAssembler(class AssemblerBase* pAssembler) { m_pAssembler = pAssembler; }
-    void SetLinker(class LinkerBase* pLinker) { m_pLinker = pLinker; }
-    void SetCompiler(class CompilerBase* pCompiler) { m_pCompiler = pCompiler; }
 private:
+    // Right now, hardcoded, in the future, I'll detect the tool chain of Visual Studio.
+    const std::string m_PathToAssembler{"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx86/x86/ml.exe"};
 
-    std::string m_FileName;
-	std::string m_FilePath; // Absolute or relative path to file without name of file.
-
-    FileType m_FileType;
-
-    class AssemblerBase* m_pAssembler;
-    class LinkerBase* m_pLinker;
-    class CompilerBase* m_pCompiler;
-    class Project* m_pProject;
 };
 

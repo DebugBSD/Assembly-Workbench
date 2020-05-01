@@ -32,6 +32,7 @@
 #include "stdafx.h"
 #include "CodeEditor.h"
 #include "Main.h"
+#include "File.h"
 
 
 wxBEGIN_EVENT_TABLE(CodeEditor, wxTextCtrl)
@@ -43,10 +44,10 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxTextCtrl)
 	EVT_LEFT_UP(CodeEditor::OnMouseUp)
 wxEND_EVENT_TABLE()
 
-CodeEditor::CodeEditor(wxWindow* parent, const wxString& fileName):
+CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
 	wxTextCtrl(parent, wxID_ANY, wxEmptyString, { 0, 0 }, parent->GetClientSize(), wxTE_MULTILINE | wxHSCROLL | wxVSCROLL | wxTE_RICH | wxTE_PROCESS_ENTER), // Base class
 	m_pMainFrame{ static_cast<MainFrame*>(parent) },
-	m_FileName{ fileName }
+	m_pFile{pFile}
 {
     wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
 	SetFont(f);

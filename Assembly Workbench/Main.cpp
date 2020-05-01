@@ -34,6 +34,9 @@
 //
 
 #include "stdafx.h"
+
+#include <filesystem>
+
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 #include "wx/treectrl.h"
@@ -44,6 +47,11 @@
 #include "SettingsDialog.h"
 #include "resource.h"
 #include "Main.h"
+#include "File.h"
+// Toolchain of Microsoft
+// NOTE: Right now is hardcoded. In the future, will be autodetected.
+#include "MASM.h"
+#include "MLINKER.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
@@ -63,6 +71,14 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
     EVT_MENU(wxID_PREFERENCES, MainFrame::OnHello)
     EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
+
+
+    EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
+    EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
+    EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
+
+    EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, MainFrame::OnCloseTab)
+
     EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
 
@@ -80,8 +96,13 @@ int MyApp::OnExit()
 }
 
 MainFrame::MainFrame(): 
-    wxFrame(NULL, wxID_ANY, "Assembly Workbench", { 0,0 }, { 1280, 1000 })
+    wxFrame(NULL, wxID_ANY, "Assembly Workbench", { 0,0 }, { 1280, 1000 }),
+    m_pAssemblerBase{nullptr},
+    m_pLinkerBase{nullptr},
+    m_pCompilerBase{nullptr}
 {
+    InitToolChain();
+
     // Layout
     m_mgr.SetManagedWindow(this);
 
@@ -144,7 +165,7 @@ wxTreeCtrl* MainFrame::CreateTreeCtrl()
         FromDIP(wxSize(160, 250)),
         wxTR_DEFAULT_STYLE | wxNO_BORDER);
 
-    wxSize size = FromDIP(wxSize(16, 16));
+    /*wxSize size = FromDIP(wxSize(16, 16));
     wxImageList* imglist = new wxImageList(size.x, size.y, true, 2);
     imglist->Add(wxArtProvider::GetBitmap(wxART_FOLDER, wxART_OTHER, size));
     imglist->Add(wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, size));
@@ -170,7 +191,7 @@ wxTreeCtrl* MainFrame::CreateTreeCtrl()
     }
 
 
-    tree->Expand(root);
+    tree->Expand(root);*/
 
     return tree;
 }
@@ -180,19 +201,19 @@ wxAuiNotebook* MainFrame::CreateNotebook()
     // create the notebook off-window to avoid flicker
     wxSize client_size = GetClientSize();
 
-    wxAuiNotebook* ctrl = new wxAuiNotebook(this, wxID_ANY,
+    wxAuiNotebook* ctrl = new wxAuiNotebook(this, ID_Notebook,
         wxPoint(client_size.x, client_size.y),
         FromDIP(wxSize(430, 200)),
         m_notebook_style);
     ctrl->Freeze();
 
-    wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, FromDIP(wxSize(16, 16)));
+    /*wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, FromDIP(wxSize(16, 16)));
 
     ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "main.asm");
 
     ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "Render.asm");
 
-    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "OpenGL.asm");
+    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "OpenGL.asm");*/
 
 
     /*
@@ -211,13 +232,12 @@ wxAuiNotebook* MainFrame::CreateNotebook()
 
 MainFrame::~MainFrame()
 {
-    //delete m_pCodeEditor;
+    UnInitToolChain();
     m_mgr.UnInit();
 
 }
 void MainFrame::OnExit(wxCommandEvent& event)
 {
-    
     Close(true);
 }
 void MainFrame::OnAbout(wxCommandEvent& event)
@@ -237,95 +257,108 @@ void MainFrame::OnSave(wxCommandEvent& event)
     wxFileDialog
         saveFileDialog(this, _("Save Assembly file"), "", "",
             "ASM files (*.asm)|*.asm", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-    if (saveFileDialog.ShowModal() == wxID_CANCEL)
-        return;     // the user changed idea...
-
-    // save the current contents in the file;
-    if (!m_pCodeEditor->SaveFile(saveFileDialog.GetPath()))
+    
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    if (ctrl)
     {
-        wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
-        return;
+        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        if (pCodeEditor && pCodeEditor->IsModified())
+        {
+            File* pFile = pCodeEditor->GetFile();
+
+            if (pFile && pFile->GetFile() == "")
+            {
+                if (saveFileDialog.ShowModal() == wxID_CANCEL)
+                    return;     // the user changed idea...
+                
+                std::filesystem::path tempFile{ static_cast<std::string>(saveFileDialog.GetPath()) };
+                pFile->SetFile(tempFile.parent_path().string());
+                pFile->SetFileName(tempFile.filename().string());
+
+                if (!pCodeEditor->SaveFile(static_cast<wxString>(tempFile)))
+                {
+                    wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
+                    return;
+                }
+                int pageNum = ctrl->GetPageIndex(ctrl->GetCurrentPage());
+                ctrl->Freeze();
+                ctrl->SetPageText(pageNum, pFile->GetFileName());
+                ctrl->Thaw();
+                m_mgr.Update();
+            }
+            else
+            {
+                if (!pCodeEditor->SaveFile(pFile->GetFile()+'/'+ pFile->GetFileName()))
+                {
+                    wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
+                    return;
+                }
+            }
+        }
+        else
+        {
+            // TODO: Handle errors.
+        }
+    }
+    else
+    {
+        // TODO: Handle errors.
     }
 }
 
 void MainFrame::OnOpen(wxCommandEvent& event)
 {
-
-    bool isModified = m_pCodeEditor->IsModified();
-    if (isModified)
-    {
-        if (wxMessageBox(_("Current content has not been saved! Proceed?"), _("Please confirm"),
-            wxICON_QUESTION | wxYES_NO, this) == wxNO)
-            return;
-        //else: proceed asking to the user the new file to open
-    }
-
     wxFileDialog
         openFileDialog(this, _("Open Assembly file"), "", "",
             "ASM files (*.asm)|*.asm", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;     // the user changed idea...
 
-    m_pCodeEditor->Destroy();
-    m_pCodeEditor = new CodeEditor(this, openFileDialog.GetPath());
-    if (!m_pCodeEditor->LoadFile(openFileDialog.GetPath()))
+    std::filesystem::path tempFile{ static_cast<std::string>(openFileDialog.GetPath()) };
+
+    File* pFile = new File(tempFile.filename().string(),tempFile.parent_path().string());
+    CodeEditor* pCodeEditor = new CodeEditor(this, pFile);
+    if (!pCodeEditor->LoadFile(openFileDialog.GetPath()))
     {
         wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
         return;
     }
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+
+    m_Files.insert({ pFile,pCodeEditor });
+
+    ctrl->Freeze();
+    ctrl->AddPage(pCodeEditor, tempFile.filename().string());
+    ctrl->Thaw();
+    m_mgr.Update();
 }
 
 void MainFrame::OnNew(wxCommandEvent& event)
 {
-    /*if (!m_pCodeEditor->IsModified())
-    {
-        m_pCodeEditor->Clear();
-    }
-    else
-    {
-        if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
-            wxICON_QUESTION | wxYES_NO, this) == wxNO)
-            return;
-        //else: proceed asking to the user the new file to open
-        m_pCodeEditor->Clear();
-    }*/
-
-    static int x = 0;
-    x += FromDIP(20);
-    wxPoint pt = ClientToScreen(wxPoint(0, 0));
-
     wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+
+    File* pFile = new File("New File");
+    CodeEditor* pCodeEditor = new CodeEditor(ctrl, pFile);
+    
     ctrl->Freeze();
 
-    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "New File");
+    m_Files.insert({ pFile,pCodeEditor });
+
+    ctrl->AddPage(pCodeEditor, "New File");
     
     ctrl->Thaw();
 
     m_mgr.Update();
-
 }
 
 void MainFrame::OnClose(wxCommandEvent& event)
 {
-    if (m_pCodeEditor == nullptr) return;
-
-    if (!m_pCodeEditor->IsModified())
-    {
-        m_pCodeEditor->Clear();
-    }
-    else
-    {
-        if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
-            wxICON_QUESTION | wxYES_NO, this) == wxNO)
-            return;
-        //else: proceed asking to the user the new file to open
-        m_pCodeEditor->Clear();
-    }
+    CloseFile();
 }
 
 void MainFrame::OnExitProgram(wxCloseEvent& event)
 {
-    if (event.CanVeto() && m_pCodeEditor && m_pCodeEditor->IsModified())
+    if (event.CanVeto())
     {
         if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
             wxICON_QUESTION | wxYES_NO, this) == wxNO)
@@ -343,6 +376,69 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
 void MainFrame::OnCMDTool(wxCommandEvent& event)
 {
     wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"");
+}
+
+void MainFrame::OnBuildSolution(wxCommandEvent& event)
+{
+    int stop = 1;
+}
+
+void MainFrame::OnRebuildSolution(wxCommandEvent& event)
+{
+    int stop = 1;
+}
+
+void MainFrame::OnCleanSolution(wxCommandEvent& event)
+{
+    int stop = 1;
+}
+
+void MainFrame::OnCloseTab(wxAuiNotebookEvent& event)
+{
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    if (ctrl)
+    {
+        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        // If File is Modified
+        if (pCodeEditor && pCodeEditor->IsModified())
+        {
+            File* pFile = pCodeEditor->GetFile();
+            if (pFile->GetFile() != "") // There is a file to save
+            {
+                // El fichero ha sido guardado previamente.
+                int res = wxMessageBox(_("This file has been modifed. Do you want to save it before closing it?"), _("Please confirm"), wxYES_NO | wxCANCEL, this);
+                if (res == wxYES) // We save the file before closing it
+                {
+                    pCodeEditor->SaveFile(pFile->GetFile() + '/' + pFile->GetFileName());
+                    // TODO: Delete from m_Files
+                    event.Skip();
+                }
+                else if (res == wxNO) // We close without any saving.
+                {
+                    // We close this window.
+                    // TODO: Delete from m_Files.
+                    event.Skip();
+                }
+                else // We return to the program.
+                {
+                    event.Veto();
+                }
+            }
+            else // There is no file to save to.
+            {
+                // El fichero es nuevo. No ha sido guardado previamente.
+                if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
+                    wxYES_NO | wxCANCEL, this) == wxYES)
+                {
+                    return; // We close without any saving.
+                }
+            }
+        }
+    }
+    else
+    {
+        int stop = 1;
+    }
 }
 
 void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t currentColumn, size_t currentLine)
@@ -407,6 +503,7 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 //              Yasm
 //              Fasm
 //              Tasm
+//              UASM
 //              -----------------------------------
 //              Custom
 //          Linker
@@ -523,6 +620,18 @@ void MainFrame::CreateMenubar()
     SetMenuBar(menuBar);
 }
 
+void MainFrame::InitToolChain()
+{
+    m_pAssemblerBase = new MASM();
+    m_pLinkerBase = new MLINKER();
+}
+
+void MainFrame::UnInitToolChain()
+{
+    delete m_pLinkerBase;
+    delete m_pAssemblerBase;
+}
+
 wxAuiToolBar* MainFrame::CreateMainToolBar()
 {
     int width = ICON_SIZE, height = ICON_SIZE;
@@ -555,6 +664,11 @@ wxAuiToolBar* MainFrame::CreateMainToolBar()
     return tb1;
 }
 
+void MainFrame::CloseFile()
+{
+    
+}
+
 void MainFrame::OnHello(wxCommandEvent& event)
 {
     SettingsDialog* pSettings = new SettingsDialog(nullptr);
@@ -570,4 +684,8 @@ void MainFrame::OnHello(wxCommandEvent& event)
     ss << '\0';
     std::string env = ss.str();
 
+}
+
+void CloseFile()
+{
 }

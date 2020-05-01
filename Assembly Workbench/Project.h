@@ -44,7 +44,13 @@ public:
 
 	void ReBuild() { Clean(); Build(); }
 
+    void AddFile(class File* pFile) { m_Files.push_back(pFile); }
+
 private:
 	std::vector<class File*> m_Files;
+
+    class AssemblerBase* m_pAssembler;
+    class LinkerBase* m_pLinker;
+    class CompilerBase* m_pCompiler;
 };
 
