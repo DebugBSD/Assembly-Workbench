@@ -113,7 +113,7 @@ private:
     void InitToolChain();
     void UnInitToolChain();
     class wxAuiToolBar * CreateMainToolBar();
-    void CloseFile();
+    int CloseFile();
 #pragma endregion
 
     wxDECLARE_EVENT_TABLE();

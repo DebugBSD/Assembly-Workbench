@@ -353,7 +353,8 @@ void MainFrame::OnNew(wxCommandEvent& event)
 
 void MainFrame::OnClose(wxCommandEvent& event)
 {
-    CloseFile();
+    int res = CloseFile();
+    event.Skip();
 }
 
 void MainFrame::OnExitProgram(wxCloseEvent& event)
@@ -395,49 +396,18 @@ void MainFrame::OnCleanSolution(wxCommandEvent& event)
 
 void MainFrame::OnCloseTab(wxAuiNotebookEvent& event)
 {
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
-    if (ctrl)
+    int res = CloseFile();
+    if (res == wxYES) // We save the file before closing it
     {
-        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
-        // If File is Modified
-        if (pCodeEditor && pCodeEditor->IsModified())
-        {
-            File* pFile = pCodeEditor->GetFile();
-            if (pFile->GetFile() != "") // There is a file to save
-            {
-                // El fichero ha sido guardado previamente.
-                int res = wxMessageBox(_("This file has been modifed. Do you want to save it before closing it?"), _("Please confirm"), wxYES_NO | wxCANCEL, this);
-                if (res == wxYES) // We save the file before closing it
-                {
-                    pCodeEditor->SaveFile(pFile->GetFile() + '/' + pFile->GetFileName());
-                    // TODO: Delete from m_Files
-                    event.Skip();
-                }
-                else if (res == wxNO) // We close without any saving.
-                {
-                    // We close this window.
-                    // TODO: Delete from m_Files.
-                    event.Skip();
-                }
-                else // We return to the program.
-                {
-                    event.Veto();
-                }
-            }
-            else // There is no file to save to.
-            {
-                // El fichero es nuevo. No ha sido guardado previamente.
-                if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
-                    wxYES_NO | wxCANCEL, this) == wxYES)
-                {
-                    return; // We close without any saving.
-                }
-            }
-        }
+        event.Skip();
     }
-    else
+    else if (res == wxNO) // We close without any saving.
     {
-        int stop = 1;
+        event.Skip();
+    }
+    else // We return to the program.
+    {
+        event.Veto();
     }
 }
 
@@ -664,9 +634,64 @@ wxAuiToolBar* MainFrame::CreateMainToolBar()
     return tb1;
 }
 
-void MainFrame::CloseFile()
+int MainFrame::CloseFile()
 {
-    
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    if (ctrl)
+    {
+        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        // If File is Modified
+        if (pCodeEditor && pCodeEditor->IsModified())
+        {
+            File* pFile = pCodeEditor->GetFile();
+            if (pFile->GetFile() != "") // There is a file to save
+            {
+                int res = wxMessageBox(_("This file has been modifed. Do you want to save it before closing it?"), _("Please confirm"), wxYES_NO | wxCANCEL, this);
+                if (res == wxYES) // We save the file before closing it
+                {
+                    pCodeEditor->SaveFile(pFile->GetFile() + '/' + pFile->GetFileName());
+                    // Delete this elemento from m_Files.
+                    m_Files.erase(pCodeEditor->GetFile());
+                    
+                }
+                return res;
+            }
+            else // There is no file to save to.
+            {
+                int res = wxMessageBox(_("This buffer has been modifed. All changes will be lost! Do you want to save it before saving it?"), _("Please confirm"), wxYES_NO | wxCANCEL, this);
+
+                wxFileDialog
+                    saveFileDialog(this, _("Save Assembly file"), "", "",
+                        "ASM files (*.asm)|*.asm", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+
+                if (res == wxYES)
+                {
+                    if (saveFileDialog.ShowModal() == wxID_CANCEL)
+                        return wxCANCEL;     // the user changed idea...
+
+                    std::filesystem::path tempFile{ static_cast<std::string>(saveFileDialog.GetPath()) };
+                    pFile->SetFile(tempFile.parent_path().string());
+                    pFile->SetFileName(tempFile.filename().string());
+
+                    if (!pCodeEditor->SaveFile(static_cast<wxString>(tempFile)))
+                    {
+                        wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
+                        return -1;
+                    }
+                }
+                return res;
+            }
+        }
+        else
+        {
+            return wxYES;
+        }
+    }
+    else
+    {
+
+    }
+    return -1;
 }
 
 void MainFrame::OnHello(wxCommandEvent& event)
