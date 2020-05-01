@@ -236,15 +236,17 @@ MainFrame::~MainFrame()
     m_mgr.UnInit();
 
 }
+
 void MainFrame::OnExit(wxCommandEvent& event)
 {
     Close(true);
 }
+
 void MainFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox("This is a wxWidgets Hello World example",
-        "About Hello World", wxOK | wxICON_INFORMATION);
+
 }
+
 void MainFrame::OnResize(wxSizeEvent& event)
 {
     int stop = 1;
@@ -359,9 +361,9 @@ void MainFrame::OnClose(wxCommandEvent& event)
 
 void MainFrame::OnExitProgram(wxCloseEvent& event)
 {
-    if (event.CanVeto())
+    if (event.CanVeto() && !m_Files.empty())
     {
-        if (wxMessageBox(_("This file has been modifed. All changes will be lost!"), _("Please confirm"),
+        if (wxMessageBox(_("There are unsaved changes. All changes will be lost!"), _("Please confirm"),
             wxICON_QUESTION | wxYES_NO, this) == wxNO)
         {
             event.Veto();
@@ -672,12 +674,16 @@ int MainFrame::CloseFile()
                     std::filesystem::path tempFile{ static_cast<std::string>(saveFileDialog.GetPath()) };
                     pFile->SetFile(tempFile.parent_path().string());
                     pFile->SetFileName(tempFile.filename().string());
-
+                    m_Files.erase(pCodeEditor->GetFile());
                     if (!pCodeEditor->SaveFile(static_cast<wxString>(tempFile)))
                     {
                         wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
                         return -1;
                     }
+                }
+                else
+                {
+                    m_Files.erase(pCodeEditor->GetFile());
                 }
                 return res;
             }
