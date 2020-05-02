@@ -318,7 +318,7 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 
     std::filesystem::path tempFile{ static_cast<std::string>(openFileDialog.GetPath()) };
 
-    File* pFile = new File(tempFile.filename().string(),tempFile.parent_path().string());
+    File* pFile = new File(tempFile.filename().string(),tempFile.parent_path().string(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase);
     CodeEditor* pCodeEditor = new CodeEditor(this, pFile);
     if (!pCodeEditor->LoadFile(openFileDialog.GetPath()))
     {
@@ -339,7 +339,7 @@ void MainFrame::OnNew(wxCommandEvent& event)
 {
     wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
 
-    File* pFile = new File("New File");
+    File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase);
     CodeEditor* pCodeEditor = new CodeEditor(ctrl, pFile);
     
     ctrl->Freeze();
@@ -378,12 +378,21 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
 
 void MainFrame::OnCMDTool(wxCommandEvent& event)
 {
-    wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"");
+    // Note: X64
+    wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat\"");
+    // Note: X32 - wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"");
+    //wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"&&dir");
 }
 
 void MainFrame::OnBuildSolution(wxCommandEvent& event)
 {
-    int stop = 1;
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    if (ctrl)
+    {
+        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        pCodeEditor->GetFile()->Assemble();
+        pCodeEditor->GetFile()->Link();
+    }
 }
 
 void MainFrame::OnRebuildSolution(wxCommandEvent& event)
@@ -476,6 +485,7 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 //              Fasm
 //              Tasm
 //              UASM
+//              JWASM
 //              -----------------------------------
 //              Custom
 //          Linker
@@ -715,8 +725,4 @@ void MainFrame::OnHello(wxCommandEvent& event)
     ss << '\0';
     std::string env = ss.str();
 
-}
-
-void CloseFile()
-{
 }

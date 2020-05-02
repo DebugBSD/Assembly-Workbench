@@ -30,7 +30,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "stdafx.h"
+#include <filesystem>
+#include <string>
 #include "MASM.h"
+#include <wx/arrstr.h>
+#include <wx/utils.h> 
+
+ /*
+  * MASM Options
+  * ------------
+  *
+  * - /c - Assemble without linking
+  * - /nologo - Supress copyright message
+  * - /Fo<file> - Name object file
+  * - /G<c|d|z> - Use Pascal, C, or Stdcall.
+  * 
+  * Environment variables used by ml64.
+  * -----------------------------------
+  *
+  * - Include - INCLUDE=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\ATLMFC\include;
+  *                     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\include;
+  *                     C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um;
+  *                     C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\ucrt;
+  *                     C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\shared;
+  *                     C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\um;
+  *                     C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\winrt;
+  *                     C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\cppwinrt
+  * - Tmp -     TMP=C:\Users\debugg\AppData\Local\Temp
+  */
 
 MASM::MASM()
 {
@@ -46,9 +73,44 @@ void MASM::AssembleFile(const std::string& file)
     // Check if everything is okay.
     if (file != "")
     {
+        wxExecuteEnv environment;
+        // Get the environment variables.
+        SetEnvVariables(environment.env);
+
         // Assemble file.
-        // execute the wxExecute.
+        std::filesystem::path filepath{ file };
+        std::string fileInput{ "/c " + filepath.parent_path().string() + "/" + filepath.filename().string() };
+        std::string fileOutput{ "/Fo " + filepath.parent_path().string() + "/" + filepath.filename().stem().string() + ".obj" };
+        // Options 
+        std::string options{ "/nologo " };
+
         // See options of MASM
+        std::string command{ m_PathToAssembler + " " + options + " " + fileOutput + " " + fileInput };
+
+        // execute the wxExecute.
+        wxArrayString output;
+        wxArrayString errors;
+        long res = wxExecute(command, output, errors, wxEXEC_SYNC,&environment);
+        
+        int stop = 1;
+        
     }
+
+}
+
+void MASM::SetEnvVariables(wxEnvVariableHashMap& envMap)
+{
+    wxGetEnvMap(&envMap);
+    std::string includePath;
+
+    includePath =  "C:\\Program Files(x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\ATLMFC\\include;\
+                    C:\\Program Files(x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\include;        \
+                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;                                          \
+                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;                                        \
+                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;                                            \
+                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;                                         \
+                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
+
+    envMap["INCLUDE"] = includePath;
 
 }

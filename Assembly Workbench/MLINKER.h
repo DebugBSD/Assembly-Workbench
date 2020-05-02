@@ -32,6 +32,9 @@
 #pragma once
 #include "LinkerBase.h"
 #include <string>
+
+#include "wx/utils.h"
+
 class MLINKER :
 	public LinkerBase
 {
@@ -42,7 +45,10 @@ public:
     void Link(const std::string& file) override;
 
 private:
+    void SetEnvVariables(wxEnvVariableHashMap& envMap);
+
+private:
     // Right now, hardcoded, in the future, I'll detect the tool chain of Visual Studio.
-    const std::string m_PathToLinker{ "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx86/x86/link.exe" };
+    const std::string m_PathToLinker{ "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx64/x64/link.exe\"" };
 };
 
