@@ -32,6 +32,7 @@
 #include "stdafx.h"
 #include <filesystem>
 #include <string>
+#include "Main.h"
 #include "MASM.h"
 #include <wx/arrstr.h>
 #include <wx/utils.h> 
@@ -59,12 +60,17 @@
   * - Tmp -     TMP=C:\Users\debugg\AppData\Local\Temp
   */
 
-MASM::MASM()
+MASM::MASM(MainFrame* pFrame):
+    m_pFrame{pFrame}
 {
     // Set Default Options
 }
 
 MASM::~MASM()
+{
+}
+
+void MASM::Clean(const std::string& file)
 {
 }
 
@@ -79,8 +85,11 @@ void MASM::AssembleFile(const std::string& file)
 
         // Assemble file.
         std::filesystem::path filepath{ file };
-        std::string fileInput{ "/c " + filepath.parent_path().string() + "/" + filepath.filename().string() };
-        std::string fileOutput{ "/Fo " + filepath.parent_path().string() + "/" + filepath.filename().stem().string() + ".obj" };
+        std::string fileInput{ "/c " + filepath.filename().string() };
+        std::string fileOutput{ "/Fo " + filepath.filename().stem().string() + ".obj" };
+
+        environment.cwd = filepath.parent_path().string();
+
         // Options 
         std::string options{ "/nologo " };
 
@@ -92,7 +101,8 @@ void MASM::AssembleFile(const std::string& file)
         wxArrayString errors;
         long res = wxExecute(command, output, errors, wxEXEC_SYNC,&environment);
         
-        int stop = 1;
+        if (m_pFrame) m_pFrame->Log(&output);
+        if (m_pFrame) m_pFrame->Log(&errors);
         
     }
 

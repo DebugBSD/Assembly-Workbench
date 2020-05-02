@@ -89,12 +89,14 @@ public:
 #pragma region Public Methods
     void SetStatusBar(const wxString& text) { GetStatusBar()->SetStatusText(text); }
     void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
+
+    void Log(class wxArrayString *pArrayLog);
+    void Log(class wxString* pError);
 #pragma endregion
 
 private:
 #pragma region Private attributes
     wxAuiManager m_mgr;
-    class CodeEditor* m_pCodeEditor;
     long m_notebook_style;
     class AssemblerBase* m_pAssemblerBase;
     class LinkerBase* m_pLinkerBase;

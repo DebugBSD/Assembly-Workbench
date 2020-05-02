@@ -49,6 +49,8 @@ public:
     File(const std::string& fileName, const std::string &filePath, class AssemblerBase* pAssemblerFile = nullptr, class LinkerBase* pLinkerFile = nullptr, class CompilerBase* pCompiler = nullptr, class Project* pProject = nullptr);
     ~File();
 
+    void Clean();
+
     void Assemble(); // Just for assembly files.
 
 	void Compile(); // For C/C++ files.

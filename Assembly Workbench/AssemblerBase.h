@@ -35,6 +35,7 @@ class AssemblerBase
 {
 public:
 
+    virtual void Clean(const std::string& file) = 0;
 	virtual void AssembleFile(const std::string &file) = 0;
 
 };

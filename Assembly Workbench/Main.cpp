@@ -131,12 +131,12 @@ MainFrame::MainFrame():
         CloseButton(true).MaximizeButton(true));
 
     // Create bottom panel
-    wxWindow* wnd10 = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
+    wxTextCtrl* wnd10 = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
         wxPoint(0, 0), FromDIP(wxSize(150, 90)),
         wxNO_BORDER | wxTE_MULTILINE);
 
     m_mgr.AddPane(wnd10, wxAuiPaneInfo().
-        Name("test10").Caption("Console Output").
+        Name("ConsoleLog").Caption("Console Output").
         Bottom().Layer(1).Position(1));
 
     // create center panels
@@ -145,7 +145,7 @@ MainFrame::MainFrame():
 
     // add toolbars to the manager
     m_mgr.GetPane("TreeControl").Show().Left().Layer(0).Row(0).Position(0);
-    m_mgr.GetPane("test10").Show().Bottom().Layer(0).Row(0).Position(0);
+    m_mgr.GetPane("ConsoleLog").Show().Bottom().Layer(0).Row(0).Position(0);
     m_mgr.GetPane("notebook_content").Show();
     m_mgr.AddPane(tb1, wxAuiPaneInfo().Name("tb1").Caption("File Toolbar").ToolbarPane().Top());
 
@@ -329,10 +329,7 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 
     m_Files.insert({ pFile,pCodeEditor });
 
-    ctrl->Freeze();
     ctrl->AddPage(pCodeEditor, tempFile.filename().string());
-    ctrl->Thaw();
-    m_mgr.Update();
 }
 
 void MainFrame::OnNew(wxCommandEvent& event)
@@ -390,8 +387,12 @@ void MainFrame::OnBuildSolution(wxCommandEvent& event)
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
-        pCodeEditor->GetFile()->Assemble();
-        pCodeEditor->GetFile()->Link();
+        if (pCodeEditor && pCodeEditor->GetFile())
+        {
+            pCodeEditor->GetFile()->Assemble();
+            pCodeEditor->GetFile()->Compile();
+            pCodeEditor->GetFile()->Link();
+        }
     }
 }
 
@@ -442,6 +443,20 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
     // TODO
     //if(GetStatusBar())
     //    GetStatusBar()->SetStatusText(statusText);
+}
+
+void MainFrame::Log(wxArrayString* pArrayLog)
+{
+
+    wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_mgr.GetPane("ConsoleLog").window);
+    for (wxString str : *pArrayLog)
+    {
+        pTextControl->AppendText(str + "\n");
+    }
+}
+
+void MainFrame::Log(wxString* pError)
+{
 }
 
 /*****************************************************************************/
@@ -569,7 +584,7 @@ void MainFrame::CreateMenubar()
     // TODO: Add linkers.
 
     menuProject->AppendSeparator();
-    menuProject->Append(ID_Project_Preferences, "Preferences", "Edit project preferences");
+    menuProject->Append(ID_Project_Preferences, "Settings", "Edit project settings");
 
     wxMenu* menuBuild = new wxMenu;
     menuBuild->Append(ID_Build_Build_Solution, "Build solution", "Build current solution");
@@ -604,8 +619,8 @@ void MainFrame::CreateMenubar()
 
 void MainFrame::InitToolChain()
 {
-    m_pAssemblerBase = new MASM();
-    m_pLinkerBase = new MLINKER();
+    m_pAssemblerBase = new MASM(this);
+    m_pLinkerBase = new MLINKER(this);
 }
 
 void MainFrame::UnInitToolChain()

@@ -33,8 +33,8 @@
 class CompilerBase
 {
 public:
-	virtual ~CompilerBase() {}
 
+    virtual void Clean(const std::string& file) = 0;
 	virtual void Compile(const std::string &file) = 0;
 };
 

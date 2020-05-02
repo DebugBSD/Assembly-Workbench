@@ -31,6 +31,7 @@
  */
 #include "stdafx.h"
 #include <filesystem>
+#include "Main.h"
 #include "MLINKER.h"
 
 /* 
@@ -45,11 +46,16 @@
  * link /DEBUG /subsystem:console /entry:main /largeaddressaware:no /nologo /out:main.exe basic.obj kernel32.lib user32.lib msvcrt.lib libucrt.lib
  */
 
-MLINKER::MLINKER()
+MLINKER::MLINKER(MainFrame* pFrame):
+    m_pFrame{ pFrame }
 {
 }
 
 MLINKER::~MLINKER()
+{
+}
+
+void MLINKER::Clean(const std::string& file)
 {
 }
 
@@ -81,7 +87,9 @@ void MLINKER::Link(const std::string& file)
     wxArrayString output;
     wxArrayString errors;
     long res = wxExecute(command, output, errors, wxEXEC_SYNC, &environment);
-    int stop = 1;
+
+    if (m_pFrame) m_pFrame->Log(&output);
+    if (m_pFrame) m_pFrame->Log(&errors);
 }
 
 void MLINKER::SetEnvVariables(wxEnvVariableHashMap& envMap)
