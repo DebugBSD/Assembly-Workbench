@@ -77,6 +77,8 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
     EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
 
+    EVT_MENU(ID_Debug_LaunchWindDbg, MainFrame::OnLaunchDebugger)
+
     EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, MainFrame::OnCloseTab)
 
     EVT_CLOSE(MainFrame::OnExitProgram)
@@ -406,6 +408,12 @@ void MainFrame::OnCleanSolution(wxCommandEvent& event)
     int stop = 1;
 }
 
+void MainFrame::OnLaunchDebugger(wxCommandEvent& event)
+{
+    // WinDbg accept an executable as argument so, you can pass the program you have built.
+    wxExecute("\"C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\WinDbg.exe\"");
+}
+
 void MainFrame::OnCloseTab(wxAuiNotebookEvent& event)
 {
     int res = CloseFile();
@@ -592,7 +600,7 @@ void MainFrame::CreateMenubar()
     menuBuild->Append(ID_Build_Clean_Solution, "Clean solution", "Clean current solution");
 
     wxMenu* menuDebug = new wxMenu;
-
+    menuDebug->Append(ID_Debug_LaunchWindDbg, "Launch WindDbg", "Launch the debugger.");
 
     wxMenu* menuTools = new wxMenu;
     menuTools->Append(ID_Tools_Command_Line, "Command Line Tool", "Open a command line tool");
@@ -667,8 +675,9 @@ int MainFrame::CloseFile()
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        if (!pCodeEditor) return -1;
         // If File is Modified
-        if (pCodeEditor && pCodeEditor->IsModified())
+        if (pCodeEditor->IsModified())
         {
             File* pFile = pCodeEditor->GetFile();
             if (pFile->GetFile() != "") // There is a file to save
@@ -715,6 +724,7 @@ int MainFrame::CloseFile()
         }
         else
         {
+            m_Files.erase(pCodeEditor->GetFile());
             return wxYES;
         }
     }

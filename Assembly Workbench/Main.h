@@ -78,6 +78,8 @@ private:
     void OnRebuildSolution(wxCommandEvent& event);
     void OnCleanSolution(wxCommandEvent& event);
 
+    void OnLaunchDebugger(wxCommandEvent& event);
+
     // Close tab
     void OnCloseTab(wxAuiNotebookEvent& event);
 
@@ -142,6 +144,7 @@ enum
     ID_Build_Build_Solution,
     ID_Build_Rebuild_Solution,
     ID_Build_Clean_Solution,
+    ID_Debug_LaunchWindDbg,
     ID_Tools_Command_Line,
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
