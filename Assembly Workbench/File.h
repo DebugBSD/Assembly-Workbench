@@ -30,22 +30,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <wx/dialog.h>
 
-class SettingsDialog:
-	public wxDialog
+#include <string>
+
+enum class FileType
+{
+    FT_NONE = -1,
+    FT_ASSEMBLER,
+    FT_C,
+    FT_CPP
+};
+
+class File
 {
 public:
-	SettingsDialog(class wxWindow *parent);
+    
+	File(const std::string& file, class AssemblerBase*pAssemblerFile = nullptr, class LinkerBase *pLinkerFile = nullptr, class CompilerBase *pCompiler = nullptr, class Project *pProject = nullptr);
+    File(const std::string& fileName, const std::string &filePath, class AssemblerBase* pAssemblerFile = nullptr, class LinkerBase* pLinkerFile = nullptr, class CompilerBase* pCompiler = nullptr, class Project* pProject = nullptr);
+    ~File();
 
+    void Clean();
+
+    void Assemble(); // Just for assembly files.
+
+	void Compile(); // For C/C++ files.
+
+	void Link(); // For object files. (ASM objects and C/C++ objects)
+
+    void SetFileName(const std::string file) { m_FileName = file; }
+    const std::string& GetFileName() const { return m_FileName; }
+
+    void SetFile(const std::string file) { m_FilePath = file; }
+    const std::string& GetFile() const { return m_FilePath; }
+    void SetAssembler(class AssemblerBase* pAssembler) { m_pAssembler = pAssembler; }
+    void SetLinker(class LinkerBase* pLinker) { m_pLinker = pLinker; }
+    void SetCompiler(class CompilerBase* pCompiler) { m_pCompiler = pCompiler; }
 private:
 
+    std::string m_FileName;
+	std::string m_FilePath; // Absolute or relative path to file without name of file.
 
-private:
+    FileType m_FileType;
 
-	void OnCloseButton(wxCommandEvent& event);
-	wxDECLARE_EVENT_TABLE();
-
-
+    class AssemblerBase* m_pAssembler;
+    class LinkerBase* m_pLinker;
+    class CompilerBase* m_pCompiler;
+    class Project* m_pProject;
 };
 

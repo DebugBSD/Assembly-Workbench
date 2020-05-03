@@ -30,22 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <wx/dialog.h>
 
-class SettingsDialog:
-	public wxDialog
+#include <vector>
+
+class Project
 {
 public:
-	SettingsDialog(class wxWindow *parent);
+	Project();
+
+	bool Build();
+
+	void Clean();
+
+	void ReBuild() { Clean(); Build(); }
+
+    void AddFile(class File* pFile) { m_Files.push_back(pFile); }
 
 private:
+	std::vector<class File*> m_Files;
 
-
-private:
-
-	void OnCloseButton(wxCommandEvent& event);
-	wxDECLARE_EVENT_TABLE();
-
-
+    class AssemblerBase* m_pAssembler;
+    class LinkerBase* m_pLinker;
+    class CompilerBase* m_pCompiler;
 };
 

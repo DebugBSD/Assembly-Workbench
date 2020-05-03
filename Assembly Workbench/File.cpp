@@ -29,23 +29,59 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#pragma once
-#include <wx/dialog.h>
+#include "stdafx.h"
+#include "AssemblerBase.h"
+#include "LinkerBase.h"
+#include "CompilerBase.h"
+#include "File.h"
+#include "Project.h"
 
-class SettingsDialog:
-	public wxDialog
+File::File(const std::string& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, Project* pProject):
+    m_FileName{file},
+    m_FilePath{""},
+    m_pAssembler{pAssemblerFile},
+    m_pLinker{pLinkerFile},
+    m_pCompiler{pCompiler},
+    m_pProject{pProject}
 {
-public:
-	SettingsDialog(class wxWindow *parent);
+    if (m_pProject) m_pProject->AddFile(this);
+}
 
-private:
+File::File(const std::string& fileName, const std::string& filePath, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, Project* pProject) :
+    m_FileName{ fileName },
+    m_FilePath{ filePath },
+    m_pAssembler{ pAssemblerFile },
+    m_pLinker{ pLinkerFile },
+    m_pCompiler{ pCompiler },
+    m_pProject{ pProject }
+{
+    if (m_pProject) m_pProject->AddFile(this);
+}
 
+File::~File()
+{
+}
 
-private:
+void File::Assemble()
+{
+    if (m_pAssembler && m_FilePath != "")
+    {
+        m_pAssembler->AssembleFile(m_FilePath+'/'+m_FileName);
+    }
+}
 
-	void OnCloseButton(wxCommandEvent& event);
-	wxDECLARE_EVENT_TABLE();
+void File::Compile()
+{
+    if (m_pCompiler && m_FilePath != "")
+    {
+        m_pCompiler->Compile(m_FilePath + '/' + m_FileName);
+    }
+}
 
-
-};
-
+void File::Link()
+{
+    if (m_pLinker && m_FilePath != "")
+    {
+        m_pLinker->Link(m_FilePath + '/' + m_FileName);
+    }
+}

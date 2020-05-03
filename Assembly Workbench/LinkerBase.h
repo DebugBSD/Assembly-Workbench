@@ -30,22 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <wx/dialog.h>
-
-class SettingsDialog:
-	public wxDialog
+#include <string>
+class LinkerBase
 {
 public:
-	SettingsDialog(class wxWindow *parent);
 
-private:
-
-
-private:
-
-	void OnCloseButton(wxCommandEvent& event);
-	wxDECLARE_EVENT_TABLE();
-
-
+    virtual void Clean(const std::string& file) = 0;;
+    virtual void Link(const std::string &file) = 0;
 };
 

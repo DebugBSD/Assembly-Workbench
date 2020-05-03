@@ -1,14 +1,48 @@
+/*
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2020, DebugBSD
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 #pragma once
 
 // wxWidgets "Hello World" Program
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/aui/framemanager.h>
+#include <wx/aui/auibook.h>
 #include <wx/wxprec.h>
 #include <wx/utils.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
+
+#include <unordered_map>
 
 
 class MyApp : public wxApp
@@ -38,6 +72,17 @@ private:
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
     void OnCMDTool(wxCommandEvent& event);
+
+    // Build Menu
+    void OnBuildSolution(wxCommandEvent& event);
+    void OnRebuildSolution(wxCommandEvent& event);
+    void OnCleanSolution(wxCommandEvent& event);
+
+    void OnLaunchDebugger(wxCommandEvent& event);
+
+    // Close tab
+    void OnCloseTab(wxAuiNotebookEvent& event);
+
 public:
 #pragma region Public attributes
 
@@ -46,18 +91,33 @@ public:
 #pragma region Public Methods
     void SetStatusBar(const wxString& text) { GetStatusBar()->SetStatusText(text); }
     void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
+
+    void Log(class wxArrayString *pArrayLog);
+    void Log(class wxString* pError);
 #pragma endregion
 
 private:
 #pragma region Private attributes
     wxAuiManager m_mgr;
-    class CodeEditor* m_pCodeEditor;
     long m_notebook_style;
+    class AssemblerBase* m_pAssemblerBase;
+    class LinkerBase* m_pLinkerBase;
+    class CompilerBase* m_pCompilerBase;
+    // Create a map with assemblers, compilers and linkers.
+    // Then, set a default.
+    // On a new file created, set the default based on the file type.
+
+    // Map with File Editor so, we can know which file foes into a editor.
+    std::unordered_map<class File*, class CodeEditor*> m_Files;
+
 #pragma endregion
 
 #pragma region Private Methods
     void CreateMenubar();
+    void InitToolChain();
+    void UnInitToolChain();
     class wxAuiToolBar * CreateMainToolBar();
+    int CloseFile();
 #pragma endregion
 
     wxDECLARE_EVENT_TABLE();
@@ -84,8 +144,10 @@ enum
     ID_Build_Build_Solution,
     ID_Build_Rebuild_Solution,
     ID_Build_Clean_Solution,
+    ID_Debug_LaunchWindDbg,
     ID_Tools_Command_Line,
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
-    ID_Tool_Graph
+    ID_Tool_Graph,
+    ID_Notebook
 };

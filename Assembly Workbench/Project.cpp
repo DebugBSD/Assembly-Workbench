@@ -29,23 +29,18 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#pragma once
-#include <wx/dialog.h>
+#include "stdafx.h"
+#include "Project.h"
 
-class SettingsDialog:
-	public wxDialog
+Project::Project()
 {
-public:
-	SettingsDialog(class wxWindow *parent);
+}
 
-private:
+bool Project::Build()
+{
+	return false;
+}
 
-
-private:
-
-	void OnCloseButton(wxCommandEvent& event);
-	wxDECLARE_EVENT_TABLE();
-
-
-};
-
+void Project::Clean()
+{
+}

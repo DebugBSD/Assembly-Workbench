@@ -30,22 +30,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <wx/dialog.h>
+#include "LinkerBase.h"
+#include <string>
 
-class SettingsDialog:
-	public wxDialog
+#include "wx/utils.h"
+
+class MLINKER :
+	public LinkerBase
 {
 public:
-	SettingsDialog(class wxWindow *parent);
+    MLINKER(class MainFrame* pFrame = nullptr);
+    ~MLINKER();
+
+    void Clean(const std::string& file) override;
+
+    void Link(const std::string& file) override;
 
 private:
-
+    void SetEnvVariables(wxEnvVariableHashMap& envMap);
 
 private:
+    class MainFrame* m_pFrame;
 
-	void OnCloseButton(wxCommandEvent& event);
-	wxDECLARE_EVENT_TABLE();
-
-
+    // Right now, hardcoded, in the future, I'll detect the tool chain of Visual Studio.
+    const std::string m_PathToLinker{ "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx64/x64/link.exe\"" };
 };
 

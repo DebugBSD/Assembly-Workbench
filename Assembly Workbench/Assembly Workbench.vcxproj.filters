@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Archivos de encabezado\Assembler">
+      <UniqueIdentifier>{2774abfe-f095-45ed-ad88-e51c110f827b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Linker">
+      <UniqueIdentifier>{c43c29ac-5bd9-4ff3-a236-f45849293535}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Compiler">
+      <UniqueIdentifier>{555e8dad-8a06-41a8-baf8-0c4c60c2bbf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Assembler">
+      <UniqueIdentifier>{05cce467-7a4b-440e-8942-d30ae45beb88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Linker">
+      <UniqueIdentifier>{708b6de5-eabd-4ecf-8db2-402136431cb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Compiler">
+      <UniqueIdentifier>{3b4ad73e-0d6c-4047-a2f5-16ba33685921}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -36,6 +54,27 @@
     <ClInclude Include="resource1.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="Project.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="AssemblerBase.h">
+      <Filter>Archivos de encabezado\Assembler</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkerBase.h">
+      <Filter>Archivos de encabezado\Linker</Filter>
+    </ClInclude>
+    <ClInclude Include="MASM.h">
+      <Filter>Archivos de encabezado\Assembler</Filter>
+    </ClInclude>
+    <ClInclude Include="MLINKER.h">
+      <Filter>Archivos de encabezado\Linker</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilerBase.h">
+      <Filter>Archivos de encabezado\Compiler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -46,6 +85,18 @@
     </ClCompile>
     <ClCompile Include="CodeEditor.cpp">
       <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Project.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="MASM.cpp">
+      <Filter>Archivos de origen\Assembler</Filter>
+    </ClCompile>
+    <ClCompile Include="MLINKER.cpp">
+      <Filter>Archivos de origen\Linker</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,5 +117,8 @@
     <Image Include="icon4.ico">
       <Filter>Archivos de recursos</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assembly Workbench.licenseheader" />
   </ItemGroup>
 </Project>
