@@ -37,6 +37,7 @@
 #include <wx/aui/auibook.h>
 #include <wx/wxprec.h>
 #include <wx/utils.h>
+#include <wx/splitter.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -72,6 +73,9 @@ private:
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
     void OnCMDTool(wxCommandEvent& event);
+
+    // Project Menu
+    void OnProjectPreferences(wxCommandEvent& event);
 
     // Build Menu
     void OnBuildSolution(wxCommandEvent& event);

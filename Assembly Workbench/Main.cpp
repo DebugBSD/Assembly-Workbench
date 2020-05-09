@@ -45,6 +45,7 @@
 #include <sstream>
 #include "CodeEditor.h"
 #include "SettingsDialog.h"
+#include "FileSettings.h"
 #include "resource.h"
 #include "Main.h"
 #include "File.h"
@@ -72,6 +73,7 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(wxID_PREFERENCES, MainFrame::OnHello)
     EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
 
+    EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
 
     EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
     EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
@@ -241,6 +243,15 @@ MainFrame::~MainFrame()
 
 void MainFrame::OnExit(wxCommandEvent& event)
 {
+    if(!m_Files.empty())
+    {
+        if (wxMessageBox(_("There are unsaved changes. All changes will be lost!"), _("Please confirm"),
+            wxICON_QUESTION | wxYES_NO, this) == wxNO)
+        {
+            return;
+        }
+
+    }
     Close(true);
 }
 
@@ -383,6 +394,15 @@ void MainFrame::OnCMDTool(wxCommandEvent& event)
     //wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"&&dir");
 }
 
+void MainFrame::OnProjectPreferences(wxCommandEvent& event)
+{
+    FileSettings* pSettings = new FileSettings(nullptr, wxID_ANY, "File Settings", wxDefaultPosition, wxSize(640, 480));
+
+    pSettings->ShowModal();
+
+    pSettings->Destroy();
+}
+
 void MainFrame::OnBuildSolution(wxCommandEvent& event)
 {
     wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
@@ -509,10 +529,12 @@ void MainFrame::Log(wxString* pError)
 //              Tasm
 //              UASM
 //              JWASM
+//              GoAsm
 //              -----------------------------------
 //              Custom
 //          Linker
 //              ML
+//              GoLink
 //              -----------------------------------
 //              Custom
 //          ---------------------------------------

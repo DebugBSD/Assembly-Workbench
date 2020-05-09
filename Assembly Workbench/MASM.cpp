@@ -45,6 +45,8 @@
   * - /nologo - Supress copyright message
   * - /Fo<file> - Name object file
   * - /G<c|d|z> - Use Pascal, C, or Stdcall.
+  * - /Zi - Debug
+  * - /W3 - Warning level 3
   * 
   * Environment variables used by ml64.
   * -----------------------------------
@@ -91,7 +93,7 @@ void MASM::AssembleFile(const std::string& file)
         environment.cwd = filepath.parent_path().string();
 
         // Options 
-        std::string options{ "/nologo " };
+        std::string options{ "/nologo /Zi /W3" };
 
         // See options of MASM
         std::string command{ m_PathToAssembler + " " + options + " " + fileOutput + " " + fileInput };
