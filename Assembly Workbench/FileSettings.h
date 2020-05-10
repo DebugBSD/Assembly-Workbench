@@ -20,8 +20,9 @@
  */
 
 ////@begin includes
-#include "wx/splitter.h"
-#include "wx/treectrl.h"
+#include <wx/splitter.h>
+#include <wx/treectrl.h>
+#include <wx/propgrid/propgrid.h>
 ////@end includes
 
 /*!
@@ -45,6 +46,7 @@ class wxSplitterWindow;
 #define ID_PANEL 10003
 #define ID_TEXTCTRL 10004
 #define ID_TEXTCTRL1 10005
+#define ID_ADD_NEW 10006
 #define SYMBOL_FILESETTINGS_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX|wxTAB_TRAVERSAL
 #define SYMBOL_FILESETTINGS_TITLE _("File Settings")
 #define SYMBOL_FILESETTINGS_IDNAME ID_FILESETTINGS
@@ -96,12 +98,9 @@ public:
 ////@begin FileSettings member variables
 #if defined(__WXMSW__)
     wxComboBox* m_pProjectConfigCtrl;
-#endif
-#if defined(__WXMSW__)
     wxComboBox* m_pPlatformConfCtrl;
-#endif
-#if defined(__WXMSW__)
     wxSplitterWindow* m_pSplitter;
+    wxPropertyGrid* m_pPropGridCtrl;
 #endif
 ////@end FileSettings member variables
 };

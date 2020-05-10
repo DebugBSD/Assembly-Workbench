@@ -80,11 +80,7 @@ bool FileSettings::Create( wxWindow* parent, wxWindowID id, const wxString& capt
     wxDialog::Create( parent, id, caption, pos, size, style );
 
     CreateControls();
-
-    if (GetSizer())
-    {
-        GetSizer()->SetSizeHints(this);
-    }
+    SetMinSize(size);
     Centre();
 ////@end FileSettings creation
     return true;
@@ -110,13 +106,10 @@ void FileSettings::Init()
 {
 ////@begin FileSettings member initialisation
 #if defined(__WXMSW__)
-    m_pProjectConfigCtrl = NULL;
-#endif
-#if defined(__WXMSW__)
-    m_pPlatformConfCtrl = NULL;
-#endif
-#if defined(__WXMSW__)
-    m_pSplitter = NULL;
+    m_pProjectConfigCtrl = nullptr;
+    m_pPlatformConfCtrl = nullptr;
+    m_pSplitter = nullptr;
+    m_pPropGridCtrl = nullptr;
 #endif
 ////@end FileSettings member initialisation
 }
@@ -140,23 +133,23 @@ void FileSettings::CreateControls()
     itemBoxSizer2->Add(itemBoxSizer1, 1, wxGROW|wxALL, 5);
 
     wxBoxSizer* itemBoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
-    itemBoxSizer1->Add(itemBoxSizer3, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    itemBoxSizer1->Add(itemBoxSizer3, 0, wxGROW | wxALL, 5);
 
-    wxStaticText* itemStaticText4 = new wxStaticText( itemDialog1, wxID_STATIC, _("Project Config"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer3->Add(itemStaticText4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxStaticText* itemStaticText4 = new wxStaticText(itemDialog1, wxID_STATIC, _("Project Config"), wxDefaultPosition, wxDefaultSize, 0);
+    itemBoxSizer3->Add(itemStaticText4, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     wxArrayString m_pProjectConfigCtrlStrings;
     m_pProjectConfigCtrlStrings.Add(_("Debug"));
     m_pProjectConfigCtrlStrings.Add(_("Release"));
     m_pProjectConfigCtrlStrings.Add(_("Add New"));
-    m_pProjectConfigCtrl = new wxComboBox(this, wxID_ANY, "X64", wxDefaultPosition, wxDefaultSize, m_pProjectConfigCtrlStrings, wxALIGN_LEFT | wxCB_READONLY);
+    m_pProjectConfigCtrl = new wxComboBox(itemDialog1,wxID_ANY,"Debug",wxDefaultPosition, wxDefaultSize, m_pProjectConfigCtrlStrings,wxALIGN_LEFT | wxCB_READONLY);
     m_pProjectConfigCtrl->SetStringSelection(_("Debug"));
-    itemBoxSizer3->Add(m_pProjectConfigCtrl, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemBoxSizer3->Add(m_pProjectConfigCtrl, 1, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    itemBoxSizer3->Add(5, 5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemBoxSizer3->Add(5, 5, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    wxStaticText* itemStaticText7 = new wxStaticText( itemDialog1, wxID_STATIC, _("Platform Config"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer3->Add(itemStaticText7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxStaticText* itemStaticText7 = new wxStaticText(itemDialog1, wxID_STATIC, _("Platform Config"), wxDefaultPosition, wxDefaultSize, 0);
+    itemBoxSizer3->Add(itemStaticText7, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     wxArrayString m_pPlatformConfCtrlStrings;
     m_pPlatformConfCtrlStrings.Add(_("X64"));
@@ -164,11 +157,11 @@ void FileSettings::CreateControls()
     m_pPlatformConfCtrlStrings.Add(_("ARM"));
     m_pPlatformConfCtrlStrings.Add(_("ARM64"));
     m_pPlatformConfCtrlStrings.Add(_("Add New"));
-    m_pPlatformConfCtrl = new wxComboBox(this, wxID_ANY, "X64", wxDefaultPosition, wxDefaultSize, m_pPlatformConfCtrlStrings, wxALIGN_LEFT | wxCB_READONLY);
+    m_pPlatformConfCtrl = new wxComboBox(itemDialog1, wxID_ANY, "X64", wxDefaultPosition, wxDefaultSize, m_pPlatformConfCtrlStrings, wxALIGN_LEFT | wxCB_READONLY);
     m_pPlatformConfCtrl->SetStringSelection(_("X64"));
-    itemBoxSizer3->Add(m_pPlatformConfCtrl, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemBoxSizer3->Add(m_pPlatformConfCtrl, 1, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    itemBoxSizer1->Add(5, 5, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    itemBoxSizer1->Add(5, 5, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
 
     m_pSplitter = new wxSplitterWindow( itemDialog1, ID_SPLITTERWINDOW, wxDefaultPosition, wxSize(100, 100), wxSP_3DBORDER|wxSP_3DSASH|wxNO_BORDER );
     m_pSplitter->SetMinimumPaneSize(0);
@@ -181,20 +174,68 @@ void FileSettings::CreateControls()
     itemPanel6->SetSizer(itemBoxSizer7);
 
     wxBoxSizer* itemBoxSizer8 = new wxBoxSizer(wxVERTICAL);
-    itemBoxSizer7->Add(itemBoxSizer8, 1, wxGROW|wxALL, 5);
-    wxStaticText* itemStaticText9 = new wxStaticText( itemPanel6, wxID_STATIC, _("Static text"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer8->Add(itemStaticText9, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP, 5);
+    itemBoxSizer7->Add(itemBoxSizer8, 1, wxGROW | wxALL, 0);
+    wxBoxSizer* itemBoxSizer4 = new wxBoxSizer(wxHORIZONTAL);
+    itemBoxSizer8->Add(itemBoxSizer4, 0, wxGROW | wxALL, 5);
+    wxStaticText* itemStaticText5 = new wxStaticText(itemPanel6, wxID_STATIC, _("Property"), wxDefaultPosition, wxDefaultSize, 0);
+    itemBoxSizer4->Add(itemStaticText5, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    wxTextCtrl* itemTextCtrl10 = new wxTextCtrl( itemPanel6, ID_TEXTCTRL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer8->Add(itemTextCtrl10, 0, wxGROW|wxALL, 5);
+    wxTextCtrl* itemTextCtrl6 = new wxTextCtrl(itemPanel6, ID_TEXTCTRL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    itemBoxSizer4->Add(itemTextCtrl6, 1, wxGROW | wxALL, 5);
 
-    itemBoxSizer8->Add(5, 5, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    wxArrayString itemComboBox1Strings;
+    itemComboBox1Strings.Add("String");
+    itemComboBox1Strings.Add("Array of Strings");
+    itemComboBox1Strings.Add("Integer");
+    itemComboBox1Strings.Add("Boolean");
+    wxComboBox* itemComboBox1 = new wxComboBox(itemPanel6, wxID_ANY, "String", wxDefaultPosition, wxDefaultSize, itemComboBox1Strings, wxCB_DROPDOWN| wxCB_READONLY);
+    itemBoxSizer4->Add(itemComboBox1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    wxStaticText* itemStaticText12 = new wxStaticText( itemPanel6, wxID_STATIC, _("Static text"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer8->Add(itemStaticText12, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT|wxTOP, 5);
 
-    wxTextCtrl* itemTextCtrl13 = new wxTextCtrl( itemPanel6, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
-    itemBoxSizer8->Add(itemTextCtrl13, 1, wxGROW|wxALL, 5);
+    wxButton* itemButton7 = new wxButton(itemPanel6, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, 0);
+    itemBoxSizer4->Add(itemButton7, 0, wxGROW | wxALL, 5);
+
+    itemBoxSizer8->Add(5, 5, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
+
+    // Construct wxPropertyGrid control
+    m_pPropGridCtrl = new wxPropertyGrid(
+        itemPanel6, // parent
+        wxID_ANY, // id
+        wxDefaultPosition, // position
+        wxDefaultSize, // size
+        // Here are just some of the supported window styles
+        wxPG_AUTO_SORT | // Automatic sorting after items added
+        wxPG_SPLITTER_AUTO_CENTER | // Automatically center splitter until user manually adjusts it
+        // Default style
+        wxPG_DEFAULT_STYLE);
+    itemBoxSizer8->Add(m_pPropGridCtrl, 1, wxGROW | wxALL, 0);
+
+    // Window style flags are at premium, so some less often needed ones are
+    // available as extra window styles (wxPG_EX_xxx) which must be set using
+    // SetExtraStyle member function. wxPG_EX_HELP_AS_TOOLTIPS, for instance,
+    // allows displaying help strings as tool tips.
+    m_pPropGridCtrl->SetExtraStyle(wxPG_EX_HELP_AS_TOOLTIPS);
+
+    // wxArrayStringProperty embeds a wxArrayString.
+    wxArrayString arrayStr;
+    arrayStr.Add("test1");
+    arrayStr.Add("test2");
+    arrayStr.Add("test3");
+    m_pPropGridCtrl->Append(new wxArrayStringProperty("Label of ArrayStringProperty",
+        "NameOfArrayStringProp", arrayStr));
+
+    // A file selector property.
+    m_pPropGridCtrl->Append(new wxFileProperty("FileProperty", wxPG_LABEL, wxEmptyString));
+
+    // Extra: set wild card for file property (format same as in wxFileDialog).
+    m_pPropGridCtrl->SetPropertyAttribute("FileProperty",
+        wxPG_FILE_WILDCARD,
+        "All files (*.*)|*.*");
+
+    // Extra: We set the delimiter to the array of strings to ;
+    m_pPropGridCtrl->SetPropertyAttribute("NameOfArrayStringProp",
+        wxPG_ARRAY_DELIMITER,
+        ";");
 
     m_pSplitter->SplitVertically(itemTreeCtrl5, itemPanel6, 150);
     itemBoxSizer1->Add(m_pSplitter, 1, wxGROW|wxALL, 5);
