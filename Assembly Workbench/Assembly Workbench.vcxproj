@@ -170,6 +170,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_propgrid_vc_x64_custom.dll" "$(OutDi
     <ClInclude Include="CompilerBase.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FileSettings.h" />
+    <ClInclude Include="FileSettingsDlg.h" />
     <ClInclude Include="LinkerBase.h" />
     <ClInclude Include="MASM.h" />
     <ClInclude Include="MLINKER.h" />
@@ -185,6 +186,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_propgrid_vc_x64_custom.dll" "$(OutDi
     <ClCompile Include="CodeEditor.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileSettings.cpp" />
+    <ClCompile Include="FileSettingsDlg.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MASM.cpp" />
     <ClCompile Include="MLINKER.cpp" />

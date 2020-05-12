@@ -107,6 +107,7 @@ private:
     class AssemblerBase* m_pAssemblerBase;
     class LinkerBase* m_pLinkerBase;
     class CompilerBase* m_pCompilerBase;
+    class FileSettings *m_pGlobalFileSettings;
     // Create a map with assemblers, compilers and linkers.
     // Then, set a default.
     // On a new file created, set the default based on the file type.

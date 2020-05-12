@@ -45,8 +45,8 @@ class File
 {
 public:
     
-	File(const std::string& file, class AssemblerBase*pAssemblerFile = nullptr, class LinkerBase *pLinkerFile = nullptr, class CompilerBase *pCompiler = nullptr, class Project *pProject = nullptr);
-    File(const std::string& fileName, const std::string &filePath, class AssemblerBase* pAssemblerFile = nullptr, class LinkerBase* pLinkerFile = nullptr, class CompilerBase* pCompiler = nullptr, class Project* pProject = nullptr);
+	File(const std::string& file, class AssemblerBase*pAssemblerFile = nullptr, class LinkerBase *pLinkerFile = nullptr, class CompilerBase *pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project *pProject = nullptr);
+    File(const std::string& fileName, const std::string &filePath, class AssemblerBase* pAssemblerFile = nullptr, class LinkerBase* pLinkerFile = nullptr, class CompilerBase* pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project* pProject = nullptr);
     ~File();
 
     void Clean();
@@ -65,6 +65,8 @@ public:
     void SetAssembler(class AssemblerBase* pAssembler) { m_pAssembler = pAssembler; }
     void SetLinker(class LinkerBase* pLinker) { m_pLinker = pLinker; }
     void SetCompiler(class CompilerBase* pCompiler) { m_pCompiler = pCompiler; }
+
+    class FileSettings* GetFileSettings() { return m_pFileSettings; }
 private:
 
     std::string m_FileName;
@@ -72,6 +74,7 @@ private:
 
     FileType m_FileType;
 
+    class FileSettings* m_pFileSettings;
     class AssemblerBase* m_pAssembler;
     class LinkerBase* m_pLinker;
     class CompilerBase* m_pCompiler;

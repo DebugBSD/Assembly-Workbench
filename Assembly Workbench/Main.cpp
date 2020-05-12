@@ -45,7 +45,7 @@
 #include <sstream>
 #include "CodeEditor.h"
 #include "SettingsDialog.h"
-#include "FileSettings.h"
+#include "FileSettingsDlg.h"
 #include "resource.h"
 #include "Main.h"
 #include "File.h"
@@ -103,7 +103,8 @@ MainFrame::MainFrame():
     wxFrame(NULL, wxID_ANY, "Assembly Workbench", { 0,0 }, { 1280, 1000 }),
     m_pAssemblerBase{nullptr},
     m_pLinkerBase{nullptr},
-    m_pCompilerBase{nullptr}
+    m_pCompilerBase{nullptr},
+    m_pGlobalFileSettings{nullptr}
 {
     InitToolChain();
 
@@ -331,7 +332,7 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 
     std::filesystem::path tempFile{ static_cast<std::string>(openFileDialog.GetPath()) };
 
-    File* pFile = new File(tempFile.filename().string(),tempFile.parent_path().string(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase);
+    File* pFile = new File(tempFile.filename().string(),tempFile.parent_path().string(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     CodeEditor* pCodeEditor = new CodeEditor(this, pFile);
     if (!pCodeEditor->LoadFile(openFileDialog.GetPath()))
     {
@@ -349,7 +350,7 @@ void MainFrame::OnNew(wxCommandEvent& event)
 {
     wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
 
-    File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase);
+    File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     CodeEditor* pCodeEditor = new CodeEditor(ctrl, pFile);
     
     ctrl->Freeze();
@@ -396,11 +397,22 @@ void MainFrame::OnCMDTool(wxCommandEvent& event)
 
 void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 {
-    FileSettings* pSettings = new FileSettings(nullptr, wxID_ANY, "File Settings", wxDefaultPosition, wxSize(640, 480));
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    if (ctrl)
+    {
+        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        if (pCodeEditor && pCodeEditor->GetFile())
+        {
+            FileSettingsDlg* pSettings = new FileSettingsDlg(nullptr, wxID_ANY, "File Settings", wxDefaultPosition, wxSize(640, 480), SYMBOL_FILESETTINGS_STYLE, pCodeEditor->GetFile()->GetFileSettings());
 
-    pSettings->ShowModal();
+            pSettings->ShowModal();
 
-    pSettings->Destroy();
+            pSettings->Destroy();
+
+        }
+    }
+
+    
 }
 
 void MainFrame::OnBuildSolution(wxCommandEvent& event)
@@ -651,12 +663,14 @@ void MainFrame::InitToolChain()
 {
     m_pAssemblerBase = new MASM(this);
     m_pLinkerBase = new MLINKER(this);
+    m_pGlobalFileSettings = new FileSettings();
 }
 
 void MainFrame::UnInitToolChain()
 {
     delete m_pLinkerBase;
     delete m_pAssemblerBase;
+    delete m_pGlobalFileSettings;
 }
 
 wxAuiToolBar* MainFrame::CreateMainToolBar()

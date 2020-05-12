@@ -78,6 +78,9 @@
     <ClInclude Include="FileSettings.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="FileSettingsDlg.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -102,6 +105,9 @@
       <Filter>Archivos de origen\Linker</Filter>
     </ClCompile>
     <ClCompile Include="FileSettings.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSettingsDlg.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
