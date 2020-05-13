@@ -85,6 +85,6 @@ void File::Link()
 {
     if (m_pLinker && m_FilePath != "")
     {
-        m_pLinker->Link(m_FilePath + '/' + m_FileName);
+        m_pLinker->Link(m_FilePath + '/' + m_FileName, m_pFileSettings);
     }
 }

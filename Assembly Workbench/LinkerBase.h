@@ -35,7 +35,7 @@ class LinkerBase
 {
 public:
 
-    virtual void Clean(const std::string& file) = 0;;
-    virtual void Link(const std::string &file) = 0;
+    virtual void Clean(const std::string& file, class FileSettings *pFileSettings) = 0;;
+    virtual void Link(const std::string &file, class FileSettings *pFileSettings) = 0;
 };
 

@@ -42,9 +42,9 @@ public:
     MLINKER(class MainFrame* pFrame = nullptr);
     ~MLINKER();
 
-    void Clean(const std::string& file) override;
+    void Clean(const std::string& file, class FileSettings* pFileSettings) override;
 
-    void Link(const std::string& file) override;
+    void Link(const std::string& file, class FileSettings* pFileSettings) override;
 
 private:
     void SetEnvVariables(wxEnvVariableHashMap& envMap);

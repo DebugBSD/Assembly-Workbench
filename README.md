@@ -12,7 +12,6 @@ BUGS
 TODO
 ----
 
-* Pass linker to the settings. Right now everything related to the linker is hardcoded into MLINKER.CPP/H
 * Make available the possibility of update settings for files and projects.
 * Integration with GIT/GitHUB/Any other CVS
 * Integration with Scintilla

@@ -69,6 +69,8 @@ public:
     void GetSettings(const EProperty &id, std::unordered_map<wxString, wxAny>& settings);
     void GetAssemblerEnvironmentSettings(wxEnvVariableHashMap& env);
 
+    void GetLinkerEnvironmentSettings(wxEnvVariableHashMap& env);
+
 private:
     void CreateAssemblerProperties(void);
     void CreateCompilerProperties(void);

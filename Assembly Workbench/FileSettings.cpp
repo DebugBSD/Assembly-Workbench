@@ -120,6 +120,19 @@ void FileSettings::GetAssemblerEnvironmentSettings(wxEnvVariableHashMap &env)
     }
 }
 
+void FileSettings::GetLinkerEnvironmentSettings(wxEnvVariableHashMap& env)
+{
+    std::unordered_map<wxString, wxAny> settings;
+
+    GetSettings(FileSettings::EProperty::Linker_Environment, settings);
+
+    for (const auto& e : settings)
+    {
+        env[e.first] = e.second.As<wxString>();
+    }
+}
+
+
 void FileSettings::CreateAssemblerProperties(void)
 {
     std::unordered_map<wxString, wxAny> assemblerProperties;
@@ -156,4 +169,28 @@ void FileSettings::CreateCompilerProperties(void)
 
 void FileSettings::CreateLinkerProperties(void)
 {
+    std::unordered_map<wxString, wxAny> assemblerProperties;
+    assemblerProperties["COMMAND"] = wxString("\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx64/x64/link.exe\"");
+    std::unordered_map<wxString, wxAny> assemblerEnvironment;
+    wxEnvVariableHashMap envMap;
+    wxGetEnvMap(&envMap);
+    wxString lib = wxString("C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\ATLMFC\\lib\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\lib\\x64;C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.18362.0\\ucrt\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.18362.0\\um\\x64;");
+    envMap["Lib"] = lib;
+
+    wxString envPath = wxString("C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\bin\\HostX64\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\VC\\VCPackages;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\bin\\Roslyn;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Team Tools\\Performance Tools\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Team Tools\\Performance Tools;C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Common\\VSPerfCollectionTools\\vs2019\\\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Common\\VSPerfCollectionTools\\vs2019\\;C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\x64\\;C:\\Program Files (x86)\\HTML Help Workshop;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.18362.0\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\\\MSBuild\\Current\\Bin;C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\Tools\\;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\Ninja;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe;");
+
+    wxString tempPath{ envMap["Path"] };
+    envMap["Path"] = envPath + tempPath;
+
+    for (const auto& e : envMap)
+    {
+        assemblerEnvironment[e.first] = e.second;
+    }
+    m_settings[Linker] = assemblerProperties;
+    m_settings[Linker_General] = assemblerProperties;
+    m_settings[Linker_Environment] = assemblerEnvironment;
+
+    std::unordered_map<wxString, wxAny> assemblerOptions;
+    assemblerOptions["OPTIONS"] = wxString("/DEBUG /subsystem:console /entry:main /largeaddressaware:no /nologo ");
+    m_settings[Linker_Options] = assemblerOptions;
 }
