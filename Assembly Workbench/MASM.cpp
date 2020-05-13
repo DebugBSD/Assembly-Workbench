@@ -34,6 +34,7 @@
 #include <string>
 #include "Main.h"
 #include "MASM.h"
+#include "FileSettings.h"
 #include <wx/arrstr.h>
 #include <wx/utils.h> 
 
@@ -72,20 +73,26 @@ MASM::~MASM()
 {
 }
 
-void MASM::Clean(const std::string& file)
+void MASM::Clean(const std::string& file, FileSettings* pFileSettings)
 {
 }
 
-void MASM::AssembleFile(const std::string& file)
+void MASM::AssembleFile(const std::string& file, FileSettings* pFileSettings)
 {
     // Check if everything is okay.
     if (file != "")
     {
+
         wxExecuteEnv environment;
         // Get the environment variables.
-        SetEnvVariables(environment.env);
+        pFileSettings->GetAssemblerEnvironmentSettings(environment.env);
+
+        std::unordered_map<wxString, wxAny> assemblerCommand;
+        std::unordered_map<wxString, wxAny> assemblerOptions;
+        pFileSettings->GetSettings(FileSettings::EProperty::Assembler, assemblerCommand);
 
         // Assemble file.
+        // TODO: Move to settings panel.
         std::filesystem::path filepath{ file };
         std::string fileInput{ "/c " + filepath.filename().string() };
         std::string fileOutput{ "/Fo " + filepath.filename().stem().string() + ".obj" };
@@ -93,11 +100,10 @@ void MASM::AssembleFile(const std::string& file)
         environment.cwd = filepath.parent_path().string();
 
         // Options 
-        std::string options{ "/nologo /Zi /W3" };
+        pFileSettings->GetSettings(FileSettings::EProperty::Assembler_Options, assemblerOptions);
 
         // See options of MASM
-        std::string command{ m_PathToAssembler + " " + options + " " + fileOutput + " " + fileInput };
-
+        std::string command{ assemblerCommand["COMMAND"].As<wxString>() + " " + assemblerOptions["OPTIONS"].As<wxString>() + " " + fileOutput + " " + fileInput };
         // execute the wxExecute.
         wxArrayString output;
         wxArrayString errors;
@@ -107,22 +113,5 @@ void MASM::AssembleFile(const std::string& file)
         if (m_pFrame) m_pFrame->Log(&errors);
         
     }
-
-}
-
-void MASM::SetEnvVariables(wxEnvVariableHashMap& envMap)
-{
-    wxGetEnvMap(&envMap);
-    std::string includePath;
-
-    includePath =  "C:\\Program Files(x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\ATLMFC\\include;\
-                    C:\\Program Files(x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\include;        \
-                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;                                          \
-                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;                                        \
-                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;                                            \
-                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;                                         \
-                    C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
-
-    envMap["INCLUDE"] = includePath;
 
 }

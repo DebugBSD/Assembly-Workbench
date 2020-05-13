@@ -69,7 +69,7 @@ void File::Assemble()
 {
     if (m_pAssembler && m_FilePath != "")
     {
-        m_pAssembler->AssembleFile(m_FilePath+'/'+m_FileName);
+        m_pAssembler->AssembleFile(m_FilePath+'/'+m_FileName, m_pFileSettings);
     }
 }
 

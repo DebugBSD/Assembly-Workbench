@@ -359,6 +359,10 @@ void FileSettingsDlg::OnEndSelection(wxTreeEvent& event)
             {
                 m_pPropGridCtrl->Append(new wxStringProperty(e.first, e.first, e.second.As<wxString>()));
             }
+            else
+            {
+                int stop = 1;
+            }
         }
     }
 

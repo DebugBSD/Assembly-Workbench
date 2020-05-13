@@ -83,14 +83,11 @@ FileSettings::FileSettings()
     
     m_settings[Directories] = general;
     m_settings[Environment] = environment;
-    m_settings[Assembler] = general;
-    m_settings[Assembler_General] = general;
-    m_settings[Assembler_Environment] = environment;
-    m_settings[Assembler_Options] = general;
-    m_settings[Linker] = general;
-    m_settings[Linker_General] = general;
-    m_settings[Linker_Environment] = environment;
-    m_settings[Linker_Options] = general;
+    
+    CreateAssemblerProperties();
+    CreateCompilerProperties();
+    CreateLinkerProperties();
+
     m_settings[BuildOptions] = general;
 
 }
@@ -109,4 +106,54 @@ void FileSettings::GetSettings(const EProperty& id, std::unordered_map<wxString,
 {
     // TODO: Handle error
     settings = m_settings[id];
+}
+
+void FileSettings::GetAssemblerEnvironmentSettings(wxEnvVariableHashMap &env)
+{
+    std::unordered_map<wxString, wxAny> settings;
+
+    GetSettings(FileSettings::EProperty::Assembler_Environment, settings);
+
+    for (const auto& e : settings)
+    {
+        env[e.first] = e.second.As<wxString>();
+    }
+}
+
+void FileSettings::CreateAssemblerProperties(void)
+{
+    std::unordered_map<wxString, wxAny> assemblerProperties;
+    assemblerProperties["COMMAND"] = wxString("\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx64/x64/ml64.exe\"");
+    m_settings[Assembler] = assemblerProperties;
+    m_settings[Assembler_General] = assemblerProperties;
+
+    std::unordered_map<wxString, wxAny> assemblerEnvironment;
+    wxEnvVariableHashMap envMap;
+    wxGetEnvMap(&envMap);
+    std::string includePath =  "C:\\Program Files(x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\ATLMFC\\include;C:\\Program Files(x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\include;C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\ucrt;C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\shared;C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\um;C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\winrt;C:\\Program Files(x86)\\Windows Kits\\10\\include\\10.0.18362.0\\cppwinrt";
+    envMap["INCLUDE"] = includePath;
+
+    std::string envPath = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\bin\\HostX64\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\VC\\VCPackages;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\bin\\Roslyn;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Team Tools\\Performance Tools\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Team Tools\\Performance Tools;C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Common\\VSPerfCollectionTools\\vs2019\\\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Common\\VSPerfCollectionTools\\vs2019\\;C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8 Tools\\x64\\;C:\\Program Files (x86)\\HTML Help Workshop;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\FSharp\\;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.18362.0\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\\\MSBuild\\Current\\Bin;C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\Tools\\;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\Ninja;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\VC\\Linux\\bin\\ConnectionManagerExe;";
+
+    std::string tempPath{ envMap["Path"] };
+    envMap["Path"] = envPath + tempPath;
+
+    for (const auto& e : envMap)
+    {
+        assemblerEnvironment[e.first] = e.second;
+    }
+
+    m_settings[Assembler_Environment] = assemblerEnvironment;
+
+    std::unordered_map<wxString, wxAny> assemblerOptions;
+    assemblerOptions["OPTIONS"] = wxString("/nologo /Zi /W3");
+    m_settings[Assembler_Options] = assemblerOptions;
+}
+
+void FileSettings::CreateCompilerProperties(void)
+{
+}
+
+void FileSettings::CreateLinkerProperties(void)
+{
 }
