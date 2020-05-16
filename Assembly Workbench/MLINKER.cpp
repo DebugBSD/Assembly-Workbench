@@ -71,6 +71,7 @@ void MLINKER::Link(const std::string& file, FileSettings* pFileSettings)
     pFileSettings->GetSettings(FileSettings::EProperty::Linker, linkerCommand);
 
     // Assemble file.
+    // TODO: Move to settings.
     std::filesystem::path filepath{ file };
     std::string fileInput{ filepath.filename().stem().string() + ".obj" };
     std::string fileOutput{ "/out:" + filepath.filename().stem().string() + ".exe" };
@@ -81,6 +82,7 @@ void MLINKER::Link(const std::string& file, FileSettings* pFileSettings)
     pFileSettings->GetSettings(FileSettings::EProperty::Linker_Options, linkerOptions);
 
     // Dependencies
+    // TODO: Move to settings.
     std::string dependencies{"kernel32.lib user32.lib msvcrt.lib libucrt.lib"};
 
     // See options of MASM

@@ -46,9 +46,12 @@
 #include "CodeEditor.h"
 #include "SettingsDialog.h"
 #include "FileSettingsDlg.h"
+#include "NewProjectDlg.h"
+#include "NewFileDlg.h"
 #include "resource.h"
 #include "Main.h"
 #include "File.h"
+#include "Project.h"
 // Toolchain of Microsoft
 // NOTE: Right now is hardcoded. In the future, will be autodetected.
 #include "MASM.h"
@@ -64,26 +67,30 @@ constexpr int ICON_SIZE = 16;
 wxIMPLEMENT_APP(MyApp);
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
-    EVT_MENU(wxID_EXIT, MainFrame::OnExit)
-    EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
-    EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
-    EVT_MENU(wxID_SAVE, MainFrame::OnSave)
-    EVT_MENU(wxID_NEW, MainFrame::OnNew)
-    EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
-    EVT_MENU(wxID_PREFERENCES, MainFrame::OnHello)
-    EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
+EVT_MENU(wxID_EXIT, MainFrame::OnExit)
+EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
+EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
+EVT_MENU(wxID_SAVE, MainFrame::OnSave)
+EVT_MENU(wxID_NEW, MainFrame::OnNew)
+EVT_MENU(ID_New_File, MainFrame::OnNewFile)
+EVT_MENU(ID_New_Project, MainFrame::OnNewProject)
+EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
+EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
 
-    EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
+EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
 
-    EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
-    EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
-    EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
+EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
+EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
+EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
 
-    EVT_MENU(ID_Debug_LaunchWindDbg, MainFrame::OnLaunchDebugger)
+EVT_MENU(ID_Debug_LaunchWinDbg, MainFrame::OnLaunchDebugger)
 
-    EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, MainFrame::OnCloseTab)
+EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, MainFrame::OnCloseTab)
 
-    EVT_CLOSE(MainFrame::OnExitProgram)
+// Tree control events
+EVT_TREE_ITEM_RIGHT_CLICK(ID_TreeCtrl_Projects_View, MainFrame::OnRightClickOverTreeCtrl)
+
+EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
 
 bool MyApp::OnInit()
@@ -165,10 +172,11 @@ MainFrame::MainFrame():
 
 wxTreeCtrl* MainFrame::CreateTreeCtrl()
 {
-    wxTreeCtrl* tree = new wxTreeCtrl(this, wxID_ANY,
+    wxTreeCtrl* tree = new wxTreeCtrl(this, ID_TreeCtrl_Projects_View,
         wxPoint(0, 0),
         FromDIP(wxSize(160, 250)),
         wxTR_DEFAULT_STYLE | wxNO_BORDER);
+    wxTreeItemId root = tree->AddRoot("Projects");
 
     /*wxSize size = FromDIP(wxSize(16, 16));
     wxImageList* imglist = new wxImageList(size.x, size.y, true, 2);
@@ -364,6 +372,33 @@ void MainFrame::OnNew(wxCommandEvent& event)
     m_mgr.Update();
 }
 
+void MainFrame::OnNewProject(wxCommandEvent& event)
+{
+    NewProjectDlg* pNewProjectDlg = new NewProjectDlg(nullptr);
+
+    if (pNewProjectDlg->ShowModal() == 0)
+    {
+        Project* pProject = new Project();
+        int res = pProject->Create(pNewProjectDlg->GetDirectory()+'/'+pNewProjectDlg->GetProjectName(), pNewProjectDlg->GetFileName());
+
+        if (res == 0)
+        {
+            // Add the project and files and everything to the main tree.
+            AddProjectToTreeCtrl(pProject);
+
+            // Add the project to the vector of projects.
+            m_Projects.push_back(pProject);
+        }
+
+        pNewProjectDlg->Destroy();
+    }
+}
+
+void MainFrame::OnNewFile(wxCommandEvent& event)
+{
+    
+}
+
 void MainFrame::OnClose(wxCommandEvent& event)
 {
     int res = CloseFile();
@@ -446,6 +481,77 @@ void MainFrame::OnLaunchDebugger(wxCommandEvent& event)
     wxExecute("\"C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\WinDbg.exe\"");
 }
 
+Project* MainFrame::GetProject(const wxString& text)
+{
+    for (Project* pProject : m_Projects)
+    {
+        if (pProject->GetName() == text)
+        {
+            return pProject;
+        }
+    }
+
+    return nullptr;
+}
+
+void MainFrame::OnRightClickOverTreeCtrl(wxTreeEvent& event)
+{
+    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_mgr.GetPane("TreeControl").window);
+    if (ctrl)
+    {
+        // We need to find the project based on the file.
+        wxTreeItemId tid = event.GetItem();
+        wxString text = ctrl->GetItemText(tid);
+        Project* pProject{ GetProject(text) };
+        while (!pProject && tid.IsOk())
+        {
+            tid = ctrl->GetItemParent(tid);
+            if (tid.IsOk())
+            {
+                text = ctrl->GetItemText(tid);
+                pProject = GetProject(text);
+            }
+        }
+
+        if (pProject)
+        {
+            wxString path, file;
+            // Now we have detected the project so we can add files.
+            wxPoint currentPos = event.GetPoint();
+            ctrl->PopupMenu(m_MenuPopUp, currentPos);
+            NewFileDlg* pNewFileDlg = new NewFileDlg(nullptr);
+            pNewFileDlg->SetFileLocation(pProject->GetProjectDirectory());
+            if (pNewFileDlg->ShowModal() == wxCANCEL)
+            {
+                pNewFileDlg->Destroy();
+                return;
+            }
+
+            pNewFileDlg->GetFileName(path, file);
+            pNewFileDlg->Destroy();
+
+            wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+
+            File* pFile = new File(file.ToStdString(), path.ToStdString(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings, pProject);
+            pProject->Save();
+            CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
+
+            pCodeEditor->SaveFile(pFile->GetFile() + '/' + pFile->GetFileName());
+            m_Files.insert({ pFile,pCodeEditor });
+
+            dockWindows->Freeze();
+
+            dockWindows->AddPage(pCodeEditor, file);
+
+            dockWindows->Thaw();
+
+            m_mgr.Update();
+
+            ctrl->AppendItem(tid, file);
+        }
+    }
+}
+
 void MainFrame::OnCloseTab(wxAuiNotebookEvent& event)
 {
     int res = CloseFile();
@@ -483,6 +589,54 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
     // TODO
     //if(GetStatusBar())
     //    GetStatusBar()->SetStatusText(statusText);
+}
+
+int MainFrame::AddProjectToTreeCtrl(Project* pProject)
+{
+    /*
+     * TODO: Documentation says that is best practice to add elementos to the tree when user 
+     * expands an item and delete them when user collapses the item, but,right now, we just 
+     * add them.
+     * In the future, change this as documentation says. 
+     */
+    int retCode = 0;
+    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_mgr.GetPane("TreeControl").window);
+    if (ctrl)
+    {
+
+        wxTreeItemId root = ctrl->GetRootItem();
+        wxTreeItemId rootProject = ctrl->AppendItem(root, pProject->GetName());
+
+        // Add the rest of the files
+        for (File* pFile : pProject->GetFiles())
+        {
+            ctrl->AppendItem(rootProject, pFile->GetFileName());
+        }
+
+        ctrl->Expand(root);
+    }
+    else
+    {
+        retCode = 1;
+    }
+
+    return retCode;
+}
+
+int MainFrame::RemoveProjectFromTreeCtrl(Project* pProject)
+{
+    int retCode = 0;
+    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_mgr.GetPane("TreeControl").window);
+    if (ctrl)
+    {
+
+    }
+    else
+    {
+        retCode = 1;
+    }
+
+    return retCode;
 }
 
 void MainFrame::Log(wxArrayString* pArrayLog)
@@ -569,11 +723,17 @@ void MainFrame::Log(wxString* pError)
 /*****************************************************************************/
 void MainFrame::CreateMenubar()
 {
-    
+    m_MenuPopUp = new wxMenu;
+    m_MenuPopUp->Append(ID_Project_View_Add_New_File, "Add New File");                      // Open a new window 
+
     wxMenu* menuFile = new wxMenu;
+    wxMenu* pSubMenuFile = new wxMenu;
     /*menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
         "Help string shown in status bar for this menu item");*/
-    menuFile->Append(wxID_NEW);
+    pSubMenuFile->Append(wxID_NEW);                                     // Open a new tab with an empty buffer to start editing.
+    pSubMenuFile->Append(ID_New_File, "New File");                      // Open a new window 
+    pSubMenuFile->Append(ID_New_Project, "New Project");                // Open a new Window 
+    menuFile->AppendSubMenu(pSubMenuFile, "New", "New File/Project");
     // TODO: Submenu 
 
     menuFile->Append(wxID_OPEN);
@@ -634,7 +794,7 @@ void MainFrame::CreateMenubar()
     menuBuild->Append(ID_Build_Clean_Solution, "Clean solution", "Clean current solution");
 
     wxMenu* menuDebug = new wxMenu;
-    menuDebug->Append(ID_Debug_LaunchWindDbg, "Launch WindDbg", "Launch the debugger.");
+    menuDebug->Append(ID_Debug_LaunchWinDbg, "Launch WindDbg", "Launch the debugger.");
 
     wxMenu* menuTools = new wxMenu;
     menuTools->Append(ID_Tools_Command_Line, "Command Line Tool", "Open a command line tool");
@@ -769,21 +929,4 @@ int MainFrame::CloseFile()
 
     }
     return -1;
-}
-
-void MainFrame::OnHello(wxCommandEvent& event)
-{
-    SettingsDialog* pSettings = new SettingsDialog(nullptr);
-    
-    pSettings->ShowModal();
-
-    pSettings->Destroy();
-
-    std::stringstream ss;
-    ss << "PATH=" << getenv("PATH");
-    //ss << ";" << plugin_path;
-    //ss << ";" << lib_path;
-    ss << '\0';
-    std::string env = ss.str();
-
 }

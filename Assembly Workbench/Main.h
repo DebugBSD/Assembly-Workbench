@@ -38,6 +38,7 @@
 #include <wx/wxprec.h>
 #include <wx/utils.h>
 #include <wx/splitter.h>
+#include <wx/treectrl.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -63,13 +64,14 @@ private:
     class wxTreeCtrl* CreateTreeCtrl();
     class wxAuiNotebook* CreateNotebook();
 
-    void OnHello(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
     void OnSave(wxCommandEvent& event);
     void OnOpen(wxCommandEvent& event);
     void OnNew(wxCommandEvent& event);
+    void OnNewProject(wxCommandEvent& event);
+    void OnNewFile(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
     void OnCMDTool(wxCommandEvent& event);
@@ -84,6 +86,10 @@ private:
 
     void OnLaunchDebugger(wxCommandEvent& event);
 
+
+    // Tree Events
+    void OnRightClickOverTreeCtrl(wxTreeEvent &event);
+
     // Close tab
     void OnCloseTab(wxAuiNotebookEvent& event);
 
@@ -95,6 +101,10 @@ public:
 #pragma region Public Methods
     void SetStatusBar(const wxString& text) { GetStatusBar()->SetStatusText(text); }
     void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
+
+    int AddProjectToTreeCtrl(class Project* pProject);
+    int RemoveProjectFromTreeCtrl(class Project* pProject);
+    Project* GetProject(const wxString& text);
 
     void Log(class wxArrayString *pArrayLog);
     void Log(class wxString* pError);
@@ -108,12 +118,17 @@ private:
     class LinkerBase* m_pLinkerBase;
     class CompilerBase* m_pCompilerBase;
     class FileSettings *m_pGlobalFileSettings;
+
+    // Menu popup
+    wxMenu* m_MenuPopUp;
+
     // Create a map with assemblers, compilers and linkers.
     // Then, set a default.
     // On a new file created, set the default based on the file type.
 
     // Map with File Editor so, we can know which file foes into a editor.
     std::unordered_map<class File*, class CodeEditor*> m_Files;
+    std::vector<class Project*> m_Projects;
 
 #pragma endregion
 
@@ -131,6 +146,8 @@ enum
 {
     ID_Hello = wxID_HIGHEST+1,
     ID_Size,
+    ID_New_File,
+    ID_New_Project,
     ID_Clone,
     ID_Close_Project,
     ID_Save_Project,
@@ -149,10 +166,16 @@ enum
     ID_Build_Build_Solution,
     ID_Build_Rebuild_Solution,
     ID_Build_Clean_Solution,
-    ID_Debug_LaunchWindDbg,
+    ID_Debug_LaunchWinDbg,
     ID_Tools_Command_Line,
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
     ID_Tool_Graph,
-    ID_Notebook
+    ID_Notebook,
+
+    // Tree Control IDs
+    ID_TreeCtrl_Projects_View,
+
+    // Add new file to project. We Show a window to create the file.
+    ID_Project_View_Add_New_File
 };

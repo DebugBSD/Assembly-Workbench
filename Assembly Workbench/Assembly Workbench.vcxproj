@@ -103,7 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS;__WXMSW__;_UNICODE;WXUSINGDLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include;C:\Users\debugg\My Projects\Librerias\rapidjson\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -116,7 +116,8 @@
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_core_vc_x64_custom.dll" "$(OutDir)" /Y /A
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_aui_vc_x64_custom.dll" "$(OutDir)" /Y /A
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_stc_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313ud_xml_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -146,7 +147,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_propgrid_vc_x64_custom.dll" "$(OutD
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS;__WXMSW__;_UNICODE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include;C:\Users\debugg\My Projects\Librerias\rapidjson\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -161,7 +162,8 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_propgrid_vc_x64_custom.dll" "$(OutD
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_core_vc_x64_custom.dll" "$(OutDir)" /Y /A
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_aui_vc_x64_custom.dll" "$(OutDir)" /Y /A
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_stc_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -171,9 +173,12 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_propgrid_vc_x64_custom.dll" "$(OutDi
     <ClInclude Include="File.h" />
     <ClInclude Include="FileSettings.h" />
     <ClInclude Include="FileSettingsDlg.h" />
+    <ClInclude Include="Git.h" />
     <ClInclude Include="LinkerBase.h" />
     <ClInclude Include="MASM.h" />
     <ClInclude Include="MLINKER.h" />
+    <ClInclude Include="NewFileDlg.h" />
+    <ClInclude Include="NewProjectDlg.h" />
     <ClInclude Include="Project.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
@@ -187,9 +192,12 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_propgrid_vc_x64_custom.dll" "$(OutDi
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileSettings.cpp" />
     <ClCompile Include="FileSettingsDlg.cpp" />
+    <ClCompile Include="Git.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MASM.cpp" />
     <ClCompile Include="MLINKER.cpp" />
+    <ClCompile Include="NewFileDlg.cpp" />
+    <ClCompile Include="NewProjectDlg.cpp" />
     <ClCompile Include="Project.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
   </ItemGroup>

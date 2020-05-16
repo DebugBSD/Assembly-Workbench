@@ -30,10 +30,59 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "stdafx.h"
+
+#include <wx/xml/xml.h>
+
 #include "Project.h"
 
-Project::Project()
+Project::Project():
+    m_pAssembler{nullptr},
+    m_pCompiler{nullptr},
+    m_pLinker{nullptr}
 {
+}
+
+Project::~Project()
+{
+}
+
+int Project::Load(const wxString& fileName)
+{
+    return 0;
+}
+
+void Project::Close()
+{
+}
+
+int Project::Create(const wxString& projectDirectory, const wxString& fileName)
+{
+    // Here we need to create the Project Settings too based on the configuration file.
+    int retCode = 0; // 0 -> OK
+    m_ProjectDirectory = projectDirectory;
+    m_ProjectFile = fileName;
+    wxString path = projectDirectory;
+    if (wxMkdir(path))
+    {
+        wxMkdir(path + "/Config");
+        wxMkdir(path + "/.cache");
+        wxMkdir(path + "/Build");
+        
+        // We should create a basic file.
+        wxFile projectFile;
+        if (!projectFile.Create( m_ProjectDirectory + '/' + m_ProjectFile, true ))
+        {
+            // TODO: Handle error
+            int stop = 0;
+        }
+        
+    }
+    else
+    {
+
+        retCode = 1;
+    }
+    return retCode;
 }
 
 bool Project::Build()
@@ -44,3 +93,25 @@ bool Project::Build()
 void Project::Clean()
 {
 }
+
+void Project::Save()
+{
+    // Create a document and add the root node.
+    wxXmlDocument xmlDoc;
+
+    wxXmlNode* root = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "Root");
+    xmlDoc.SetRoot(root);
+
+    // Add some XML.
+    wxXmlNode* library = new wxXmlNode(root, wxXML_ELEMENT_NODE, "Configuration");
+    library->AddAttribute("type", "Windows");
+
+    wxXmlNode* name = new wxXmlNode(library, wxXML_ELEMENT_NODE, "Name");
+    name->AddAttribute("Assembler","MASM64");
+    name->AddAttribute("File", "SRC");
+    name->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", "Main.asm"));
+
+    // Write the output to a wxString.
+    xmlDoc.Save(m_ProjectDirectory+'/'+m_ProjectFile);
+}
+
