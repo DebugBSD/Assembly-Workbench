@@ -112,7 +112,7 @@ public:
 
 private:
 #pragma region Private attributes
-    wxAuiManager m_mgr;
+    class WindowManager* m_pWindowManager;
     long m_notebook_style;
     class AssemblerBase* m_pAssemblerBase;
     class LinkerBase* m_pLinkerBase;

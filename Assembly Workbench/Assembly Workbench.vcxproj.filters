@@ -37,6 +37,12 @@
     <Filter Include="Archivos de origen\Dialogs">
       <UniqueIdentifier>{02cecb61-60f0-4169-a40f-5e4b3f8e62c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Windows">
+      <UniqueIdentifier>{160e962a-da1b-4411-bea7-74976fde79fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Windows">
+      <UniqueIdentifier>{bc2a1416-6aa7-470b-a422-aa9a4c57bf2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -96,6 +102,9 @@
     <ClInclude Include="NewFileDlg.h">
       <Filter>Archivos de encabezado\Dialogs</Filter>
     </ClInclude>
+    <ClInclude Include="WindowManager.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -133,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="NewFileDlg.cpp">
       <Filter>Archivos de origen\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowManager.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

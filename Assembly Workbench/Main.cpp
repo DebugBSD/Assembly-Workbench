@@ -43,6 +43,7 @@
 #include "wx/artprov.h"
 #include "wx/aui/aui.h"
 #include <sstream>
+#include "WindowManager.h"
 #include "CodeEditor.h"
 #include "SettingsDialog.h"
 #include "FileSettingsDlg.h"
@@ -111,12 +112,13 @@ MainFrame::MainFrame():
     m_pAssemblerBase{nullptr},
     m_pLinkerBase{nullptr},
     m_pCompilerBase{nullptr},
-    m_pGlobalFileSettings{nullptr}
+    m_pGlobalFileSettings{nullptr},
+    m_pWindowManager{new WindowManager()}
 {
     InitToolChain();
 
     // Layout
-    m_mgr.SetManagedWindow(this);
+    m_pWindowManager->SetManagedWindow(this);
 
     // Set Icon
     // SetIcon();
@@ -131,15 +133,15 @@ MainFrame::MainFrame():
     CreateMenubar();
 
     CreateStatusBar();
-    GetStatusBar()->SetStatusText("Welcome to wxWidgets!");
+    GetStatusBar()->SetStatusText("Welcome to Assembly Workbench!");
 
     // Add toolbars
     wxAuiToolBar* tb1 = CreateMainToolBar();
 
     // Add panels
-    m_mgr.AddPane(CreateTreeCtrl(), wxAuiPaneInfo().
+    m_pWindowManager->AddPane(CreateTreeCtrl(), wxAuiPaneInfo().
         Name("TreeControl").Caption("Projects").
-        Left().Layer(1).Position(1).
+        Left().Layer(0).Row(0).Position(0).
         CloseButton(true).MaximizeButton(true));
 
     // Create bottom panel
@@ -147,19 +149,16 @@ MainFrame::MainFrame():
         wxPoint(0, 0), FromDIP(wxSize(150, 90)),
         wxNO_BORDER | wxTE_MULTILINE);
 
-    m_mgr.AddPane(wnd10, wxAuiPaneInfo().
+    m_pWindowManager->AddPane(wnd10, wxAuiPaneInfo().
         Name("ConsoleLog").Caption("Console Output").
-        Bottom().Layer(1).Position(1));
+        Bottom().Layer(1).Position(1).
+        CloseButton(true).MaximizeButton(true));
 
     // create center panels
-    m_mgr.AddPane(CreateNotebook(), wxAuiPaneInfo().Name("notebook_content").
+    m_pWindowManager->AddPane(CreateNotebook(), wxAuiPaneInfo().Name("notebook_content").
         CenterPane().PaneBorder(false));
 
-    // add toolbars to the manager
-    m_mgr.GetPane("TreeControl").Show().Left().Layer(0).Row(0).Position(0);
-    m_mgr.GetPane("ConsoleLog").Show().Bottom().Layer(0).Row(0).Position(0);
-    m_mgr.GetPane("notebook_content").Show();
-    m_mgr.AddPane(tb1, wxAuiPaneInfo().Name("tb1").Caption("File Toolbar").ToolbarPane().Top());
+    m_pWindowManager->AddPane(tb1, wxAuiPaneInfo().Name("tb1").Caption("File Toolbar").ToolbarPane().Top());
 
     /*Bind(wxEVT_MENU, &MainFrame::OnHello, this, ID_Hello);
     Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
@@ -167,7 +166,7 @@ MainFrame::MainFrame():
     Bind(wxEVT_SIZE, &MainFrame::OnResize, this);*/
 
     // "commit" all changes made to wxAuiManager
-    m_mgr.Update();
+    m_pWindowManager->Update();
 }
 
 wxTreeCtrl* MainFrame::CreateTreeCtrl()
@@ -177,34 +176,6 @@ wxTreeCtrl* MainFrame::CreateTreeCtrl()
         FromDIP(wxSize(160, 250)),
         wxTR_DEFAULT_STYLE | wxNO_BORDER);
     wxTreeItemId root = tree->AddRoot("Projects");
-
-    /*wxSize size = FromDIP(wxSize(16, 16));
-    wxImageList* imglist = new wxImageList(size.x, size.y, true, 2);
-    imglist->Add(wxArtProvider::GetBitmap(wxART_FOLDER, wxART_OTHER, size));
-    imglist->Add(wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, size));
-    tree->AssignImageList(imglist);
-
-    wxTreeItemId root = tree->AddRoot("Carone Engine", 0);
-    wxArrayTreeItemIds items;
-
-
-    items.Add(tree->AppendItem(root, "include", 0));
-    items.Add(tree->AppendItem(root, "src", 0));
-
-
-    int i, count;
-    for (i = 0, count = items.Count(); i < count; ++i)
-    {
-        wxTreeItemId id = items.Item(i);
-        tree->AppendItem(id, "Main", 1);
-        tree->AppendItem(id, "Render", 1);
-        tree->AppendItem(id, "OpenGL", 1);
-        tree->AppendItem(id, "Vulkan", 1);
-        tree->AppendItem(id, "DirectX", 1);
-    }
-
-
-    tree->Expand(root);*/
 
     return tree;
 }
@@ -218,35 +189,13 @@ wxAuiNotebook* MainFrame::CreateNotebook()
         wxPoint(client_size.x, client_size.y),
         FromDIP(wxSize(430, 200)),
         m_notebook_style);
-    ctrl->Freeze();
-
-    /*wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, FromDIP(wxSize(16, 16)));
-
-    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "main.asm");
-
-    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "Render.asm");
-
-    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "OpenGL.asm");*/
-
-
-    /*
-    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
-        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 1");
-
-    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
-        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 2");
-
-    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
-        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 3");
-    */
-    ctrl->Thaw();
     return ctrl;
 }
 
 MainFrame::~MainFrame()
 {
     UnInitToolChain();
-    m_mgr.UnInit();
+    m_pWindowManager->UnInit();
 
 }
 
@@ -282,7 +231,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
         saveFileDialog(this, _("Save Assembly file"), "", "",
             "ASM files (*.asm)|*.asm", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
@@ -308,7 +257,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
                 ctrl->Freeze();
                 ctrl->SetPageText(pageNum, pFile->GetFileName());
                 ctrl->Thaw();
-                m_mgr.Update();
+                m_pWindowManager->Update();
             }
             else
             {
@@ -347,7 +296,7 @@ void MainFrame::OnOpen(wxCommandEvent& event)
         wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
         return;
     }
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
 
     m_Files.insert({ pFile,pCodeEditor });
 
@@ -356,7 +305,7 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 
 void MainFrame::OnNew(wxCommandEvent& event)
 {
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
 
     File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     CodeEditor* pCodeEditor = new CodeEditor(ctrl, pFile);
@@ -369,7 +318,7 @@ void MainFrame::OnNew(wxCommandEvent& event)
     
     ctrl->Thaw();
 
-    m_mgr.Update();
+    m_pWindowManager->Update();
 }
 
 void MainFrame::OnNewProject(wxCommandEvent& event)
@@ -432,7 +381,7 @@ void MainFrame::OnCMDTool(wxCommandEvent& event)
 
 void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 {
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
@@ -452,7 +401,7 @@ void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 
 void MainFrame::OnBuildSolution(wxCommandEvent& event)
 {
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
@@ -496,7 +445,7 @@ Project* MainFrame::GetProject(const wxString& text)
 
 void MainFrame::OnRightClickOverTreeCtrl(wxTreeEvent& event)
 {
-    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_mgr.GetPane("TreeControl").window);
+    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_pWindowManager->GetPane("TreeControl").window);
     if (ctrl)
     {
         // We need to find the project based on the file.
@@ -530,7 +479,7 @@ void MainFrame::OnRightClickOverTreeCtrl(wxTreeEvent& event)
             pNewFileDlg->GetFileName(path, file);
             pNewFileDlg->Destroy();
 
-            wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+            wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
 
             File* pFile = new File(file.ToStdString(), path.ToStdString(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings, pProject);
             pProject->Save();
@@ -545,7 +494,7 @@ void MainFrame::OnRightClickOverTreeCtrl(wxTreeEvent& event)
 
             dockWindows->Thaw();
 
-            m_mgr.Update();
+            m_pWindowManager->Update();
 
             ctrl->AppendItem(tid, file);
         }
@@ -600,7 +549,7 @@ int MainFrame::AddProjectToTreeCtrl(Project* pProject)
      * In the future, change this as documentation says. 
      */
     int retCode = 0;
-    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_mgr.GetPane("TreeControl").window);
+    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_pWindowManager->GetPane("TreeControl").window);
     if (ctrl)
     {
 
@@ -626,7 +575,7 @@ int MainFrame::AddProjectToTreeCtrl(Project* pProject)
 int MainFrame::RemoveProjectFromTreeCtrl(Project* pProject)
 {
     int retCode = 0;
-    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_mgr.GetPane("TreeControl").window);
+    wxTreeCtrl* ctrl = static_cast<wxTreeCtrl*>(m_pWindowManager->GetPane("TreeControl").window);
     if (ctrl)
     {
 
@@ -642,7 +591,7 @@ int MainFrame::RemoveProjectFromTreeCtrl(Project* pProject)
 void MainFrame::Log(wxArrayString* pArrayLog)
 {
 
-    wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_mgr.GetPane("ConsoleLog").window);
+    wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_pWindowManager->GetPane("ConsoleLog").window);
     for (wxString str : *pArrayLog)
     {
         pTextControl->AppendText(str + "\n");
@@ -867,7 +816,7 @@ wxAuiToolBar* MainFrame::CreateMainToolBar()
 
 int MainFrame::CloseFile()
 {
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
