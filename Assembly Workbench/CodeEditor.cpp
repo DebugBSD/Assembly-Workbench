@@ -31,7 +31,6 @@
  */
 #include "stdafx.h"
 #include "CodeEditor.h"
-#include "Main.h"
 #include "File.h"
 
 

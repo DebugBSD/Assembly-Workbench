@@ -38,6 +38,7 @@
 #include <wx/stc/stc.h>
 #include <wx/sizer.h>
 
+#include "Main.h"
 
 enum
 {
@@ -65,9 +66,10 @@ public:
     const class File* GetFile() const { return m_pFile; }
     class File* GetFile() { return m_pFile; }
     void SetFile(class File* pFile) { m_pFile = pFile; }
+    void RemoveFile(class File* pFile) { if (m_pMainFrame) m_pMainFrame->RemoveFile(pFile); }
 
 private:
-	class MainFrame* m_pMainFrame;
+	MainFrame* m_pMainFrame;
 
     class File* m_pFile;
 private:

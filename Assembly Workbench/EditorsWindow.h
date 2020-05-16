@@ -30,18 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <wx/aui/framemanager.h>
-class WindowManager :
-	public wxAuiManager
+#include <wx/aui/auibook.h>
+
+enum {
+    ID_Notebook = wxID_HIGHEST + 1,
+};
+
+class EditorsWindow :
+	public wxAuiNotebook
 {
 public:
-	WindowManager(wxWindow* pManaged_wnd = nullptr, unsigned int flags = wxAUI_MGR_DEFAULT) :wxAuiManager(pManaged_wnd, flags) {}
+    EditorsWindow(class wxWindow* pWindow);
 
-	void AddWindow(wxWindow *pWindow);
-	void RemoveWindow(wxWindow *pWindow);
-    wxWindow* GetWindow(const wxString& windowName) { return GetPane(windowName).window; }
 private:
+    class MainFrame* m_pMainFrame;
+private:
+    int CloseFile();
 
-	
+    // Close tab
+    void OnCloseTab(wxAuiNotebookEvent& event);
+    void OnClosedTab(wxAuiNotebookEvent& event);
+
+    wxDECLARE_EVENT_TABLE();
 };
+
 

@@ -170,6 +170,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClInclude Include="AssemblerBase.h" />
     <ClInclude Include="CodeEditor.h" />
     <ClInclude Include="CompilerBase.h" />
+    <ClInclude Include="EditorsWindow.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FileSettings.h" />
     <ClInclude Include="FileSettingsDlg.h" />
@@ -180,6 +181,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClInclude Include="NewFileDlg.h" />
     <ClInclude Include="NewProjectDlg.h" />
     <ClInclude Include="Project.h" />
+    <ClInclude Include="ProjectsWindow.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
     <ClInclude Include="SettingsDialog.h" />
@@ -190,6 +192,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CodeEditor.cpp" />
+    <ClCompile Include="EditorsWindow.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileSettings.cpp" />
     <ClCompile Include="FileSettingsDlg.cpp" />
@@ -200,6 +203,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClCompile Include="NewFileDlg.cpp" />
     <ClCompile Include="NewProjectDlg.cpp" />
     <ClCompile Include="Project.cpp" />
+    <ClCompile Include="ProjectsWindow.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>

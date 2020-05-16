@@ -105,6 +105,12 @@
     <ClInclude Include="WindowManager.h">
       <Filter>Archivos de encabezado\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="EditorsWindow.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectsWindow.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -144,6 +150,12 @@
       <Filter>Archivos de origen\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="WindowManager.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorsWindow.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectsWindow.cpp">
       <Filter>Archivos de origen\Windows</Filter>
     </ClCompile>
   </ItemGroup>

@@ -40,6 +40,8 @@
 #include <wx/splitter.h>
 #include <wx/treectrl.h>
 
+#include "WindowManager.h"
+
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -60,9 +62,6 @@ public:
     MainFrame();
     ~MainFrame();
 private:
-
-    class wxTreeCtrl* CreateTreeCtrl();
-    class wxAuiNotebook* CreateNotebook();
 
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
@@ -87,11 +86,6 @@ private:
     void OnLaunchDebugger(wxCommandEvent& event);
 
 
-    // Tree Events
-    void OnRightClickOverTreeCtrl(wxTreeEvent &event);
-
-    // Close tab
-    void OnCloseTab(wxAuiNotebookEvent& event);
 
 public:
 #pragma region Public attributes
@@ -102,12 +96,24 @@ public:
     void SetStatusBar(const wxString& text) { GetStatusBar()->SetStatusText(text); }
     void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
 
-    int AddProjectToTreeCtrl(class Project* pProject);
-    int RemoveProjectFromTreeCtrl(class Project* pProject);
-    Project* GetProject(const wxString& text);
-
     void Log(class wxArrayString *pArrayLog);
     void Log(class wxString* pError);
+
+    // Access to Projects
+    const std::vector<class Project*>& GetProjects() const { return m_Projects; }
+
+    // Access to windows from WindowManager
+    class wxWindow* GetWindow(const wxString& windowName) { if (m_pWindowManager) return m_pWindowManager->GetWindow(windowName); else return nullptr; }
+
+    class AssemblerBase* GetAssembler() { return m_pAssemblerBase; }
+    class LinkerBase* GetLinker() { return m_pLinkerBase; }
+    class CompilerBase* GetCompiler() { return m_pCompilerBase; }
+    class FileSettings* GetFileSettings() { return m_pGlobalFileSettings; }
+
+    // Access to the files of the projects or the editor.
+    void RemoveFile(class File* pFile) { if (pFile) m_Files.erase(pFile); }
+    void AddFile(class File* pFile, class CodeEditor* pCodeEditor) { if (pFile && pCodeEditor) m_Files.insert({pFile,pCodeEditor}); }
+
 #pragma endregion
 
 private:
@@ -119,8 +125,6 @@ private:
     class CompilerBase* m_pCompilerBase;
     class FileSettings *m_pGlobalFileSettings;
 
-    // Menu popup
-    wxMenu* m_MenuPopUp;
 
     // Create a map with assemblers, compilers and linkers.
     // Then, set a default.
@@ -137,7 +141,6 @@ private:
     void InitToolChain();
     void UnInitToolChain();
     class wxAuiToolBar * CreateMainToolBar();
-    int CloseFile();
 #pragma endregion
 
     wxDECLARE_EVENT_TABLE();
@@ -171,11 +174,5 @@ enum
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
     ID_Tool_Graph,
-    ID_Notebook,
 
-    // Tree Control IDs
-    ID_TreeCtrl_Projects_View,
-
-    // Add new file to project. We Show a window to create the file.
-    ID_Project_View_Add_New_File
 };
