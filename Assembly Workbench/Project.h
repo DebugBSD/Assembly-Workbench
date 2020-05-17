@@ -85,6 +85,8 @@ public:
     wxString GetProjectDirectory() const {return m_ProjectDirectory; }
     void Save();
 
+    const wxString GetRelativePathToFile(const std::string& absoultePathToFile);
+
 
 private:
     wxString m_ProjectFile;

@@ -32,7 +32,9 @@
 #include "stdafx.h"
 
 #include <wx/xml/xml.h>
+#include <wx/filename.h>
 
+#include "File.h"
 #include "Project.h"
 
 Project::Project():
@@ -69,12 +71,7 @@ int Project::Create(const wxString& projectDirectory, const wxString& fileName)
         wxMkdir(path + "/Build");
         
         // We should create a basic file.
-        wxFile projectFile;
-        if (!projectFile.Create( m_ProjectDirectory + '/' + m_ProjectFile, true ))
-        {
-            // TODO: Handle error
-            int stop = 0;
-        }
+        Save();
         
     }
     else
@@ -102,16 +99,43 @@ void Project::Save()
     wxXmlNode* root = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "Root");
     xmlDoc.SetRoot(root);
 
-    // Add some XML.
-    wxXmlNode* library = new wxXmlNode(root, wxXML_ELEMENT_NODE, "Configuration");
-    library->AddAttribute("type", "Windows");
+    // Add Settings
+    wxXmlNode* fileNode = new wxXmlNode(root, wxXML_ELEMENT_NODE, "Settings");
+    fileNode->AddAttribute("type", "Parent");
 
-    wxXmlNode* name = new wxXmlNode(library, wxXML_ELEMENT_NODE, "Name");
-    name->AddAttribute("Assembler","MASM64");
-    name->AddAttribute("File", "SRC");
-    name->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", "Main.asm"));
-
-    // Write the output to a wxString.
-    xmlDoc.Save(m_ProjectDirectory+'/'+m_ProjectFile);
+    // Add files to the same Configuration
+    wxXmlNode* fileNodeConf = new wxXmlNode(root, wxXML_ELEMENT_NODE, "Configuration");
+    fileNodeConf->AddAttribute("type", "Windows");
+    for (File* pFile : m_Files)
+    {
+        wxXmlNode* name = new wxXmlNode(fileNodeConf, wxXML_ELEMENT_NODE, "Name");
+        name->AddAttribute("Assembler", "MASM64");
+        name->AddAttribute("File", "SRC");
+        wxString srcFile{ GetRelativePathToFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName()) };
+        name->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", srcFile));
+    }
+    
+    xmlDoc.Save(m_ProjectDirectory+ wxFileName::GetPathSeparator() +m_ProjectFile);
 }
 
+const wxString Project::GetRelativePathToFile(const std::string& absoultePathToFile)
+{
+    wxString pathToFile, fileName, extension, projectName;
+
+    wxFileName::SplitPath(absoultePathToFile, &pathToFile, &fileName, &extension);
+    int pos = pathToFile.Find(m_ProjectDirectory);
+    if (pos != wxNOT_FOUND)
+    {
+        pathToFile.erase(pos, m_ProjectDirectory.Length());
+    }
+
+    wxString relPath;
+    if (pathToFile.IsEmpty())
+        relPath = fileName + '.' + extension;
+    else
+    {
+        pathToFile.StartsWith(wxFileName::GetPathSeparator(), &pathToFile);
+        relPath = pathToFile + wxFileName::GetPathSeparator() + fileName + '.' + extension;
+    }
+    return relPath;
+}

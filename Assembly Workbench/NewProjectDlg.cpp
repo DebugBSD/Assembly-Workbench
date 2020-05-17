@@ -229,6 +229,8 @@ void NewProjectDlg::OnCreate(wxCommandEvent& event)
         retCode = -1;
         return; // Do nothing
     }
+
+
     
     if (!wxDirExists(m_pProjectBaseDirectoryComboBoxCtrl->GetValue()))
     {
@@ -237,7 +239,7 @@ void NewProjectDlg::OnCreate(wxCommandEvent& event)
         return; // Do nothing
     }
 
-    if (wxDirExists(m_pProjectBaseDirectoryComboBoxCtrl->GetValue() + '/' + m_pProjectNameTextCtrl->GetValue()))
+    if (wxDirExists(m_pProjectBaseDirectoryComboBoxCtrl->GetValue() + wxFileName::GetPathSeparator() + m_pProjectNameTextCtrl->GetValue()))
     {
         // Directory and Project directory exists, so we don't do anything. We should show a message to handle it.
 

@@ -31,6 +31,9 @@
  */
 #include "stdafx.h"
 #include <filesystem>
+
+#include <wx/filename.h>
+
 #include "EditorsWindow.h"
 #include "CodeEditor.h"
 #include "File.h"
@@ -76,7 +79,7 @@ int EditorsWindow::CloseFile()
             int res = wxMessageBox(_("This file has been modifed. Do you want to save it before closing it?"), _("Please confirm"), wxYES_NO | wxCANCEL, this);
             if (res == wxYES) // We save the file before closing it
             {
-                pCodeEditor->SaveFile(pFile->GetFile() + '/' + pFile->GetFileName());
+                pCodeEditor->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName());
                 m_pMainFrame->RemoveFile(pFile);
             }
             else if (res == wxNO)

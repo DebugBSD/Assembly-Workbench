@@ -25,9 +25,7 @@ TODO
 Tomorrow:
 ---------
 
-- Permit only characters, numbers, spaces and some special characters in the name of projects and files.
-- Implement a basic project file when creating a new empty project.
 - Open Projects from menu.
 - Open Files from the Projects Tree Window.
-- Ensure every file into the project has a relative path and every file outside of the project has an absolute path.
+- Ensure every file outside the project has an absolute path.
 

@@ -257,7 +257,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
             }
             else
             {
-                if (!pCodeEditor->SaveFile(pFile->GetFile()+'/'+ pFile->GetFileName()))
+                if (!pCodeEditor->SaveFile(pFile->GetFile()+ wxFileName::GetPathSeparator() + pFile->GetFileName()))
                 {
                     wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
                     return;
@@ -335,7 +335,7 @@ void MainFrame::OnNewProject(wxCommandEvent& event)
 
         Project* pProject = new Project();
 
-        int res = pProject->Create(pNewProjectDlg->GetDirectory()+'/'+pNewProjectDlg->GetProjectName(), pNewProjectDlg->GetFileName());
+        int res = pProject->Create(pNewProjectDlg->GetDirectory()+ wxFileName::GetPathSeparator() +pNewProjectDlg->GetProjectName(), pNewProjectDlg->GetFileName());
 
         if (res == 0)
         {
@@ -376,6 +376,11 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
         
     }
 
+    // We save the project configuration
+    for (Project* pProject : m_Projects)
+    {
+        pProject->Save();
+    }
 
     // Save cache
     wxString userDir{ wxStandardPaths::Get().GetUserLocalDataDir() };
