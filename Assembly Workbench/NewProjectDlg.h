@@ -81,10 +81,10 @@ class NewProjectDlg: public wxDialog
 public:
     /// Constructors
     NewProjectDlg();
-    NewProjectDlg( wxWindow* parent, wxWindowID id = SYMBOL_NEWPROJECTDLG_IDNAME, const wxString& caption = SYMBOL_NEWPROJECTDLG_TITLE, const wxPoint& pos = SYMBOL_NEWPROJECTDLG_POSITION, const wxSize& size = SYMBOL_NEWPROJECTDLG_SIZE, long style = SYMBOL_NEWPROJECTDLG_STYLE );
+    NewProjectDlg( wxWindow* parent, const wxArrayString& choices, wxWindowID id = SYMBOL_NEWPROJECTDLG_IDNAME, const wxString& caption = SYMBOL_NEWPROJECTDLG_TITLE, const wxPoint& pos = SYMBOL_NEWPROJECTDLG_POSITION, const wxSize& size = SYMBOL_NEWPROJECTDLG_SIZE, long style = SYMBOL_NEWPROJECTDLG_STYLE);
 
     /// Creation
-    bool Create( wxWindow* parent, wxWindowID id = SYMBOL_NEWPROJECTDLG_IDNAME, const wxString& caption = SYMBOL_NEWPROJECTDLG_TITLE, const wxPoint& pos = SYMBOL_NEWPROJECTDLG_POSITION, const wxSize& size = SYMBOL_NEWPROJECTDLG_SIZE, long style = SYMBOL_NEWPROJECTDLG_STYLE );
+    bool Create( wxWindow* parent, const wxArrayString& choices, wxWindowID id = SYMBOL_NEWPROJECTDLG_IDNAME, const wxString& caption = SYMBOL_NEWPROJECTDLG_TITLE, const wxPoint& pos = SYMBOL_NEWPROJECTDLG_POSITION, const wxSize& size = SYMBOL_NEWPROJECTDLG_SIZE, long style = SYMBOL_NEWPROJECTDLG_STYLE);
 
     /// Destructor
     ~NewProjectDlg();
@@ -93,7 +93,7 @@ public:
     void Init();
 
     /// Creates the controls and sizers
-    void CreateControls();
+    void CreateControls(const wxArrayString& choices);
 
 ////@begin NewProjectDlg event handler declarations
 ////@end NewProjectDlg event handler declarations
@@ -101,7 +101,7 @@ public:
 ////@begin NewProjectDlg member function declarations
     /// Get Filename
     wxString GetFileName() const { return m_pProjectNameTextCtrl->GetValue()+".awp"; }
-    wxString GetDirectory() const { return m_pProjectBaseDirectoryTextCtrl->GetValue(); }
+    wxString GetDirectory() const { return m_pProjectBaseDirectoryComboBoxCtrl->GetValue(); }
     wxString GetProjectName() const { return m_pProjectNameTextCtrl->GetValue(); }
 
     /// Retrieves bitmap resources
@@ -117,7 +117,7 @@ public:
 private:
 ////@begin NewProjectDlg member variables
     class wxTextCtrl* m_pProjectNameTextCtrl;
-    class wxTextCtrl* m_pProjectBaseDirectoryTextCtrl;
+    class wxComboBox* m_pProjectBaseDirectoryComboBoxCtrl;
 ////@end NewProjectDlg member variables
 
 private:

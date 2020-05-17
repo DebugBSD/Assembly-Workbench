@@ -114,6 +114,9 @@ public:
     void RemoveFile(class File* pFile) { if (pFile) m_Files.erase(pFile); }
     void AddFile(class File* pFile, class CodeEditor* pCodeEditor) { if (pFile && pCodeEditor) m_Files.insert({pFile,pCodeEditor}); }
 
+    // Get/Set project directory entries
+    wxArrayString& GetProjectDirectoryEntries() { return m_ProjectDirectoryEntries; }
+    void SetProjectDirectoryEntries(wxArrayString& projectDirectoryEntries) { m_ProjectDirectoryEntries = projectDirectoryEntries; }
 #pragma endregion
 
 private:
@@ -134,6 +137,7 @@ private:
     std::unordered_map<class File*, class CodeEditor*> m_Files;
     std::vector<class Project*> m_Projects;
 
+    wxArrayString m_ProjectDirectoryEntries;
 #pragma endregion
 
 #pragma region Private Methods

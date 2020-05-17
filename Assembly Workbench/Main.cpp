@@ -42,6 +42,8 @@
 #include "wx/treectrl.h"
 #include "wx/artprov.h"
 #include "wx/aui/aui.h"
+#include "wx/stdpaths.h"
+#include "wx/textfile.h"
 #include <sstream>
 #include "WindowManager.h"
 #include "CodeEditor.h"
@@ -113,6 +115,25 @@ MainFrame::MainFrame():
     m_pWindowManager{new WindowManager()}
 {
     InitToolChain();
+
+    // Load cache
+    wxString userDir{ wxStandardPaths::Get().GetUserLocalDataDir() };
+    if (!wxFileName::DirExists(userDir))
+    {
+        wxFileName::Mkdir(userDir);
+    }
+
+    if (wxFileName::FileExists(userDir + "/dirEntries"))
+    {
+        wxTextFile entriesFile{ userDir + "/dirEntries" };
+        entriesFile.Open();
+
+        for (size_t i = 0; i < entriesFile.GetLineCount(); i++)
+        {
+            m_ProjectDirectoryEntries.Add(entriesFile[i]);
+        }
+
+    }
 
     // Layout
     m_pWindowManager->SetManagedWindow(this);
@@ -298,11 +319,22 @@ void MainFrame::OnNew(wxCommandEvent& event)
 
 void MainFrame::OnNewProject(wxCommandEvent& event)
 {
-    NewProjectDlg* pNewProjectDlg = new NewProjectDlg(nullptr);
+    NewProjectDlg* pNewProjectDlg = new NewProjectDlg(nullptr, m_ProjectDirectoryEntries);
 
     if (pNewProjectDlg->ShowModal() == 0)
     {
+        bool isFound = false;
+        for (wxString projectDirStr : m_ProjectDirectoryEntries)
+        {
+            if (projectDirStr == pNewProjectDlg->GetDirectory())
+            {
+                isFound = true;
+            }
+        }
+        if(!isFound) m_ProjectDirectoryEntries.Add(pNewProjectDlg->GetDirectory());
+
         Project* pProject = new Project();
+
         int res = pProject->Create(pNewProjectDlg->GetDirectory()+'/'+pNewProjectDlg->GetProjectName(), pNewProjectDlg->GetFileName());
 
         if (res == 0)
@@ -315,9 +347,9 @@ void MainFrame::OnNewProject(wxCommandEvent& event)
             // Add the project to the vector of projects.
             m_Projects.push_back(pProject);
         }
-
-        pNewProjectDlg->Destroy();
     }
+
+    pNewProjectDlg->Destroy();
 }
 
 void MainFrame::OnNewFile(wxCommandEvent& event)
@@ -342,6 +374,31 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
             return;
         }
         
+    }
+
+
+    // Save cache
+    wxString userDir{ wxStandardPaths::Get().GetUserLocalDataDir() };
+    wxTextFile entriesFile;
+    bool fileOpen = false;
+    if (wxFileName::FileExists(userDir + "/dirEntries"))
+    {
+        fileOpen = entriesFile.Open(userDir + "/dirEntries");
+        entriesFile.Clear();
+    }
+    else
+    {
+        fileOpen = entriesFile.Create(userDir + "/dirEntries");
+    }
+
+    if (fileOpen)
+    {
+        for (wxString currentLine : m_ProjectDirectoryEntries)
+        {
+            entriesFile.AddLine(currentLine);
+        }
+        entriesFile.Write();
+        entriesFile.Close();
     }
 
     Destroy();
