@@ -50,6 +50,67 @@ Project::~Project()
 
 int Project::Load(const wxString& fileName)
 {
+    wxXmlDocument doc;
+    if (!doc.Load(fileName))
+        return -1;
+
+    // Start processing the XML file.
+    if (doc.GetRoot()->GetName() != "Root")
+        return -2;
+
+    wxString path, fName, extension;
+    wxFileName::SplitPath(fileName, &path, &fName, &extension);
+    m_ProjectFile = fName + '.' + extension;
+    m_ProjectDirectory = path;
+
+    wxXmlNode* child = doc.GetRoot()->GetChildren();
+    while (child)
+    {
+        if (child->GetName() == "Settings")
+        {
+            // We parse the settings
+            wxString content = child->GetNodeContent();
+
+            // Process attributes of tag1.
+            wxString type =
+                child->GetAttribute("type", "Parent");
+
+        }
+        else if (child->GetName() == "Configuration")
+        {
+            // We parse the files
+            wxString type =
+                child->GetAttribute("type", "Windows");
+
+            wxXmlNode* pFilesNode = child->GetChildren();
+            while (pFilesNode)
+            {
+                if (pFilesNode->GetName() == "Name") {
+                    wxString assembler = pFilesNode->GetAttribute("Assembler", "MASM64");
+                    wxString fileType = pFilesNode->GetAttribute("File", "SRC");
+                    wxString sourceFile;
+
+                    wxXmlNode* pContent = pFilesNode->GetChildren();
+                    while (pContent)
+                    {
+                        sourceFile = pContent->GetContent();
+                        pContent = pContent->GetNext();
+                    }
+
+                    wxString path, fName, extension;
+                    wxFileName::SplitPath(m_ProjectDirectory + wxFileName::GetPathSeparator() + sourceFile, &path, &fName, &extension);
+
+                    wxString completeFileName{ fName + '.' + extension };
+                    File* pFile = new File(completeFileName.ToStdString(), path.ToStdString(), nullptr, nullptr, nullptr, nullptr, this);
+                }
+                pFilesNode = pFilesNode->GetNext();
+            }
+
+        }
+
+        child = child->GetNext();
+    }
+
     return 0;
 }
 

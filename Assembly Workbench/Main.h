@@ -67,6 +67,7 @@ private:
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
     void OnSave(wxCommandEvent& event);
+    void OnOpenProject(wxCommandEvent& event);
     void OnOpen(wxCommandEvent& event);
     void OnNew(wxCommandEvent& event);
     void OnNewProject(wxCommandEvent& event);
@@ -156,6 +157,7 @@ enum
     ID_New_File,
     ID_New_Project,
     ID_Clone,
+    ID_Open_Project,
     ID_Close_Project,
     ID_Save_Project,
     ID_Recent_Files,

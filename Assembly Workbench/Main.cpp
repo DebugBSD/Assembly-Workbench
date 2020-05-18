@@ -75,6 +75,7 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(wxID_EXIT, MainFrame::OnExit)
 EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
 EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
+EVT_MENU(ID_Open_Project, MainFrame::OnOpenProject)
 EVT_MENU(wxID_SAVE, MainFrame::OnSave)
 EVT_MENU(wxID_NEW, MainFrame::OnNew)
 EVT_MENU(ID_New_File, MainFrame::OnNewFile)
@@ -275,11 +276,36 @@ void MainFrame::OnSave(wxCommandEvent& event)
     }
 }
 
+void MainFrame::OnOpenProject(wxCommandEvent &event)
+{
+    wxFileDialog
+        openFileDialog(this, _("Open Project file"), "", "",
+            "Project files (*.awp)|*.awp", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (openFileDialog.ShowModal() == wxID_CANCEL)
+        return;     // the user changed idea...
+
+    Project* pProject = new Project();
+    if (pProject->Load(openFileDialog.GetPath()))
+    {
+        // TODO: Handle error
+    }
+    else
+    {
+        // TODO: WindowManager has the control over this window, so, pass to WindowManager instead of accessing this control in this way.
+        ProjectsWindow* ctrl = static_cast<ProjectsWindow*>(m_pWindowManager->GetPane("ProjectsWindow").window);
+        // Add the project and files and everything to the main tree.
+        if (ctrl) ctrl->AddProject(pProject);
+
+        // Add the project to the vector of projects.
+        m_Projects.push_back(pProject);
+    }
+}
+
 void MainFrame::OnOpen(wxCommandEvent& event)
 {
     wxFileDialog
         openFileDialog(this, _("Open Assembly file"), "", "",
-            "ASM files (*.asm)|*.asm", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+            "ASM and Include files (*.asm;*.inc)|*.asm;*.inc", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;     // the user changed idea...
 
@@ -584,7 +610,10 @@ void MainFrame::CreateMenubar()
     menuFile->AppendSubMenu(pSubMenuFile, "New", "New File/Project");
     // TODO: Submenu 
 
-    menuFile->Append(wxID_OPEN);
+    wxMenu* pSubMenuOpen = new wxMenu;
+    pSubMenuOpen->Append(wxID_OPEN);
+    pSubMenuOpen->Append(ID_Open_Project, "Open Project", "Open an existing project");
+    menuFile->AppendSubMenu(pSubMenuOpen, "Open", "Open a File or Project");
     menuFile->Append(ID_Clone, "Clone a repository", "Clone a repository");
 
     menuFile->AppendSeparator();
