@@ -65,7 +65,7 @@
 class Project
 {
 public:
-	Project();
+	Project(class wxWindow *parent);
     ~Project();
 
     int Load(const wxString& fileName);
@@ -89,6 +89,8 @@ public:
 
 
 private:
+    class MainFrame* m_pMainFrame;
+
     wxString m_ProjectFile;
     wxString m_ProjectDirectory;
 

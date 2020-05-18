@@ -284,7 +284,7 @@ void MainFrame::OnOpenProject(wxCommandEvent &event)
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;     // the user changed idea...
 
-    Project* pProject = new Project();
+    Project* pProject = new Project(this);
     if (pProject->Load(openFileDialog.GetPath()))
     {
         // TODO: Handle error
@@ -359,7 +359,7 @@ void MainFrame::OnNewProject(wxCommandEvent& event)
         }
         if(!isFound) m_ProjectDirectoryEntries.Add(pNewProjectDlg->GetDirectory());
 
-        Project* pProject = new Project();
+        Project* pProject = new Project(this);
 
         int res = pProject->Create(pNewProjectDlg->GetDirectory()+ wxFileName::GetPathSeparator() +pNewProjectDlg->GetProjectName(), pNewProjectDlg->GetFileName());
 

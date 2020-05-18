@@ -36,8 +36,10 @@
 
 #include "File.h"
 #include "Project.h"
+#include "Main.h"
 
-Project::Project():
+Project::Project(wxWindow* parent):
+    m_pMainFrame{static_cast<MainFrame*>(parent)},
     m_pAssembler{nullptr},
     m_pCompiler{nullptr},
     m_pLinker{nullptr}
@@ -101,7 +103,7 @@ int Project::Load(const wxString& fileName)
                     wxFileName::SplitPath(m_ProjectDirectory + wxFileName::GetPathSeparator() + sourceFile, &path, &fName, &extension);
 
                     wxString completeFileName{ fName + '.' + extension };
-                    File* pFile = new File(completeFileName, path, nullptr, nullptr, nullptr, nullptr, this);
+                    File* pFile = new File(completeFileName, path, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), this);
                 }
                 pFilesNode = pFilesNode->GetNext();
             }
