@@ -257,7 +257,7 @@ void ProjectsWindow::OnRightClickOverTreeCtrl(wxTreeEvent& event)
 
         wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_pMainFrame->GetWindow("notebook_content"));
 
-        File* pFile = new File(file.ToStdString(), path.ToStdString(), m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), pProject);
+        File* pFile = new File(file, path, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), pProject);
         
         CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
 

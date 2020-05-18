@@ -37,7 +37,7 @@
 #include "File.h"
 #include "Project.h"
 
-File::File(const std::string& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
+File::File(const wxString& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
     m_FileName{file},
     m_FilePath{""},
     m_pAssembler{pAssemblerFile},
@@ -49,7 +49,7 @@ File::File(const std::string& file, AssemblerBase* pAssemblerFile, LinkerBase* p
     if (m_pProject) m_pProject->AddFile(this);
 }
 
-File::File(const std::string& fileName, const std::string& filePath, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
+File::File(const wxString& fileName, const wxString& filePath, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
     m_FileName{ fileName },
     m_FilePath{ filePath },
     m_pAssembler{ pAssemblerFile },
@@ -69,7 +69,7 @@ void File::Assemble()
 {
     if (m_pAssembler && m_FilePath != "")
     {
-        m_pAssembler->AssembleFile(m_FilePath+ wxFileName::GetPathSeparator().operator char() +m_FileName, m_pFileSettings);
+        m_pAssembler->AssembleFile(m_FilePath + wxFileName::GetPathSeparator().operator char() +m_FileName, m_pFileSettings);
     }
 }
 

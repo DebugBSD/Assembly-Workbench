@@ -101,7 +101,7 @@ int Project::Load(const wxString& fileName)
                     wxFileName::SplitPath(m_ProjectDirectory + wxFileName::GetPathSeparator() + sourceFile, &path, &fName, &extension);
 
                     wxString completeFileName{ fName + '.' + extension };
-                    File* pFile = new File(completeFileName.ToStdString(), path.ToStdString(), nullptr, nullptr, nullptr, nullptr, this);
+                    File* pFile = new File(completeFileName, path, nullptr, nullptr, nullptr, nullptr, this);
                 }
                 pFilesNode = pFilesNode->GetNext();
             }
@@ -179,7 +179,7 @@ void Project::Save()
     xmlDoc.Save(m_ProjectDirectory+ wxFileName::GetPathSeparator() +m_ProjectFile);
 }
 
-const wxString Project::GetRelativePathToFile(const std::string& absoultePathToFile)
+const wxString Project::GetRelativePathToFile(const wxString& absoultePathToFile)
 {
     wxString pathToFile, fileName, extension, projectName;
 

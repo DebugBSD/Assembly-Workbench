@@ -45,8 +45,8 @@ class File
 {
 public:
     
-	File(const std::string& file, class AssemblerBase*pAssemblerFile = nullptr, class LinkerBase *pLinkerFile = nullptr, class CompilerBase *pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project *pProject = nullptr);
-    File(const std::string& fileName, const std::string &filePath, class AssemblerBase* pAssemblerFile = nullptr, class LinkerBase* pLinkerFile = nullptr, class CompilerBase* pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project* pProject = nullptr);
+	File(const wxString& file, class AssemblerBase*pAssemblerFile = nullptr, class LinkerBase *pLinkerFile = nullptr, class CompilerBase *pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project *pProject = nullptr);
+    File(const wxString& fileName, const wxString&filePath, class AssemblerBase* pAssemblerFile = nullptr, class LinkerBase* pLinkerFile = nullptr, class CompilerBase* pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project* pProject = nullptr);
     ~File();
 
     void Clean();
@@ -57,11 +57,11 @@ public:
 
 	void Link(); // For object files. (ASM objects and C/C++ objects)
 
-    void SetFileName(const std::string file) { m_FileName = file; }
-    const std::string& GetFileName() const { return m_FileName; }
+    void SetFileName(const wxString file) { m_FileName = file; }
+    const wxString& GetFileName() const { return m_FileName; }
 
-    void SetFile(const std::string file) { m_FilePath = file; }
-    const std::string& GetFile() const { return m_FilePath; }
+    void SetFile(const wxString file) { m_FilePath = file; }
+    const wxString& GetFile() const { return m_FilePath; }
     void SetAssembler(class AssemblerBase* pAssembler) { m_pAssembler = pAssembler; }
     void SetLinker(class LinkerBase* pLinker) { m_pLinker = pLinker; }
     void SetCompiler(class CompilerBase* pCompiler) { m_pCompiler = pCompiler; }
@@ -69,8 +69,8 @@ public:
     class FileSettings* GetFileSettings() { return m_pFileSettings; }
 private:
 
-    std::string m_FileName;
-	std::string m_FilePath; // Absolute or relative path to file without name of file.
+    wxString m_FileName;
+    wxString m_FilePath; // Absolute or relative path to file without name of file.
 
     FileType m_FileType;
 

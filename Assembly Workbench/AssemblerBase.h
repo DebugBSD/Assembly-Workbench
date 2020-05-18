@@ -30,13 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <string>
+#include <wx/string.h>
 class AssemblerBase
 {
 public:
 
-    virtual void Clean(const std::string& file, class FileSettings *pFileSettings) = 0;
-	virtual void AssembleFile(const std::string &file, class FileSettings* pFileSettings) = 0;
+    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;
+	virtual void AssembleFile(const wxString&file, class FileSettings* pFileSettings) = 0;
 
 };
 

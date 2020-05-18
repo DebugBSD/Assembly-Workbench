@@ -20,6 +20,7 @@ TODO
 * Add Find/Replace tools with windows.
 * Add the possibility to save/reload the layout of the IDE and set the default option in the menu.
 * Think about using buffers for files instead of the wxTextCtrl or any other class. Look at the wxWidgets Documentation. (See wxTestFile, it seems ideal!)
+* Change paths to files and directories from strings to wxFileName
 
 Tomorrow:
 ---------

@@ -44,9 +44,9 @@ public:
 
     ~MASM();
 
-    void Clean(const std::string& file, class FileSettings* pFileSettings) override;
+    void Clean(const wxString& file, class FileSettings* pFileSettings) override;
 
-    void AssembleFile(const std::string &file, class FileSettings* pFileSettings) override;
+    void AssembleFile(const wxString&file, class FileSettings* pFileSettings) override;
 
 private:
     class MainFrame* m_pFrame;

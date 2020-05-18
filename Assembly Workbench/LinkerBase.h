@@ -30,12 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <string>
+#include <wx/string.h>
 class LinkerBase
 {
 public:
 
-    virtual void Clean(const std::string& file, class FileSettings *pFileSettings) = 0;;
-    virtual void Link(const std::string &file, class FileSettings *pFileSettings) = 0;
+    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;;
+    virtual void Link(const wxString&file, class FileSettings *pFileSettings) = 0;
 };
 

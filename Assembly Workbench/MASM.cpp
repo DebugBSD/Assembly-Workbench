@@ -73,11 +73,11 @@ MASM::~MASM()
 {
 }
 
-void MASM::Clean(const std::string& file, FileSettings* pFileSettings)
+void MASM::Clean(const wxString& file, FileSettings* pFileSettings)
 {
 }
 
-void MASM::AssembleFile(const std::string& file, FileSettings* pFileSettings)
+void MASM::AssembleFile(const wxString& file, FileSettings* pFileSettings)
 {
     // Check if everything is okay.
     if (file != "")
@@ -93,7 +93,7 @@ void MASM::AssembleFile(const std::string& file, FileSettings* pFileSettings)
 
         // Assemble file.
         // TODO: Move to settings panel.
-        std::filesystem::path filepath{ file };
+        std::filesystem::path filepath{ file.ToStdString() };
         std::string fileInput{ "/c " + filepath.filename().string() };
         std::string fileOutput{ "/Fo " + filepath.filename().stem().string() + ".obj" };
 

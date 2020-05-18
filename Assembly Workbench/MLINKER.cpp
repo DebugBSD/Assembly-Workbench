@@ -56,11 +56,11 @@ MLINKER::~MLINKER()
 {
 }
 
-void MLINKER::Clean(const std::string& file, FileSettings* pFileSettings)
+void MLINKER::Clean(const wxString& file, FileSettings* pFileSettings)
 {
 }
 
-void MLINKER::Link(const std::string& file, FileSettings* pFileSettings)
+void MLINKER::Link(const wxString& file, FileSettings* pFileSettings)
 {
     wxExecuteEnv environment;
     // Get the environment variables.
@@ -72,7 +72,7 @@ void MLINKER::Link(const std::string& file, FileSettings* pFileSettings)
 
     // Assemble file.
     // TODO: Move to settings.
-    std::filesystem::path filepath{ file };
+    std::filesystem::path filepath{ file.ToStdString() };
     std::string fileInput{ filepath.filename().stem().string() + ".obj" };
     std::string fileOutput{ "/out:" + filepath.filename().stem().string() + ".exe" };
 

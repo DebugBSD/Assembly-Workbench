@@ -30,11 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
+#include <wx/string.h>
+
 class CompilerBase
 {
 public:
 
-    virtual void Clean(const std::string& file) = 0;
-	virtual void Compile(const std::string &file) = 0;
+    virtual void Clean(const wxString& file) = 0;
+	virtual void Compile(const wxString&file) = 0;
 };
 
