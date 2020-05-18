@@ -25,8 +25,7 @@ TODO
 Tomorrow:
 ---------
 
-- Open Files from the Projects Tree Window with Double Click.
 - Configure the tool chain based on the configuration file.
-- Ensure every file outside the project has an absolute path.
+- Ensure every file outside the project has an absolute path. When file is absolute, we should set up this configuration on the project file.
 - Implement the compilation of Projects. Right now, it works for files only.
 - Implement a Console Log to log the output of the assembler, linker, and compiler.

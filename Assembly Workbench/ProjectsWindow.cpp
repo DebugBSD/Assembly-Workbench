@@ -65,6 +65,7 @@ wxBEGIN_EVENT_TABLE(ProjectsWindow, wxPanel)
     ////@begin ProjectWindow event table entries
     // Tree control events
     EVT_TREE_ITEM_RIGHT_CLICK(ID_TreeCtrl_Projects_View, ProjectsWindow::OnRightClickOverTreeCtrl)
+    EVT_TREE_ITEM_ACTIVATED(ID_TreeCtrl_Projects_View, ProjectsWindow::SelectedElement)
     ////@end ProjectWindow event table entries
 
 wxEND_EVENT_TABLE()
@@ -177,7 +178,8 @@ void ProjectsWindow::AddProject(Project* pProject)
     // Add the rest of the files
     for (File* pFile : pProject->GetFiles())
     {
-        m_pTreeCtrl->AppendItem(rootProject, pFile->GetFileName());
+        wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(rootProject, pFile->GetFileName());
+        m_pTreeFiles.insert({ nodeTid.GetID(), pFile });
     }
 
     m_pTreeCtrl->Expand(root);
@@ -217,6 +219,35 @@ wxIcon ProjectsWindow::GetIconResource(const wxString& name)
     wxUnusedVar(name);
     return wxNullIcon;
     ////@end ProjectWindow icon retrieval
+}
+
+void ProjectsWindow::SelectedElement(wxTreeEvent& event)
+{
+    wxTreeItemId id = event.GetItem();
+    File* pFile = m_pTreeFiles[id.GetID()];
+    if (pFile)
+    {
+        wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_pMainFrame->GetWindow("notebook_content"));
+        
+        for (size_t i = 0; i < dockWindows->GetPageCount(); i++)
+        {
+            CodeEditor* pWindow = m_pMainFrame->GetCodeEditor(pFile);
+            if (dockWindows->GetPage(i) == pWindow)
+            {
+                return;
+            }
+        }
+
+        CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
+
+        m_pMainFrame->AddFile(pFile, pCodeEditor);
+
+        dockWindows->Freeze();
+
+        dockWindows->AddPage(pCodeEditor, pFile->GetFileName());
+
+        dockWindows->Thaw();
+    }
 }
 
 void ProjectsWindow::OnRightClickOverTreeCtrl(wxTreeEvent& event)
@@ -272,7 +303,8 @@ void ProjectsWindow::OnRightClickOverTreeCtrl(wxTreeEvent& event)
 
         //m_pWindowManager->Update();
 
-        m_pTreeCtrl->AppendItem(tid, file);
+        wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(tid, file);
+        m_pTreeFiles.insert({ nodeTid.GetID(), pFile });
     }
 }
 

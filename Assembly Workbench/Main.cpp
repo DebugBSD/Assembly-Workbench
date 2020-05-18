@@ -530,6 +530,20 @@ void MainFrame::Log(wxString* pError)
 {
 }
 
+CodeEditor* MainFrame::GetCodeEditor(File* pFile)
+{
+    CodeEditor *pCodeEditor = nullptr;
+    for (const auto& e : m_Files)
+    {
+        if (e.first == pFile)
+        {
+            
+            pCodeEditor = e.second;
+        }
+    }
+    return pCodeEditor;
+}
+
 /*****************************************************************************/
 // Menus
 //      File

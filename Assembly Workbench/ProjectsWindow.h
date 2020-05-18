@@ -110,6 +110,9 @@ private:
     class wxTreeCtrl* m_pTreeCtrl;
     // Menu popup
     wxMenu* m_MenuPopUp;
+
+    // Files container
+    std::unordered_map<void*, class File *> m_pTreeFiles;
 private:
 
     class Project* GetProject(const wxString& text);
@@ -117,6 +120,7 @@ private:
     ////@end ProjectWindow member variables
 
     // Tree Events
+    void SelectedElement(wxTreeEvent& event);
     void OnRightClickOverTreeCtrl(wxTreeEvent& event);
 
     wxDECLARE_EVENT_TABLE();

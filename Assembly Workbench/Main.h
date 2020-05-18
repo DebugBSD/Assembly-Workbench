@@ -113,7 +113,12 @@ public:
 
     // Access to the files of the projects or the editor.
     void RemoveFile(class File* pFile) { if (pFile) m_Files.erase(pFile); }
-    void AddFile(class File* pFile, class CodeEditor* pCodeEditor) { if (pFile && pCodeEditor) m_Files.insert({pFile,pCodeEditor}); }
+    void AddFile(class File* pFile, class CodeEditor* pCodeEditor) 
+    { 
+        if (pFile && pCodeEditor) 
+            m_Files.insert({pFile,pCodeEditor}); 
+    }
+    class CodeEditor* GetCodeEditor(class File* pFile);
 
     // Get/Set project directory entries
     wxArrayString& GetProjectDirectoryEntries() { return m_ProjectDirectoryEntries; }
