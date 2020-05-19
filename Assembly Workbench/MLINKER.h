@@ -46,6 +46,8 @@ public:
 
     void Link(const wxString& file, class FileSettings* pFileSettings) override;
 
+    void Link(const wxString &cwd, const wxArrayString& objList, class FileSettings* pFileSettings, const wxString& outFile) override;
+
 private:
     void SetEnvVariables(wxEnvVariableHashMap& envMap);
 

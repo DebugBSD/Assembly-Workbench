@@ -470,9 +470,17 @@ void MainFrame::OnBuildSolution(wxCommandEvent& event)
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
         if (pCodeEditor && pCodeEditor->GetFile())
         {
-            pCodeEditor->GetFile()->Assemble();
-            pCodeEditor->GetFile()->Compile();
-            pCodeEditor->GetFile()->Link();
+            Project* pProject = pCodeEditor->GetFile()->GetProject();
+            if (pProject == nullptr)
+            {
+                pCodeEditor->GetFile()->Assemble();
+                pCodeEditor->GetFile()->Compile();
+                pCodeEditor->GetFile()->Link();
+            }
+            else
+            {
+                pProject->Build();
+            }
         }
     }
 }

@@ -31,11 +31,13 @@
  */
 #pragma once
 #include <wx/string.h>
+#include <wx/arrstr.h>
 class LinkerBase
 {
 public:
 
-    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;;
+    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;
     virtual void Link(const wxString&file, class FileSettings *pFileSettings) = 0;
+    virtual void Link(const wxString& cwd, const wxArrayString& objList, class FileSettings* pFileSettings, const wxString& outFile) = 0;
 };
 

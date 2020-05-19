@@ -34,6 +34,7 @@
 #include <wx/xml/xml.h>
 #include <wx/filename.h>
 
+#include "MLINKER.h"
 #include "File.h"
 #include "Project.h"
 #include "Main.h"
@@ -147,6 +148,27 @@ int Project::Create(const wxString& projectDirectory, const wxString& fileName)
 
 bool Project::Build()
 {
+    wxArrayString objects;
+
+    for (File* pFile:m_Files)
+    {
+        wxString path, fileName, extension;
+        wxString obj{ pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName() };
+        wxFileName::SplitPath(obj, &path, &fileName, &extension);
+
+        objects.Add("\""+path + wxFileName::GetPathSeparator() + fileName + ".obj\"");
+        pFile->Assemble();
+        pFile->Compile();
+    }
+
+    wxString program;
+    wxFileName::SplitPath(m_ProjectFile, nullptr, &program, nullptr);
+
+    // TODO: Add support tyo multiple linkers.
+    // Link time
+    MLINKER* pLinker = static_cast<MLINKER*>(m_pMainFrame->GetLinker());
+    pLinker->Link(m_ProjectDirectory, objects, m_pMainFrame->GetFileSettings(), program+".exe");
+
 	return false;
 }
 

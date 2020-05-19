@@ -67,6 +67,8 @@ public:
     void SetCompiler(class CompilerBase* pCompiler) { m_pCompiler = pCompiler; }
 
     class FileSettings* GetFileSettings() { return m_pFileSettings; }
+
+    class Project* GetProject() { return m_pProject; }
 private:
 
     wxString m_FileName;
