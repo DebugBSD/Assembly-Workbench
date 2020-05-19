@@ -53,6 +53,7 @@
 #include "NewFileDlg.h"
 #include "EditorsWindow.h"
 #include "ProjectsWindow.h"
+#include "FindAndReplaceWindow.h"
 #include "resource.h"
 #include "Main.h"
 #include "File.h"
@@ -161,6 +162,12 @@ MainFrame::MainFrame():
     m_pWindowManager->AddPane(new ProjectsWindow(this), wxAuiPaneInfo().
         Name("ProjectsWindow").Caption("Projects").
         Left().Layer(0).Row(0).Position(0).
+        CloseButton(true).MaximizeButton(true));
+
+    // Add panels
+    m_pWindowManager->AddPane(new FindAndReplaceWindow(this), wxAuiPaneInfo().
+        Name("FindAndReplaceWindow").Caption("Find And Replace").
+        Right().Layer(0).Row(0).Position(0).
         CloseButton(true).MaximizeButton(true));
 
     // Create bottom panel
