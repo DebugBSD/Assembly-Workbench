@@ -13,6 +13,7 @@ TODO
 ----
 
 * Make available the possibility of update settings for files and projects from Settings Window.
+* Think about how to integrate git/github into Assembly Workbench
 * Add Github/Git window to control the changes
 * Integratte GIT/GitHUB/Bitbucket/Any other CVS into the IDE
 * Integration with Scintilla
@@ -22,14 +23,17 @@ TODO
 * Spanish accents are not supported by the controls of wxWidgets, we need to add support to them.
 * Think about different templates to use when creating new projects/files.
 * Think about how to autodetect the different assemblers and linkers installed into the system.
+* Add support to directory hierarchies into the Projects Window so the user can see the same directories into the id te same way all of them resides on the hard drive.
+* Add a Window which holds a list of all symbols defined in a project or file.
 
-Tomorrow:
----------
+Tomorrow
+--------
 
-- Add Find/Replace tools with windows.
-- Configure the tool chain based on the configuration file.
-- Ensure every file outside the project has an absolute path. When file is absolute, we should set up this configuration on the project file.
-- Implement a Console Log to log the output of the assembler, linker, and compiler.
-- Implement Rebuild and Clean.
-- When there is no change in the project, we shouldn't rewrite the project file because. When it does, the order of the files is different.
-- When there is just one project open, whe should build it whether is open a file or not.
+* Change the Projects Window by wxDirCtrl or wxGenericDirCtrl
+* Add Find/Replace tools with windows.
+* Configure the tool chain based on the configuration file.
+* Ensure every file outside the project has an absolute path. When file is absolute, we should set up this configuration on the project file.
+* Implement a Console Log to log the output of the assembler, linker, and compiler.
+* Implement Rebuild and Clean.
+* When there is no change in the project, we shouldn't rewrite the project file because. When it does, the order of the files is different.
+* When there is just one project open, whe should build it whether is open a file or not.
