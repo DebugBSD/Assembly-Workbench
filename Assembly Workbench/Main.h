@@ -176,6 +176,7 @@ enum
     ID_View_Opcodes,
     ID_View_LineNumber,
     ID_View_LongLine,
+    ID_View_CaretLine,
     ID_Project_Assembler,
     ID_Project_Linker,
     ID_Project_Custom_Assembler,

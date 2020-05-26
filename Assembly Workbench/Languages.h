@@ -122,6 +122,7 @@ struct CommonInfo {
     bool lineNumberEnable;
     bool longLineOnEnable;
     bool whiteSpaceEnable;
+    bool caretLineEnable;
 };
 extern CommonInfo g_CommonPrefs;
 

@@ -71,6 +71,12 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxStyledTextCtrl)
     // view
     EVT_MENU(ID_View_LineNumber, CodeEditor::OnLineNumber)
     EVT_MENU(ID_View_LongLine, CodeEditor::OnLongLineOn)
+    EVT_MENU(ID_View_CaretLine, CodeEditor::OnCaretLineOn)
+
+    // stc
+    EVT_STC_MARGINCLICK(wxID_ANY, CodeEditor::OnMarginClick)
+    EVT_STC_CHARADDED(wxID_ANY, CodeEditor::OnCharAdded)
+    EVT_STC_CALLTIP_CLICK(wxID_ANY, CodeEditor::OnCallTipClick)
 
 	EVT_KEY_DOWN(CodeEditor::OnKeyDown)
 	EVT_LEFT_DOWN(CodeEditor::OnMouseDown)
@@ -123,6 +129,10 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
     SetVisiblePolicy(wxSTC_VISIBLE_STRICT | wxSTC_VISIBLE_SLOP, 1);
     SetXCaretPolicy(wxSTC_CARET_EVEN | wxSTC_VISIBLE_STRICT | wxSTC_CARET_SLOP, 1);
     SetYCaretPolicy(wxSTC_CARET_EVEN | wxSTC_VISIBLE_STRICT | wxSTC_CARET_SLOP, 1);
+
+    // set caret visibility in current line
+    SetCaretLineVisible(g_CommonPrefs.caretLineEnable ? true : false);
+    SetCaretLineBackground(*wxYELLOW);
 
     // markers
     MarkerDefine(wxSTC_MARKNUM_FOLDER, wxSTC_MARK_DOTDOTDOT, "BLACK", "BLACK");
@@ -431,4 +441,52 @@ void CodeEditor::OnLineNumber(wxCommandEvent& event)
 
 void CodeEditor::OnLongLineOn(wxCommandEvent& WXUNUSED(event)) {
     SetEdgeMode(GetEdgeMode() == 0 ? wxSTC_EDGE_LINE : wxSTC_EDGE_NONE);
+}
+
+void CodeEditor::OnCaretLineOn(wxCommandEvent& WXUNUSED(event)) {
+    SetCaretLineVisible(GetCaretLineVisible() == true ? false : true);
+}
+
+void CodeEditor::OnMarginClick(wxStyledTextEvent& event) {
+    if (event.GetMargin() == 2) {
+        int lineClick = LineFromPosition(event.GetPosition());
+        int levelClick = GetFoldLevel(lineClick);
+        if ((levelClick & wxSTC_FOLDLEVELHEADERFLAG) > 0) {
+            ToggleFold(lineClick);
+        }
+    }
+}
+
+void CodeEditor::OnCharAdded(wxStyledTextEvent& event) {
+    char chr = (char)event.GetKey();
+    int currentLine = GetCurrentLine();
+    // Change this if support for mac files with \r is needed
+    if (chr == '\n') {
+        int lineInd = 0;
+        if (currentLine > 0) {
+            lineInd = GetLineIndentation(currentLine - 1);
+        }
+        if (lineInd == 0) return;
+        SetLineIndentation(currentLine, lineInd);
+        GotoPos(PositionFromLine(currentLine) + lineInd);
+    }
+    /*else if (chr == '%') {
+        wxString s = "define?0 elif?0 else?0 endif?0 error?0 if?0 ifdef?0 "
+            "ifndef?0 include?0 line?0 pragma?0 undef?0";
+        AutoCompShow(0, s);
+    }*/
+}
+
+void CodeEditor::OnCallTipClick(wxStyledTextEvent& event)
+{
+    if (event.GetPosition() == 1) {
+        // If position=1, the up arrow has been clicked. Show the next tip.
+        m_calltipNo = m_calltipNo == 3 ? 1 : (m_calltipNo + 1);
+        ShowCallTipAt(CallTipPosAtStart());
+    }
+    else if (event.GetPosition() == 2) {
+        // If position=2, the down arrow has been clicked. Show previous tip.
+        m_calltipNo = m_calltipNo == 1 ? 3 : (m_calltipNo - 1);
+        ShowCallTipAt(CallTipPosAtStart());
+    }
 }

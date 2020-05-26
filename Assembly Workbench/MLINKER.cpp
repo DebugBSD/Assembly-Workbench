@@ -124,7 +124,7 @@ void MLINKER::Link(const wxString& cwd, const wxArrayString& objList, FileSettin
     std::string dependencies{ "kernel32.lib user32.lib msvcrt.lib libucrt.lib" };
 
     // See options of MASM
-    std::string command{ linkerCommand["COMMAND"].As<wxString>() + " " + linkerOptions["OPTIONS"].As<wxString>() + " /out:" + outFile + " " + objects + dependencies };
+    std::string command{ linkerCommand["COMMAND"].As<wxString>() + " " + linkerOptions["OPTIONS"].As<wxString>() + " /out:\"" + outFile + "\" " + objects + dependencies };
 
     // execute the wxExecute.
     wxArrayString output;

@@ -66,6 +66,7 @@ wxBEGIN_EVENT_TABLE(ProjectsWindow, wxPanel)
     // Tree control events
     EVT_TREE_ITEM_RIGHT_CLICK(ID_TreeCtrl_Projects_View, ProjectsWindow::OnRightClickOverTreeCtrl)
     EVT_TREE_ITEM_ACTIVATED(ID_TreeCtrl_Projects_View, ProjectsWindow::SelectedElement)
+    EVT_MENU(ID_Project_View_Add_New_File, ProjectsWindow::OnPopupNewFile)
     ////@end ProjectWindow event table entries
 
 wxEND_EVENT_TABLE()
@@ -269,43 +270,50 @@ void ProjectsWindow::OnRightClickOverTreeCtrl(wxTreeEvent& event)
 
     if (pProject)
     {
-        wxString path, file;
+        m_pSelectedProjectTid = tid;
+        m_pSelectedProject = pProject;
         // Now we have detected the project so we can add files.
         wxPoint currentPos = event.GetPoint();
         m_pTreeCtrl->PopupMenu(m_MenuPopUp, currentPos);
-        NewFileDlg* pNewFileDlg = new NewFileDlg(nullptr);
-        pNewFileDlg->SetFileLocation(pProject->GetProjectDirectory());
-        int retCode = pNewFileDlg->ShowModal();
-        if (retCode == wxID_CANCEL)
-        {
-            pNewFileDlg->Destroy();
-            return;
-        }
-
-        pNewFileDlg->GetFileName(path, file);
-        pNewFileDlg->Destroy();
-        
-
-        wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_pMainFrame->GetWindow("notebook_content"));
-
-        File* pFile = new File(file, path, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), pProject);
-        
-        CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
-
-        pCodeEditor->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator() + pFile->GetFileName());
-        m_pMainFrame->AddFile(pFile,pCodeEditor);
-
-        dockWindows->Freeze();
-
-        dockWindows->AddPage(pCodeEditor, file);
-
-        dockWindows->Thaw();
-
-        //m_pWindowManager->Update();
-
-        wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(tid, file);
-        m_pTreeFiles.insert({ nodeTid.GetID(), pFile });
     }
+}
+
+void ProjectsWindow::OnPopupNewFile(wxCommandEvent& event)
+{
+    wxString path, file;
+    NewFileDlg* pNewFileDlg = new NewFileDlg(nullptr);
+    pNewFileDlg->SetFileLocation(m_pSelectedProject->GetProjectDirectory());
+    int retCode = pNewFileDlg->ShowModal();
+    if (retCode == wxID_CANCEL)
+    {
+        pNewFileDlg->Destroy();
+        return;
+    }
+
+    pNewFileDlg->GetFileName(path, file);
+    pNewFileDlg->Destroy();
+
+
+    wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_pMainFrame->GetWindow("notebook_content"));
+
+    File* pFile = new File(file, path, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), m_pSelectedProject);
+
+    CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
+
+    pCodeEditor->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator() + pFile->GetFileName());
+    m_pMainFrame->AddFile(pFile, pCodeEditor);
+
+    dockWindows->Freeze();
+
+    dockWindows->AddPage(pCodeEditor, file);
+
+    dockWindows->Thaw();
+
+    //m_pWindowManager->Update();
+
+    wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(m_pSelectedProjectTid, file);
+    m_pTreeFiles.insert({ nodeTid.GetID(), pFile });
+
 }
 
 

@@ -91,6 +91,7 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     // View
     EVT_MENU(ID_View_LineNumber, MainFrame::OnModifySettings)
     EVT_MENU(ID_View_LongLine, MainFrame::OnModifySettings)
+    EVT_MENU(ID_View_CaretLine, MainFrame::OnModifySettings)
 
     // Project
     EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
@@ -484,6 +485,10 @@ void MainFrame::OnModifySettings(wxCommandEvent& event)
     {
         g_CommonPrefs.longLineOnEnable = !g_CommonPrefs.longLineOnEnable;
     }
+    else if (event.GetId() == ID_View_CaretLine)
+    {
+        g_CommonPrefs.caretLineEnable = !g_CommonPrefs.caretLineEnable;
+    }
 
     for (std::pair<File*, CodeEditor *> pFile : m_Files)
     {
@@ -725,6 +730,8 @@ void MainFrame::CreateMenubar()
     menuView->Append(ID_View_Opcodes, "Opcodes", "View current opcodes");
     menuView->Append(ID_View_LineNumber, "View Line Numbers");
     menuView->Append(ID_View_LongLine, "View End Line");
+    menuView->Append(ID_View_CaretLine, "Highlight Current Line");
+    
     
 
     wxMenu* menuProject = new wxMenu;

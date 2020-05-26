@@ -182,7 +182,9 @@ private:
     void OnDisplayEOL(wxCommandEvent& event);
     void OnIndentGuide(wxCommandEvent& event);
     void OnLineNumber(wxCommandEvent& event);
-    void OnLongLineOn(wxCommandEvent& event);
+    void OnLongLineOn(wxCommandEvent& event); 
+    void OnCaretLineOn(wxCommandEvent& event);
+    
     void OnWhiteSpace(wxCommandEvent& event);
     void OnFoldToggle(wxCommandEvent& event);
     void OnSetOverType(wxCommandEvent& event);

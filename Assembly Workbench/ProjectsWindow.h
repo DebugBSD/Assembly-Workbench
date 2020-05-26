@@ -104,6 +104,9 @@ public:
     void RemoveProject(const wxString& projectName);
 
 private:
+    class Project* m_pSelectedProject;
+    wxTreeItemId m_pSelectedProjectTid;
+
     class MainFrame* m_pMainFrame;
 
     class wxSearchCtrl* m_pSearchCtrl;
@@ -122,6 +125,7 @@ private:
     // Tree Events
     void SelectedElement(wxTreeEvent& event);
     void OnRightClickOverTreeCtrl(wxTreeEvent& event);
+    void OnPopupNewFile(wxCommandEvent& event);
 
     wxDECLARE_EVENT_TABLE();
 };
