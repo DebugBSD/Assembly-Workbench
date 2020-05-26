@@ -37,7 +37,6 @@ TODO
 * Add a Window which holds a list of all symbols defined in a project or file.
 * Add support to international (Spanish, English)
 * Add general Settings (see section Settings)
-* When building the file/project, save automatically all changes made into files before doing it.
 
 Tomorrow
 --------
@@ -49,5 +48,4 @@ Tomorrow
 * Implement a Console Log to log the output of the assembler, linker, and compiler.
 * Implement Rebuild and Clean.
 * When there is no change in the project, we shouldn't rewrite the project file because. When it does, the order of the files is different.
-* When there is just one project open, whe should build it whether is open a file or not.
 * Improve the projects window. We should be able to see all files and directories under a project.

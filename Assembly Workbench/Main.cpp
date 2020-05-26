@@ -517,6 +517,42 @@ void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 
 void MainFrame::OnBuildSolution(wxCommandEvent& event)
 {
+    // Compilamos el proyecto actual unica y exclusivamente cuando solo tenemos un proyecto abierto 
+    // y ninguna de las tabs abiertas pertenecen a ficheros de fuera.
+    if (m_Projects.size() == 1)
+    {
+        wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+        if (ctrl)
+        {
+            bool buildProject = true;
+            for (int i = 0; i < ctrl->GetPageCount(); i++)
+            {
+                CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetPage(i));
+                if (pCodeEditor->GetFile() != nullptr && pCodeEditor->GetFile()->GetProject() != m_Projects[0])
+                {
+                    buildProject = false;
+                    break;
+                }
+            }
+
+            if (buildProject)
+            {
+                Project* pProject = m_Projects[0];
+                // Save all files before build the project
+                for (std::pair<File*, CodeEditor*> file : m_Files)
+                {
+                    if (file.first->GetProject() == pProject && file.second->IsModified())
+                    {
+                        File* pFile = file.first;
+                        file.second->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName());
+                    }
+                }
+                pProject->Build();
+                return;
+            }
+        }
+    }
+
     wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
@@ -532,6 +568,15 @@ void MainFrame::OnBuildSolution(wxCommandEvent& event)
             }
             else
             {
+                // Save all files before build the project
+                for (std::pair<File*, CodeEditor*> file : m_Files)
+                {
+                    if (file.first->GetProject() == pProject && file.second->IsModified())
+                    {
+                        File* pFile = file.first;
+                        file.second->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName());
+                    }
+                }
                 pProject->Build();
             }
         }
