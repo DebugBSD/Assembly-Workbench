@@ -130,7 +130,7 @@ void EditorsWindow::OnOpenTab(wxAuiNotebookEvent& event)
     CodeEditor* pCodeEditor = static_cast<CodeEditor*>(GetCurrentPage());
     if (!pCodeEditor) return;
 
-    m_pMainFrame->SetStatusBar(pCodeEditor->GetTextLength(), pCodeEditor->GetLineCount(), pCodeEditor->GetCurrentLine(), pCodeEditor->GetCurrentPos());
+    m_pMainFrame->SetStatusBar(pCodeEditor->GetTextLength(), pCodeEditor->GetLineCount()+1, pCodeEditor->GetColumn(pCodeEditor->GetCurrentPos()), pCodeEditor->GetCurrentLine());
 }
 
 void EditorsWindow::OnClosedTab(wxAuiNotebookEvent& event)

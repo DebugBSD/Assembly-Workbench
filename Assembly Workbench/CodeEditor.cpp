@@ -78,6 +78,7 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxStyledTextCtrl)
     EVT_STC_CHARADDED(wxID_ANY, CodeEditor::OnCharAdded)
     EVT_STC_CALLTIP_CLICK(wxID_ANY, CodeEditor::OnCallTipClick)
     EVT_STC_MODIFIED(wxID_ANY, CodeEditor::OnDocumentModified)
+    EVT_STC_AUTOCOMP_CHAR_DELETED(wxID_ANY, CodeEditor::OnDocumentModified)
 
 	EVT_KEY_DOWN(CodeEditor::OnKeyDown)
 	EVT_LEFT_DOWN(CodeEditor::OnMouseDown)
@@ -221,15 +222,13 @@ void CodeEditor::OnKeyDown(wxKeyEvent& event)
 
 void CodeEditor::OnMouseDown(wxMouseEvent& event)
 {
-	int stop = 1;
-	int pos = GetInsertionPoint();
+    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount() + 1, GetColumn(GetCurrentPos()), GetCurrentLine());
+
 	event.Skip();
 }
 
 void CodeEditor::OnMouseUp(wxMouseEvent& event)
 {
-	int stop = 1;
-	int pos = GetInsertionPoint();
 	event.Skip();
 }
 
@@ -476,11 +475,13 @@ void CodeEditor::OnCharAdded(wxStyledTextEvent& event) {
             "ifndef?0 include?0 line?0 pragma?0 undef?0";
         AutoCompShow(0, s);
     }*/
+    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount() + 1, GetColumn(GetCurrentPos()), GetCurrentLine());
 }
 
 void CodeEditor::OnDocumentModified(wxStyledTextEvent& event)
 {
-    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount(), GetCurrentLine(), GetCurrentPos());
+
+    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount() + 1, GetColumn(GetCurrentPos()), GetCurrentLine());
 }
 
 void CodeEditor::OnCallTipClick(wxStyledTextEvent& event)
