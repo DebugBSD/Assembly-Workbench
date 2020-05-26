@@ -68,6 +68,9 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxStyledTextCtrl)
     EVT_MENU(wxID_REDO, CodeEditor::OnEditRedo)
     EVT_MENU(wxID_UNDO, CodeEditor::OnEditUndo)
 
+    // view
+    EVT_MENU(ID_View_LineNumber, CodeEditor::OnLineNumber)
+
 	EVT_KEY_DOWN(CodeEditor::OnKeyDown)
 	EVT_LEFT_DOWN(CodeEditor::OnMouseDown)
 	EVT_LEFT_UP(CodeEditor::OnMouseUp)
@@ -83,6 +86,11 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
     SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
 	SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));*/
 
+    m_calltipNo = 1;
+
+    // miscellaneous
+    m_LineNrMargin = TextWidth(wxSTC_STYLE_LINENUMBER, "_999999");
+    m_FoldingMargin = 16;
     m_LineNrID = 0;
     m_DividerID = 1;
     m_FoldingID = 2;
@@ -133,11 +141,6 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
 
     // call tips
     CallTipSetBackground(*wxYELLOW);
-    m_calltipNo = 1;
-
-    // miscellaneous
-    m_LineNrMargin = TextWidth(wxSTC_STYLE_LINENUMBER, "_999999");
-    m_FoldingMargin = 16;
     CmdKeyClear(wxSTC_KEY_TAB, 0); // this is done by the menu accelerator key
     SetLayoutCache(wxSTC_CACHE_PAGE);
     UsePopUp(wxSTC_POPUP_ALL);
@@ -245,7 +248,7 @@ bool CodeEditor::InitializePrefs(const wxString& name) {
     SetMarginType(m_LineNrID, wxSTC_MARGIN_NUMBER);
     StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour("DARK GREY"));
     StyleSetBackground(wxSTC_STYLE_LINENUMBER, *wxWHITE);
-    SetMarginWidth(m_LineNrID, 0); // start out not visible
+    SetMarginWidth(m_LineNrID, g_CommonPrefs.lineNumberEnable ? m_LineNrMargin : 0); // start out not visible
 
     // annotations style
     StyleSetBackground(ANNOTATION_STYLE, wxColour(244, 220, 220));
@@ -417,4 +420,10 @@ void CodeEditor::OnEditRedo(wxCommandEvent& WXUNUSED(event)) {
 void CodeEditor::OnEditUndo(wxCommandEvent& WXUNUSED(event)) {
     if (!CanUndo()) return;
     Undo();
+}
+
+void CodeEditor::OnLineNumber(wxCommandEvent& event)
+{
+    SetMarginWidth(m_LineNrID,
+        GetMarginWidth(m_LineNrID) == 0 ? m_LineNrMargin : 0);
 }

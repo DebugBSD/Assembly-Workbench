@@ -173,6 +173,7 @@ enum
     ID_View_Functions,
     ID_View_Variables,
     ID_View_Opcodes,
+    ID_View_LineNumber,
     ID_Project_Assembler,
     ID_Project_Linker,
     ID_Project_Custom_Assembler,

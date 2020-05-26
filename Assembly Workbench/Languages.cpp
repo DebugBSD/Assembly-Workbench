@@ -146,7 +146,7 @@ const LanguageInfo g_LanguagePrefs[] = {
       {-1, NULL},
       {-1, NULL},
       {-1, NULL}},
-     mySTC_FOLD_COMMENT | mySTC_FOLD_COMPACT | mySTC_FOLD_PREPROC},
+     0}, //mySTC_FOLD_COMMENT | mySTC_FOLD_COMPACT | mySTC_FOLD_PREPROC},
      // C++
     {"C++",
      "*.c;*.cc;*.cpp;*.cxx;*.cs;*.h;*.hh;*.hpp;*.hxx;*.sma",

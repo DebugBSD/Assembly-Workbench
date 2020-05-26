@@ -88,8 +88,13 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
     EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
 
+
+    EVT_MENU(ID_View_LineNumber, MainFrame::OnEdit)
+
+    // Project
     EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
 
+    // Build
     EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
     EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
     EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
@@ -700,6 +705,7 @@ void MainFrame::CreateMenubar()
     menuView->Append(ID_View_Functions, "Functions", "View current functions");
     menuView->Append(ID_View_Variables, "Variables", "View current variables");
     menuView->Append(ID_View_Opcodes, "Opcodes", "View current opcodes");
+    menuView->Append(ID_View_LineNumber, "View Line Numbers");
 
     wxMenu* menuProject = new wxMenu;
     menuProject->Append(ID_Project_Assembler, "Assembler", "Assembler to use when building the project");

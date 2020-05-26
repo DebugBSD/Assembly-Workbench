@@ -1,6 +1,14 @@
 # Assembly-Workbench
 IDE to program in Assembly Language
 
+SETTINGS
+--------
+* Colors for every style.
+* Open layout
+* Open last projects and files
+* Show line numbers
+* Font to use by the editor.
+
 BUGS
 ----
 
