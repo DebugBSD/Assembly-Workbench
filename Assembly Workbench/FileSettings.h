@@ -30,13 +30,53 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <wx/string.h>
-class AssemblerBase
+
+#include <wx/hashmap.h>
+#include <wx/treebase.h>
+#include <wx/any.h>
+
+#include <unordered_map>
+
+class FileSettings
 {
 public:
+    enum EProperty
+    {
+        General,
+        Advanced,
+        Debugging,
+        Directories,
+        Environment,
+        Compiler, 
+        Compiler_General,
+        Compiler_Environment,
+        Compiler_Options,
+        Assembler,
+        Assembler_General,
+        Assembler_Environment,
+        Assembler_Options,
+        Linker,
+        Linker_General,
+        Linker_Environment,
+        Linker_Options,
+        BuildOptions
+    };
 
-    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;
-	virtual void AssembleFile(const wxString&file, class FileSettings* pFileSettings) = 0;
+    FileSettings();
+    ~FileSettings();
+
+    void AddSettings(const EProperty &id, const std::unordered_map<wxString, wxAny>&settings);
+    void GetSettings(const EProperty &id, std::unordered_map<wxString, wxAny>& settings);
+    void GetAssemblerEnvironmentSettings(wxEnvVariableHashMap& env);
+
+    void GetLinkerEnvironmentSettings(wxEnvVariableHashMap& env);
+
+private:
+    void CreateAssemblerProperties(void);
+    void CreateCompilerProperties(void);
+    void CreateLinkerProperties(void);
+
+private:
+    std::unordered_map<EProperty, std::unordered_map<wxString, wxAny>> m_settings;
 
 };
-

@@ -31,7 +31,9 @@
  */
 #include "stdafx.h"
 #include <filesystem>
+#include <wx/filename.h>
 #include "Main.h"
+#include "FileSettings.h"
 #include "MLINKER.h"
 
 /* 
@@ -55,33 +57,74 @@ MLINKER::~MLINKER()
 {
 }
 
-void MLINKER::Clean(const std::string& file)
+void MLINKER::Clean(const wxString& file, FileSettings* pFileSettings)
 {
 }
 
-void MLINKER::Link(const std::string& file)
+void MLINKER::Link(const wxString& file, FileSettings* pFileSettings)
 {
     wxExecuteEnv environment;
     // Get the environment variables.
-    SetEnvVariables(environment.env);
+    pFileSettings->GetLinkerEnvironmentSettings(environment.env);
 
-    std::string libPath{ environment.env["Lib"] };
+    std::unordered_map<wxString, wxAny> linkerCommand;
+    std::unordered_map<wxString, wxAny> linkerOptions;
+    pFileSettings->GetSettings(FileSettings::EProperty::Linker, linkerCommand);
 
     // Assemble file.
-    std::filesystem::path filepath{ file };
+    // TODO: Move to settings.
+    std::filesystem::path filepath{ file.ToStdString() };
     std::string fileInput{ filepath.filename().stem().string() + ".obj" };
     std::string fileOutput{ "/out:" + filepath.filename().stem().string() + ".exe" };
 
     environment.cwd = filepath.parent_path().string();
 
     // Options 
-    std::string options{ "/DEBUG /subsystem:console /entry:main /largeaddressaware:no /nologo " };
+    pFileSettings->GetSettings(FileSettings::EProperty::Linker_Options, linkerOptions);
 
     // Dependencies
+    // TODO: Move to settings.
     std::string dependencies{"kernel32.lib user32.lib msvcrt.lib libucrt.lib"};
 
     // See options of MASM
-    std::string command{ m_PathToLinker + " " + options + " " + fileOutput + " " + fileInput + " " + dependencies};
+    std::string command{ linkerCommand["COMMAND"].As<wxString>() + " " + linkerOptions["OPTIONS"].As<wxString>() + " " + fileOutput + " " + fileInput + " " + dependencies};
+
+    // execute the wxExecute.
+    wxArrayString output;
+    wxArrayString errors;
+    long res = wxExecute(command, output, errors, wxEXEC_SYNC, &environment);
+
+    if (m_pFrame) m_pFrame->Log(&output);
+    if (m_pFrame) m_pFrame->Log(&errors);
+}
+
+void MLINKER::Link(const wxString& cwd, const wxArrayString& objList, FileSettings* pFileSettings, const wxString &outFile)
+{
+    wxExecuteEnv environment;
+    // Get the environment variables.
+    pFileSettings->GetLinkerEnvironmentSettings(environment.env);
+
+    std::unordered_map<wxString, wxAny> linkerCommand;
+    std::unordered_map<wxString, wxAny> linkerOptions;
+    pFileSettings->GetSettings(FileSettings::EProperty::Linker, linkerCommand);
+
+    environment.cwd = cwd;
+
+    wxString objects;
+    for (wxString f : objList)
+    {
+        objects += f + " ";
+    }
+
+    // Options 
+    pFileSettings->GetSettings(FileSettings::EProperty::Linker_Options, linkerOptions);
+
+    // Dependencies
+    // TODO: Move to settings.
+    std::string dependencies{ "kernel32.lib user32.lib msvcrt.lib libucrt.lib" };
+
+    // See options of MASM
+    std::string command{ linkerCommand["COMMAND"].As<wxString>() + " " + linkerOptions["OPTIONS"].As<wxString>() + " /out:\"" + outFile + "\" " + objects + dependencies };
 
     // execute the wxExecute.
     wxArrayString output;

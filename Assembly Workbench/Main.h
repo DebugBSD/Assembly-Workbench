@@ -37,6 +37,10 @@
 #include <wx/aui/auibook.h>
 #include <wx/wxprec.h>
 #include <wx/utils.h>
+#include <wx/splitter.h>
+#include <wx/treectrl.h>
+
+#include "WindowManager.h"
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -59,19 +63,23 @@ public:
     ~MainFrame();
 private:
 
-    class wxTreeCtrl* CreateTreeCtrl();
-    class wxAuiNotebook* CreateNotebook();
-
-    void OnHello(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
     void OnSave(wxCommandEvent& event);
+    void OnOpenProject(wxCommandEvent& event);
     void OnOpen(wxCommandEvent& event);
     void OnNew(wxCommandEvent& event);
+    void OnNewProject(wxCommandEvent& event);
+    void OnNewFile(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
     void OnCMDTool(wxCommandEvent& event);
+    void OnEdit(wxCommandEvent& event);
+    void OnModifySettings(wxCommandEvent &event);
+
+    // Project Menu
+    void OnProjectPreferences(wxCommandEvent& event);
 
     // Build Menu
     void OnBuildSolution(wxCommandEvent& event);
@@ -80,8 +88,7 @@ private:
 
     void OnLaunchDebugger(wxCommandEvent& event);
 
-    // Close tab
-    void OnCloseTab(wxAuiNotebookEvent& event);
+
 
 public:
 #pragma region Public attributes
@@ -94,22 +101,51 @@ public:
 
     void Log(class wxArrayString *pArrayLog);
     void Log(class wxString* pError);
+
+    // Access to Projects
+    const std::vector<class Project*>& GetProjects() const { return m_Projects; }
+
+    // Access to windows from WindowManager
+    class wxWindow* GetWindow(const wxString& windowName) { if (m_pWindowManager) return m_pWindowManager->GetWindow(windowName); else return nullptr; }
+
+    class AssemblerBase* GetAssembler() { return m_pAssemblerBase; }
+    class LinkerBase* GetLinker() { return m_pLinkerBase; }
+    class CompilerBase* GetCompiler() { return m_pCompilerBase; }
+    class FileSettings* GetFileSettings() { return m_pGlobalFileSettings; }
+
+    // Access to the files of the projects or the editor.
+    void RemoveFile(class File* pFile) { if (pFile) m_Files.erase(pFile); }
+    void AddFile(class File* pFile, class CodeEditor* pCodeEditor) 
+    { 
+        if (pFile && pCodeEditor) 
+            m_Files.insert({pFile,pCodeEditor}); 
+    }
+    class CodeEditor* GetCodeEditor(class File* pFile);
+
+    // Get/Set project directory entries
+    wxArrayString& GetProjectDirectoryEntries() { return m_ProjectDirectoryEntries; }
+    void SetProjectDirectoryEntries(wxArrayString& projectDirectoryEntries) { m_ProjectDirectoryEntries = projectDirectoryEntries; }
 #pragma endregion
 
 private:
 #pragma region Private attributes
-    wxAuiManager m_mgr;
+    class WindowManager* m_pWindowManager;
     long m_notebook_style;
     class AssemblerBase* m_pAssemblerBase;
     class LinkerBase* m_pLinkerBase;
     class CompilerBase* m_pCompilerBase;
+    class FileSettings *m_pGlobalFileSettings;
+
+
     // Create a map with assemblers, compilers and linkers.
     // Then, set a default.
     // On a new file created, set the default based on the file type.
 
     // Map with File Editor so, we can know which file foes into a editor.
     std::unordered_map<class File*, class CodeEditor*> m_Files;
+    std::vector<class Project*> m_Projects;
 
+    wxArrayString m_ProjectDirectoryEntries;
 #pragma endregion
 
 #pragma region Private Methods
@@ -117,7 +153,6 @@ private:
     void InitToolChain();
     void UnInitToolChain();
     class wxAuiToolBar * CreateMainToolBar();
-    int CloseFile();
 #pragma endregion
 
     wxDECLARE_EVENT_TABLE();
@@ -126,7 +161,10 @@ enum
 {
     ID_Hello = wxID_HIGHEST+1,
     ID_Size,
+    ID_New_File,
+    ID_New_Project,
     ID_Clone,
+    ID_Open_Project,
     ID_Close_Project,
     ID_Save_Project,
     ID_Recent_Files,
@@ -136,6 +174,9 @@ enum
     ID_View_Functions,
     ID_View_Variables,
     ID_View_Opcodes,
+    ID_View_LineNumber,
+    ID_View_LongLine,
+    ID_View_CaretLine,
     ID_Project_Assembler,
     ID_Project_Linker,
     ID_Project_Custom_Assembler,
@@ -144,10 +185,10 @@ enum
     ID_Build_Build_Solution,
     ID_Build_Rebuild_Solution,
     ID_Build_Clean_Solution,
-    ID_Debug_LaunchWindDbg,
+    ID_Debug_LaunchWinDbg,
     ID_Tools_Command_Line,
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
     ID_Tool_Graph,
-    ID_Notebook
+
 };

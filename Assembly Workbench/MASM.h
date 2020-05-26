@@ -44,18 +44,14 @@ public:
 
     ~MASM();
 
-    void Clean(const std::string& file) override;
+    void Clean(const wxString& file, class FileSettings* pFileSettings) override;
 
-    void AssembleFile(const std::string &file) override;
-
-private:
-    void SetEnvVariables(wxEnvVariableHashMap &envMap);
+    void AssembleFile(const wxString&file, class FileSettings* pFileSettings) override;
 
 private:
     class MainFrame* m_pFrame;
 
     // Right now, hardcoded, in the future, I'll detect the tool chain of Visual Studio.
-    const std::string m_PathToAssembler{"\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx64/x64/ml64.exe\""};
-
+    //const std::string m_PathToAssembler{"\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx64/x64/ml64.exe\""};
 };
 

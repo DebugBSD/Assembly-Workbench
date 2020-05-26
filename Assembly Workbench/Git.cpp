@@ -29,14 +29,5 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#pragma once
-#include <wx/string.h>
-class AssemblerBase
-{
-public:
 
-    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;
-	virtual void AssembleFile(const wxString&file, class FileSettings* pFileSettings) = 0;
-
-};
-
+#include "stdafx.h"

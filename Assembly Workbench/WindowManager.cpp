@@ -29,14 +29,13 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#pragma once
-#include <wx/string.h>
-class AssemblerBase
+#include "stdafx.h"
+#include "WindowManager.h"
+
+void WindowManager::AddWindow(wxWindow* pWindow)
 {
-public:
+}
 
-    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;
-	virtual void AssembleFile(const wxString&file, class FileSettings* pFileSettings) = 0;
-
-};
-
+void WindowManager::RemoveWindow(wxWindow* pWindow)
+{
+}

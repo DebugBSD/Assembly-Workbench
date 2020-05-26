@@ -31,6 +31,18 @@
     <Filter Include="Archivos de origen\Compiler">
       <UniqueIdentifier>{3b4ad73e-0d6c-4047-a2f5-16ba33685921}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Dialogs">
+      <UniqueIdentifier>{29eedbbc-a1e7-4930-a4d5-a4b018fbf0e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Dialogs">
+      <UniqueIdentifier>{02cecb61-60f0-4169-a40f-5e4b3f8e62c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Windows">
+      <UniqueIdentifier>{160e962a-da1b-4411-bea7-74976fde79fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Windows">
+      <UniqueIdentifier>{bc2a1416-6aa7-470b-a422-aa9a4c57bf2a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -40,9 +52,6 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="Main.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsDialog.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="CodeEditor.h">
@@ -75,12 +84,42 @@
     <ClInclude Include="CompilerBase.h">
       <Filter>Archivos de encabezado\Compiler</Filter>
     </ClInclude>
+    <ClInclude Include="FileSettings.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Git.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSettingsDlg.h">
+      <Filter>Archivos de encabezado\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="NewProjectDlg.h">
+      <Filter>Archivos de encabezado\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsDialog.h">
+      <Filter>Archivos de encabezado\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="NewFileDlg.h">
+      <Filter>Archivos de encabezado\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowManager.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorsWindow.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectsWindow.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="FindAndReplaceWindow.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Languages.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingsDialog.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="CodeEditor.cpp">
@@ -97,6 +136,39 @@
     </ClCompile>
     <ClCompile Include="MLINKER.cpp">
       <Filter>Archivos de origen\Linker</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSettings.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Git.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSettingsDlg.cpp">
+      <Filter>Archivos de origen\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="NewProjectDlg.cpp">
+      <Filter>Archivos de origen\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsDialog.cpp">
+      <Filter>Archivos de origen\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="NewFileDlg.cpp">
+      <Filter>Archivos de origen\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowManager.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorsWindow.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectsWindow.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="FindAndReplaceWindow.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Languages.cpp">
+      <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

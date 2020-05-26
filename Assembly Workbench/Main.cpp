@@ -42,12 +42,22 @@
 #include "wx/treectrl.h"
 #include "wx/artprov.h"
 #include "wx/aui/aui.h"
+#include "wx/stdpaths.h"
+#include "wx/textfile.h"
 #include <sstream>
+#include "WindowManager.h"
 #include "CodeEditor.h"
 #include "SettingsDialog.h"
+#include "FileSettingsDlg.h"
+#include "NewProjectDlg.h"
+#include "NewFileDlg.h"
+#include "EditorsWindow.h"
+#include "ProjectsWindow.h"
+#include "FindAndReplaceWindow.h"
 #include "resource.h"
 #include "Main.h"
 #include "File.h"
+#include "Project.h"
 // Toolchain of Microsoft
 // NOTE: Right now is hardcoded. In the future, will be autodetected.
 #include "MASM.h"
@@ -66,20 +76,32 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(wxID_EXIT, MainFrame::OnExit)
     EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
     EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
+    EVT_MENU(wxID_CUT, MainFrame::OnEdit)
+    EVT_MENU(wxID_COPY, MainFrame::OnEdit)
+    EVT_MENU(wxID_PASTE, MainFrame::OnEdit)
+
+    EVT_MENU(ID_Open_Project, MainFrame::OnOpenProject)
     EVT_MENU(wxID_SAVE, MainFrame::OnSave)
     EVT_MENU(wxID_NEW, MainFrame::OnNew)
+    EVT_MENU(ID_New_File, MainFrame::OnNewFile)
+    EVT_MENU(ID_New_Project, MainFrame::OnNewProject)
     EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
-    EVT_MENU(wxID_PREFERENCES, MainFrame::OnHello)
     EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
 
+    // View
+    EVT_MENU(ID_View_LineNumber, MainFrame::OnModifySettings)
+    EVT_MENU(ID_View_LongLine, MainFrame::OnModifySettings)
+    EVT_MENU(ID_View_CaretLine, MainFrame::OnModifySettings)
 
+    // Project
+    EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
+
+    // Build
     EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
     EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
     EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
 
-    EVT_MENU(ID_Debug_LaunchWindDbg, MainFrame::OnLaunchDebugger)
-
-    EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, MainFrame::OnCloseTab)
+    EVT_MENU(ID_Debug_LaunchWinDbg, MainFrame::OnLaunchDebugger)
 
     EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
@@ -101,12 +123,33 @@ MainFrame::MainFrame():
     wxFrame(NULL, wxID_ANY, "Assembly Workbench", { 0,0 }, { 1280, 1000 }),
     m_pAssemblerBase{nullptr},
     m_pLinkerBase{nullptr},
-    m_pCompilerBase{nullptr}
+    m_pCompilerBase{nullptr},
+    m_pGlobalFileSettings{nullptr},
+    m_pWindowManager{new WindowManager()}
 {
     InitToolChain();
 
+    // Load cache
+    wxString userDir{ wxStandardPaths::Get().GetUserLocalDataDir() };
+    if (!wxFileName::DirExists(userDir))
+    {
+        wxFileName::Mkdir(userDir);
+    }
+
+    if (wxFileName::FileExists(userDir + "/dirEntries"))
+    {
+        wxTextFile entriesFile{ userDir + "/dirEntries" };
+        entriesFile.Open();
+
+        for (size_t i = 0; i < entriesFile.GetLineCount(); i++)
+        {
+            m_ProjectDirectoryEntries.Add(entriesFile[i]);
+        }
+
+    }
+
     // Layout
-    m_mgr.SetManagedWindow(this);
+    m_pWindowManager->SetManagedWindow(this);
 
     // Set Icon
     // SetIcon();
@@ -121,15 +164,21 @@ MainFrame::MainFrame():
     CreateMenubar();
 
     CreateStatusBar();
-    GetStatusBar()->SetStatusText("Welcome to wxWidgets!");
+    GetStatusBar()->SetStatusText("Welcome to Assembly Workbench!");
 
     // Add toolbars
     wxAuiToolBar* tb1 = CreateMainToolBar();
 
     // Add panels
-    m_mgr.AddPane(CreateTreeCtrl(), wxAuiPaneInfo().
-        Name("TreeControl").Caption("Projects").
-        Left().Layer(1).Position(1).
+    m_pWindowManager->AddPane(new ProjectsWindow(this), wxAuiPaneInfo().
+        Name("ProjectsWindow").Caption("Projects").
+        Left().Layer(0).Row(0).Position(0).
+        CloseButton(true).MaximizeButton(true));
+
+    // Add panels
+    m_pWindowManager->AddPane(new FindAndReplaceWindow(this), wxAuiPaneInfo().
+        Name("FindAndReplaceWindow").Caption("Find And Replace").
+        Right().Layer(0).Row(0).Position(0).
         CloseButton(true).MaximizeButton(true));
 
     // Create bottom panel
@@ -137,19 +186,17 @@ MainFrame::MainFrame():
         wxPoint(0, 0), FromDIP(wxSize(150, 90)),
         wxNO_BORDER | wxTE_MULTILINE);
 
-    m_mgr.AddPane(wnd10, wxAuiPaneInfo().
+    m_pWindowManager->AddPane(wnd10, wxAuiPaneInfo().
         Name("ConsoleLog").Caption("Console Output").
-        Bottom().Layer(1).Position(1));
+        Bottom().Layer(1).Position(1).
+        CloseButton(true).MaximizeButton(true));
 
+    //EditorsWindow* pEditor = new EditorsWindow(this);
     // create center panels
-    m_mgr.AddPane(CreateNotebook(), wxAuiPaneInfo().Name("notebook_content").
+    m_pWindowManager->AddPane(new EditorsWindow(this), wxAuiPaneInfo().Name("notebook_content").
         CenterPane().PaneBorder(false));
 
-    // add toolbars to the manager
-    m_mgr.GetPane("TreeControl").Show().Left().Layer(0).Row(0).Position(0);
-    m_mgr.GetPane("ConsoleLog").Show().Bottom().Layer(0).Row(0).Position(0);
-    m_mgr.GetPane("notebook_content").Show();
-    m_mgr.AddPane(tb1, wxAuiPaneInfo().Name("tb1").Caption("File Toolbar").ToolbarPane().Top());
+    m_pWindowManager->AddPane(tb1, wxAuiPaneInfo().Name("tb1").Caption("File Toolbar").ToolbarPane().Top());
 
     /*Bind(wxEVT_MENU, &MainFrame::OnHello, this, ID_Hello);
     Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
@@ -157,90 +204,27 @@ MainFrame::MainFrame():
     Bind(wxEVT_SIZE, &MainFrame::OnResize, this);*/
 
     // "commit" all changes made to wxAuiManager
-    m_mgr.Update();
-}
-
-wxTreeCtrl* MainFrame::CreateTreeCtrl()
-{
-    wxTreeCtrl* tree = new wxTreeCtrl(this, wxID_ANY,
-        wxPoint(0, 0),
-        FromDIP(wxSize(160, 250)),
-        wxTR_DEFAULT_STYLE | wxNO_BORDER);
-
-    /*wxSize size = FromDIP(wxSize(16, 16));
-    wxImageList* imglist = new wxImageList(size.x, size.y, true, 2);
-    imglist->Add(wxArtProvider::GetBitmap(wxART_FOLDER, wxART_OTHER, size));
-    imglist->Add(wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, size));
-    tree->AssignImageList(imglist);
-
-    wxTreeItemId root = tree->AddRoot("Carone Engine", 0);
-    wxArrayTreeItemIds items;
-
-
-    items.Add(tree->AppendItem(root, "include", 0));
-    items.Add(tree->AppendItem(root, "src", 0));
-
-
-    int i, count;
-    for (i = 0, count = items.Count(); i < count; ++i)
-    {
-        wxTreeItemId id = items.Item(i);
-        tree->AppendItem(id, "Main", 1);
-        tree->AppendItem(id, "Render", 1);
-        tree->AppendItem(id, "OpenGL", 1);
-        tree->AppendItem(id, "Vulkan", 1);
-        tree->AppendItem(id, "DirectX", 1);
-    }
-
-
-    tree->Expand(root);*/
-
-    return tree;
-}
-
-wxAuiNotebook* MainFrame::CreateNotebook()
-{
-    // create the notebook off-window to avoid flicker
-    wxSize client_size = GetClientSize();
-
-    wxAuiNotebook* ctrl = new wxAuiNotebook(this, ID_Notebook,
-        wxPoint(client_size.x, client_size.y),
-        FromDIP(wxSize(430, 200)),
-        m_notebook_style);
-    ctrl->Freeze();
-
-    /*wxBitmap page_bmp = wxArtProvider::GetBitmap(wxART_NORMAL_FILE, wxART_OTHER, FromDIP(wxSize(16, 16)));
-
-    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "main.asm");
-
-    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "Render.asm");
-
-    ctrl->AddPage(new CodeEditor(ctrl, wxEmptyString), "OpenGL.asm");*/
-
-
-    /*
-    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
-        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 1");
-
-    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
-        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 2");
-
-    ctrl->AddPage(new wxTextCtrl(ctrl, wxID_ANY, "Some more text",
-        wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxNO_BORDER), "wxTextCtrl 3");
-    */
-    ctrl->Thaw();
-    return ctrl;
+    m_pWindowManager->Update();
 }
 
 MainFrame::~MainFrame()
 {
     UnInitToolChain();
-    m_mgr.UnInit();
+    m_pWindowManager->UnInit();
 
 }
 
 void MainFrame::OnExit(wxCommandEvent& event)
 {
+    if(!m_Files.empty())
+    {
+        if (wxMessageBox(_("There are unsaved changes. All changes will be lost!"), _("Please confirm"),
+            wxICON_QUESTION | wxYES_NO, this) == wxNO)
+        {
+            return;
+        }
+
+    }
     Close(true);
 }
 
@@ -262,7 +246,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
         saveFileDialog(this, _("Save Assembly file"), "", "",
             "ASM files (*.asm)|*.asm", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
@@ -288,11 +272,11 @@ void MainFrame::OnSave(wxCommandEvent& event)
                 ctrl->Freeze();
                 ctrl->SetPageText(pageNum, pFile->GetFileName());
                 ctrl->Thaw();
-                m_mgr.Update();
+                m_pWindowManager->Update();
             }
             else
             {
-                if (!pCodeEditor->SaveFile(pFile->GetFile()+'/'+ pFile->GetFileName()))
+                if (!pCodeEditor->SaveFile(pFile->GetFile()+ wxFileName::GetPathSeparator() + pFile->GetFileName()))
                 {
                     wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
                     return;
@@ -310,24 +294,49 @@ void MainFrame::OnSave(wxCommandEvent& event)
     }
 }
 
+void MainFrame::OnOpenProject(wxCommandEvent &event)
+{
+    wxFileDialog
+        openFileDialog(this, _("Open Project file"), "", "",
+            "Project files (*.awp)|*.awp", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (openFileDialog.ShowModal() == wxID_CANCEL)
+        return;     // the user changed idea...
+
+    Project* pProject = new Project(this);
+    if (pProject->Load(openFileDialog.GetPath()))
+    {
+        // TODO: Handle error
+    }
+    else
+    {
+        // TODO: WindowManager has the control over this window, so, pass to WindowManager instead of accessing this control in this way.
+        ProjectsWindow* ctrl = static_cast<ProjectsWindow*>(m_pWindowManager->GetPane("ProjectsWindow").window);
+        // Add the project and files and everything to the main tree.
+        if (ctrl) ctrl->AddProject(pProject);
+
+        // Add the project to the vector of projects.
+        m_Projects.push_back(pProject);
+    }
+}
+
 void MainFrame::OnOpen(wxCommandEvent& event)
 {
     wxFileDialog
         openFileDialog(this, _("Open Assembly file"), "", "",
-            "ASM files (*.asm)|*.asm", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+            "ASM and Include files (*.asm;*.inc)|*.asm;*.inc", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;     // the user changed idea...
 
     std::filesystem::path tempFile{ static_cast<std::string>(openFileDialog.GetPath()) };
 
-    File* pFile = new File(tempFile.filename().string(),tempFile.parent_path().string(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase);
+    File* pFile = new File(tempFile.filename().string(),tempFile.parent_path().string(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     CodeEditor* pCodeEditor = new CodeEditor(this, pFile);
     if (!pCodeEditor->LoadFile(openFileDialog.GetPath()))
     {
         wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
         return;
     }
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
 
     m_Files.insert({ pFile,pCodeEditor });
 
@@ -336,9 +345,9 @@ void MainFrame::OnOpen(wxCommandEvent& event)
 
 void MainFrame::OnNew(wxCommandEvent& event)
 {
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
 
-    File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase);
+    File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     CodeEditor* pCodeEditor = new CodeEditor(ctrl, pFile);
     
     ctrl->Freeze();
@@ -349,12 +358,52 @@ void MainFrame::OnNew(wxCommandEvent& event)
     
     ctrl->Thaw();
 
-    m_mgr.Update();
+    m_pWindowManager->Update();
+}
+
+void MainFrame::OnNewProject(wxCommandEvent& event)
+{
+    NewProjectDlg* pNewProjectDlg = new NewProjectDlg(nullptr, m_ProjectDirectoryEntries);
+
+    if (pNewProjectDlg->ShowModal() == 0)
+    {
+        bool isFound = false;
+        for (wxString projectDirStr : m_ProjectDirectoryEntries)
+        {
+            if (projectDirStr == pNewProjectDlg->GetDirectory())
+            {
+                isFound = true;
+            }
+        }
+        if(!isFound) m_ProjectDirectoryEntries.Add(pNewProjectDlg->GetDirectory());
+
+        Project* pProject = new Project(this);
+
+        int res = pProject->Create(pNewProjectDlg->GetDirectory()+ wxFileName::GetPathSeparator() +pNewProjectDlg->GetProjectName(), pNewProjectDlg->GetFileName());
+
+        if (res == 0)
+        {
+            // TODO: WindowManager has the control over this window, so, pass to WindowManager instead of accessing this control in this way.
+            ProjectsWindow* ctrl = static_cast<ProjectsWindow*>(m_pWindowManager->GetPane("ProjectsWindow").window);
+            // Add the project and files and everything to the main tree.
+            if(ctrl) ctrl->AddProject(pProject);
+
+            // Add the project to the vector of projects.
+            m_Projects.push_back(pProject);
+        }
+    }
+
+    pNewProjectDlg->Destroy();
+}
+
+void MainFrame::OnNewFile(wxCommandEvent& event)
+{
+    
 }
 
 void MainFrame::OnClose(wxCommandEvent& event)
 {
-    int res = CloseFile();
+    //int res = CloseFile();
     event.Skip();
 }
 
@@ -371,6 +420,36 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
         
     }
 
+    // We save the project configuration
+    for (Project* pProject : m_Projects)
+    {
+        pProject->Save();
+    }
+
+    // Save cache
+    wxString userDir{ wxStandardPaths::Get().GetUserLocalDataDir() };
+    wxTextFile entriesFile;
+    bool fileOpen = false;
+    if (wxFileName::FileExists(userDir + "/dirEntries"))
+    {
+        fileOpen = entriesFile.Open(userDir + "/dirEntries");
+        entriesFile.Clear();
+    }
+    else
+    {
+        fileOpen = entriesFile.Create(userDir + "/dirEntries");
+    }
+
+    if (fileOpen)
+    {
+        for (wxString currentLine : m_ProjectDirectoryEntries)
+        {
+            entriesFile.AddLine(currentLine);
+        }
+        entriesFile.Write();
+        entriesFile.Close();
+    }
+
     Destroy();
 
 }
@@ -383,17 +462,78 @@ void MainFrame::OnCMDTool(wxCommandEvent& event)
     //wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"&&dir");
 }
 
-void MainFrame::OnBuildSolution(wxCommandEvent& event)
+void MainFrame::OnEdit(wxCommandEvent& event)
 {
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+    if (ctrl)
+    {
+        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        if (pCodeEditor)
+        {
+            pCodeEditor->GetEventHandler()->ProcessEvent(event);
+        }
+    }
+}
+
+void MainFrame::OnModifySettings(wxCommandEvent& event)
+{
+    if (event.GetId() == ID_View_LineNumber)
+    {
+        g_CommonPrefs.lineNumberEnable = !g_CommonPrefs.lineNumberEnable;
+    }
+    else if (event.GetId() == ID_View_LongLine)
+    {
+        g_CommonPrefs.longLineOnEnable = !g_CommonPrefs.longLineOnEnable;
+    }
+    else if (event.GetId() == ID_View_CaretLine)
+    {
+        g_CommonPrefs.caretLineEnable = !g_CommonPrefs.caretLineEnable;
+    }
+
+    for (std::pair<File*, CodeEditor *> pFile : m_Files)
+    {
+        pFile.second->GetEventHandler()->ProcessEvent(event);
+    }
+}
+
+
+void MainFrame::OnProjectPreferences(wxCommandEvent& event)
+{
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
         if (pCodeEditor && pCodeEditor->GetFile())
         {
-            pCodeEditor->GetFile()->Assemble();
-            pCodeEditor->GetFile()->Compile();
-            pCodeEditor->GetFile()->Link();
+            FileSettingsDlg* pSettings = new FileSettingsDlg(nullptr, wxID_ANY, "File Settings", wxDefaultPosition, wxSize(640, 480), SYMBOL_FILESETTINGS_STYLE, pCodeEditor->GetFile()->GetFileSettings());
+
+            pSettings->ShowModal();
+
+            pSettings->Destroy();
+
+        }
+    }
+}
+
+void MainFrame::OnBuildSolution(wxCommandEvent& event)
+{
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+    if (ctrl)
+    {
+        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        if (pCodeEditor && pCodeEditor->GetFile())
+        {
+            Project* pProject = pCodeEditor->GetFile()->GetProject();
+            if (pProject == nullptr)
+            {
+                pCodeEditor->GetFile()->Assemble();
+                pCodeEditor->GetFile()->Compile();
+                pCodeEditor->GetFile()->Link();
+            }
+            else
+            {
+                pProject->Build();
+            }
         }
     }
 }
@@ -414,22 +554,6 @@ void MainFrame::OnLaunchDebugger(wxCommandEvent& event)
     wxExecute("\"C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\WinDbg.exe\"");
 }
 
-void MainFrame::OnCloseTab(wxAuiNotebookEvent& event)
-{
-    int res = CloseFile();
-    if (res == wxYES) // We save the file before closing it
-    {
-        event.Skip();
-    }
-    else if (res == wxNO) // We close without any saving.
-    {
-        event.Skip();
-    }
-    else // We return to the program.
-    {
-        event.Veto();
-    }
-}
 
 void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t currentColumn, size_t currentLine)
 {
@@ -456,7 +580,7 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 void MainFrame::Log(wxArrayString* pArrayLog)
 {
 
-    wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_mgr.GetPane("ConsoleLog").window);
+    wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_pWindowManager->GetPane("ConsoleLog").window);
     for (wxString str : *pArrayLog)
     {
         pTextControl->AppendText(str + "\n");
@@ -465,6 +589,20 @@ void MainFrame::Log(wxArrayString* pArrayLog)
 
 void MainFrame::Log(wxString* pError)
 {
+}
+
+CodeEditor* MainFrame::GetCodeEditor(File* pFile)
+{
+    CodeEditor *pCodeEditor = nullptr;
+    for (const auto& e : m_Files)
+    {
+        if (e.first == pFile)
+        {
+            
+            pCodeEditor = e.second;
+        }
+    }
+    return pCodeEditor;
 }
 
 /*****************************************************************************/
@@ -509,10 +647,12 @@ void MainFrame::Log(wxString* pError)
 //              Tasm
 //              UASM
 //              JWASM
+//              GoAsm
 //              -----------------------------------
 //              Custom
 //          Linker
 //              ML
+//              GoLink
 //              -----------------------------------
 //              Custom
 //          ---------------------------------------
@@ -535,14 +675,20 @@ void MainFrame::Log(wxString* pError)
 /*****************************************************************************/
 void MainFrame::CreateMenubar()
 {
-    
     wxMenu* menuFile = new wxMenu;
+    wxMenu* pSubMenuFile = new wxMenu;
     /*menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
         "Help string shown in status bar for this menu item");*/
-    menuFile->Append(wxID_NEW);
+    pSubMenuFile->Append(wxID_NEW);                                     // Open a new tab with an empty buffer to start editing.
+    pSubMenuFile->Append(ID_New_File, "New File");                      // Open a new window 
+    pSubMenuFile->Append(ID_New_Project, "New Project");                // Open a new Window 
+    menuFile->AppendSubMenu(pSubMenuFile, "New", "New File/Project");
     // TODO: Submenu 
 
-    menuFile->Append(wxID_OPEN);
+    wxMenu* pSubMenuOpen = new wxMenu;
+    pSubMenuOpen->Append(wxID_OPEN);
+    pSubMenuOpen->Append(ID_Open_Project, "Open Project", "Open an existing project");
+    menuFile->AppendSubMenu(pSubMenuOpen, "Open", "Open a File or Project");
     menuFile->Append(ID_Clone, "Clone a repository", "Clone a repository");
 
     menuFile->AppendSeparator();
@@ -582,6 +728,11 @@ void MainFrame::CreateMenubar()
     menuView->Append(ID_View_Functions, "Functions", "View current functions");
     menuView->Append(ID_View_Variables, "Variables", "View current variables");
     menuView->Append(ID_View_Opcodes, "Opcodes", "View current opcodes");
+    menuView->Append(ID_View_LineNumber, "View Line Numbers");
+    menuView->Append(ID_View_LongLine, "View End Line");
+    menuView->Append(ID_View_CaretLine, "Highlight Current Line");
+    
+    
 
     wxMenu* menuProject = new wxMenu;
     menuProject->Append(ID_Project_Assembler, "Assembler", "Assembler to use when building the project");
@@ -600,7 +751,7 @@ void MainFrame::CreateMenubar()
     menuBuild->Append(ID_Build_Clean_Solution, "Clean solution", "Clean current solution");
 
     wxMenu* menuDebug = new wxMenu;
-    menuDebug->Append(ID_Debug_LaunchWindDbg, "Launch WindDbg", "Launch the debugger.");
+    menuDebug->Append(ID_Debug_LaunchWinDbg, "Launch WindDbg", "Launch the debugger.");
 
     wxMenu* menuTools = new wxMenu;
     menuTools->Append(ID_Tools_Command_Line, "Command Line Tool", "Open a command line tool");
@@ -629,12 +780,14 @@ void MainFrame::InitToolChain()
 {
     m_pAssemblerBase = new MASM(this);
     m_pLinkerBase = new MLINKER(this);
+    m_pGlobalFileSettings = new FileSettings();
 }
 
 void MainFrame::UnInitToolChain()
 {
     delete m_pLinkerBase;
     delete m_pAssemblerBase;
+    delete m_pGlobalFileSettings;
 }
 
 wxAuiToolBar* MainFrame::CreateMainToolBar()
@@ -669,85 +822,3 @@ wxAuiToolBar* MainFrame::CreateMainToolBar()
     return tb1;
 }
 
-int MainFrame::CloseFile()
-{
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_mgr.GetPane("notebook_content").window);
-    if (ctrl)
-    {
-        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
-        if (!pCodeEditor) return -1;
-        // If File is Modified
-        if (pCodeEditor->IsModified())
-        {
-            File* pFile = pCodeEditor->GetFile();
-            if (pFile->GetFile() != "") // There is a file to save
-            {
-                int res = wxMessageBox(_("This file has been modifed. Do you want to save it before closing it?"), _("Please confirm"), wxYES_NO | wxCANCEL, this);
-                if (res == wxYES) // We save the file before closing it
-                {
-                    pCodeEditor->SaveFile(pFile->GetFile() + '/' + pFile->GetFileName());
-                    // Delete this elemento from m_Files.
-                    m_Files.erase(pCodeEditor->GetFile());
-                    
-                }
-                return res;
-            }
-            else // There is no file to save to.
-            {
-                int res = wxMessageBox(_("This buffer has been modifed. All changes will be lost! Do you want to save it before saving it?"), _("Please confirm"), wxYES_NO | wxCANCEL, this);
-
-                wxFileDialog
-                    saveFileDialog(this, _("Save Assembly file"), "", "",
-                        "ASM files (*.asm)|*.asm", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-
-                if (res == wxYES)
-                {
-                    if (saveFileDialog.ShowModal() == wxID_CANCEL)
-                        return wxCANCEL;     // the user changed idea...
-
-                    std::filesystem::path tempFile{ static_cast<std::string>(saveFileDialog.GetPath()) };
-                    pFile->SetFile(tempFile.parent_path().string());
-                    pFile->SetFileName(tempFile.filename().string());
-                    m_Files.erase(pCodeEditor->GetFile());
-                    if (!pCodeEditor->SaveFile(static_cast<wxString>(tempFile)))
-                    {
-                        wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
-                        return -1;
-                    }
-                }
-                else
-                {
-                    m_Files.erase(pCodeEditor->GetFile());
-                }
-                return res;
-            }
-        }
-        else
-        {
-            m_Files.erase(pCodeEditor->GetFile());
-            return wxYES;
-        }
-    }
-    else
-    {
-
-    }
-    return -1;
-}
-
-void MainFrame::OnHello(wxCommandEvent& event)
-{
-    SettingsDialog* pSettings = new SettingsDialog(nullptr);
-    
-    pSettings->ShowModal();
-
-    pSettings->Destroy();
-
-    std::stringstream ss;
-    ss << "PATH=" << getenv("PATH");
-    //ss << ";" << plugin_path;
-    //ss << ";" << lib_path;
-    ss << '\0';
-    std::string env = ss.str();
-
-}

@@ -30,13 +30,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <wx/string.h>
-class AssemblerBase
+#include <wx/aui/framemanager.h>
+class WindowManager :
+	public wxAuiManager
 {
 public:
+	WindowManager(wxWindow* pManaged_wnd = nullptr, unsigned int flags = wxAUI_MGR_DEFAULT) :wxAuiManager(pManaged_wnd, flags) {}
 
-    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;
-	virtual void AssembleFile(const wxString&file, class FileSettings* pFileSettings) = 0;
+	void AddWindow(wxWindow *pWindow);
+	void RemoveWindow(wxWindow *pWindow);
+    wxWindow* GetWindow(const wxString& windowName) { return GetPane(windowName).window; }
+private:
 
+	
 };
 

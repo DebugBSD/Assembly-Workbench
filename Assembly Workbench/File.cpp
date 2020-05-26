@@ -33,27 +33,30 @@
 #include "AssemblerBase.h"
 #include "LinkerBase.h"
 #include "CompilerBase.h"
+#include "FileSettings.h"
 #include "File.h"
 #include "Project.h"
 
-File::File(const std::string& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, Project* pProject):
+File::File(const wxString& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
     m_FileName{file},
     m_FilePath{""},
     m_pAssembler{pAssemblerFile},
     m_pLinker{pLinkerFile},
     m_pCompiler{pCompiler},
-    m_pProject{pProject}
+    m_pProject{pProject},
+    m_pFileSettings{pFileSettings}
 {
     if (m_pProject) m_pProject->AddFile(this);
 }
 
-File::File(const std::string& fileName, const std::string& filePath, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, Project* pProject) :
+File::File(const wxString& fileName, const wxString& filePath, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
     m_FileName{ fileName },
     m_FilePath{ filePath },
     m_pAssembler{ pAssemblerFile },
     m_pLinker{ pLinkerFile },
     m_pCompiler{ pCompiler },
-    m_pProject{ pProject }
+    m_pProject{ pProject },
+    m_pFileSettings{ pFileSettings }
 {
     if (m_pProject) m_pProject->AddFile(this);
 }
@@ -66,7 +69,7 @@ void File::Assemble()
 {
     if (m_pAssembler && m_FilePath != "")
     {
-        m_pAssembler->AssembleFile(m_FilePath+'/'+m_FileName);
+        m_pAssembler->AssembleFile(m_FilePath + wxFileName::GetPathSeparator().operator char() +m_FileName, m_pFileSettings);
     }
 }
 
@@ -74,7 +77,7 @@ void File::Compile()
 {
     if (m_pCompiler && m_FilePath != "")
     {
-        m_pCompiler->Compile(m_FilePath + '/' + m_FileName);
+        m_pCompiler->Compile(m_FilePath + wxFileName::GetPathSeparator().operator char() + m_FileName);
     }
 }
 
@@ -82,6 +85,6 @@ void File::Link()
 {
     if (m_pLinker && m_FilePath != "")
     {
-        m_pLinker->Link(m_FilePath + '/' + m_FileName);
+        m_pLinker->Link(m_FilePath + wxFileName::GetPathSeparator().operator char() + m_FileName, m_pFileSettings);
     }
 }

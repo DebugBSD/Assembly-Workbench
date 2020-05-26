@@ -30,13 +30,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include <wx/string.h>
-class AssemblerBase
+#include <wx/aui/auibook.h>
+
+enum {
+    ID_Notebook = wxID_HIGHEST + 1,
+};
+
+class EditorsWindow :
+	public wxAuiNotebook
 {
 public:
+    EditorsWindow(class wxWindow* pWindow);
 
-    virtual void Clean(const wxString& file, class FileSettings *pFileSettings) = 0;
-	virtual void AssembleFile(const wxString&file, class FileSettings* pFileSettings) = 0;
+private:
+    class MainFrame* m_pMainFrame;
+private:
+    int CloseFile();
 
+    // Close tab
+    void OnCloseTab(wxAuiNotebookEvent& event);
+    void OnClosedTab(wxAuiNotebookEvent& event);
+
+    wxDECLARE_EVENT_TABLE();
 };
+
 

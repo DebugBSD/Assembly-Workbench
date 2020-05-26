@@ -32,11 +32,45 @@
 #pragma once
 
 #include <vector>
+#include <wx/filename.h>
+
+/*
+ * - Directory structure
+ * -----------------------
+ *
+ * ProjectName/
+ *   |-> ProjectName.awp (Assembly Workbench Project)
+ *   |-> .cache
+ *   |-> Config/
+ *   |    |-> [Different Project Configurations (like Assembler, Linker, Compiler, Debugger, Paths, and Environment variables)] 
+ *   |    |-> [Example:] Windows.cfg - This file sets the Visual Studio environment (masm and linker with paths, includes, and everything)
+ *   |    |-> [Example:] Layout.cfg - Layout of the interface. If there is not layout, we load a default one.
+ *   |-> Build - Directory where resides all binaries built with the IDE.
+ *   |-> [.git] - Git directory
+ *   |-> [src/include/]file[s].asm/inc/c/cpp/h - Source code.
+ *   |-> [.gitignore] - Git ignore file
+ *
+ * - NOTES
+ * ---------
+ *
+ * Before loading a project, we need to do some checks before:
+ * - Check that the file exists and if not exists, show a warning to the user
+ * - Check that configuration files exists and ensure we can load and use them. If not, show a warning to the user
+ * - Think more about it
+ * After checking that everything is okay, we proceed to load the project and the configuration.
+ * 
+ */
+
 
 class Project
 {
 public:
-	Project();
+	Project(class wxWindow *parent);
+    ~Project();
+
+    int Load(const wxString& fileName);
+    void Close();
+    int Create(const wxString&projectDirectory, const wxString&fileName);
 
 	bool Build();
 
@@ -45,8 +79,21 @@ public:
 	void ReBuild() { Clean(); Build(); }
 
     void AddFile(class File* pFile) { m_Files.push_back(pFile); }
+    const std::vector<class File*>& GetFiles() const { return m_Files; }
+
+    wxString GetName() const { return wxFileName(m_ProjectFile).GetName(); }
+    wxString GetProjectDirectory() const {return m_ProjectDirectory; }
+    void Save();
+
+    const wxString GetRelativePathToFile(const wxString& absoultePathToFile);
+
 
 private:
+    class MainFrame* m_pMainFrame;
+
+    wxString m_ProjectFile;
+    wxString m_ProjectDirectory;
+
 	std::vector<class File*> m_Files;
 
     class AssemblerBase* m_pAssembler;
