@@ -36,7 +36,7 @@
 #include "Languages.h"       
  //----------------------------------------------------------------------------
  //! language types
-const CommonInfo g_CommonPrefs = {
+CommonInfo g_CommonPrefs = {
     // editor functionality prefs
     true,  // syntaxEnable
     true,  // foldEnable
@@ -146,7 +146,7 @@ const LanguageInfo g_LanguagePrefs[] = {
       {-1, NULL},
       {-1, NULL},
       {-1, NULL}},
-     0}, //mySTC_FOLD_COMMENT | mySTC_FOLD_COMPACT | mySTC_FOLD_PREPROC},
+     0}, //mySTC_FOLD_COMMENT | mySTC_FOLD_COMPACT | mySTC_FOLD_PREPROC}, TODO: it seems that Scintilla don't support folding for assembly language.
      // C++
     {"C++",
      "*.c;*.cc;*.cpp;*.cxx;*.cs;*.h;*.hh;*.hpp;*.hxx;*.sma",

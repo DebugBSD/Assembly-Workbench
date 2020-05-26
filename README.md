@@ -8,6 +8,8 @@ SETTINGS
 * Open last projects and files
 * Show line numbers
 * Font to use by the editor.
+* Enable code/comments/preproc folding
+* See end line 
 
 BUGS
 ----
@@ -30,14 +32,16 @@ TODO
 * Spanish accents are not supported by the controls of wxWidgets, we need to add support to them.
 * Think about different templates to use when creating new projects/files.
 * Think about how to autodetect the different assemblers and linkers installed into the system.
-* Add support to directory hierarchies into the Projects Window so the user can see the same directories into the id te same way all of them resides on the hard drive.
 * Add a Window which holds a list of all symbols defined in a project or file.
+* Add support to international (Spanish, English)
+* Add general Settings (see section Settings)
 
 Tomorrow
 --------
 
+* Add support to directory hierarchies into the Projects Window so the user can see the same directories into the id te same way all of them resides on the hard drive.
 * Change the Projects Window by wxDirCtrl or wxGenericDirCtrl
-* Add Find/Replace tools with windows.
+* Add Basic Find/Replace tools with windows.
 * Configure the tool chain based on the configuration file.
 * Ensure every file outside the project has an absolute path. When file is absolute, we should set up this configuration on the project file.
 * Implement a Console Log to log the output of the assembler, linker, and compiler.

@@ -76,6 +76,7 @@ private:
     void OnExitProgram(wxCloseEvent& event);
     void OnCMDTool(wxCommandEvent& event);
     void OnEdit(wxCommandEvent& event);
+    void OnModifySettings(wxCommandEvent &event);
 
     // Project Menu
     void OnProjectPreferences(wxCommandEvent& event);
@@ -174,6 +175,7 @@ enum
     ID_View_Variables,
     ID_View_Opcodes,
     ID_View_LineNumber,
+    ID_View_LongLine,
     ID_Project_Assembler,
     ID_Project_Linker,
     ID_Project_Custom_Assembler,

@@ -70,6 +70,7 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxStyledTextCtrl)
 
     // view
     EVT_MENU(ID_View_LineNumber, CodeEditor::OnLineNumber)
+    EVT_MENU(ID_View_LongLine, CodeEditor::OnLongLineOn)
 
 	EVT_KEY_DOWN(CodeEditor::OnKeyDown)
 	EVT_LEFT_DOWN(CodeEditor::OnMouseDown)
@@ -426,4 +427,8 @@ void CodeEditor::OnLineNumber(wxCommandEvent& event)
 {
     SetMarginWidth(m_LineNrID,
         GetMarginWidth(m_LineNrID) == 0 ? m_LineNrMargin : 0);
+}
+
+void CodeEditor::OnLongLineOn(wxCommandEvent& WXUNUSED(event)) {
+    SetEdgeMode(GetEdgeMode() == 0 ? wxSTC_EDGE_LINE : wxSTC_EDGE_NONE);
 }

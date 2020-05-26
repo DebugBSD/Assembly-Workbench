@@ -88,8 +88,9 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
     EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
 
-
-    EVT_MENU(ID_View_LineNumber, MainFrame::OnEdit)
+    // View
+    EVT_MENU(ID_View_LineNumber, MainFrame::OnModifySettings)
+    EVT_MENU(ID_View_LongLine, MainFrame::OnModifySettings)
 
     // Project
     EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
@@ -473,6 +474,23 @@ void MainFrame::OnEdit(wxCommandEvent& event)
     }
 }
 
+void MainFrame::OnModifySettings(wxCommandEvent& event)
+{
+    if (event.GetId() == ID_View_LineNumber)
+    {
+        g_CommonPrefs.lineNumberEnable = !g_CommonPrefs.lineNumberEnable;
+    }
+    else if (event.GetId() == ID_View_LongLine)
+    {
+        g_CommonPrefs.longLineOnEnable = !g_CommonPrefs.longLineOnEnable;
+    }
+
+    for (std::pair<File*, CodeEditor *> pFile : m_Files)
+    {
+        pFile.second->GetEventHandler()->ProcessEvent(event);
+    }
+}
+
 
 void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 {
@@ -706,6 +724,8 @@ void MainFrame::CreateMenubar()
     menuView->Append(ID_View_Variables, "Variables", "View current variables");
     menuView->Append(ID_View_Opcodes, "Opcodes", "View current opcodes");
     menuView->Append(ID_View_LineNumber, "View Line Numbers");
+    menuView->Append(ID_View_LongLine, "View End Line");
+    
 
     wxMenu* menuProject = new wxMenu;
     menuProject->Append(ID_Project_Assembler, "Assembler", "Assembler to use when building the project");

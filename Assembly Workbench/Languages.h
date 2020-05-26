@@ -123,7 +123,7 @@ struct CommonInfo {
     bool longLineOnEnable;
     bool whiteSpaceEnable;
 };
-extern const CommonInfo g_CommonPrefs;
+extern CommonInfo g_CommonPrefs;
 
 //----------------------------------------------------------------------------
 // LanguageInfo
