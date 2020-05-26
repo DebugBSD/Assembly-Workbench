@@ -81,7 +81,7 @@ ProjectsWindow::ProjectsWindow()
 }
 
 ProjectsWindow::ProjectsWindow(wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style):
-    m_pMainFrame{ static_cast<MainFrame*>(parent) }
+    m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) }
 {
     Init();
     Create(parent, id, caption, pos, size, style);

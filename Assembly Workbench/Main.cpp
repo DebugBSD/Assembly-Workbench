@@ -163,8 +163,8 @@ MainFrame::MainFrame():
     
     CreateMenubar();
 
-    CreateStatusBar();
-    GetStatusBar()->SetStatusText("Welcome to Assembly Workbench!");
+    m_pStatusBar = CreateStatusBar(2);
+    m_pStatusBar->SetStatusText("Welcome to Assembly Workbench!",0);
 
     // Add toolbars
     wxAuiToolBar* tb1 = CreateMainToolBar();
@@ -571,10 +571,8 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
     // Columna actual del cursor
     statusText << " Col: " << currentColumn;
 
-    // Caracter actual (sin tab)
-    // TODO
-    //if(GetStatusBar())
-    //    GetStatusBar()->SetStatusText(statusText);
+    m_pStatusBar->SetStatusText(statusText,1);
+
 }
 
 void MainFrame::Log(wxArrayString* pArrayLog)

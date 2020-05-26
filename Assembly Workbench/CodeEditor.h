@@ -206,6 +206,7 @@ private:
     // stc
     void OnMarginClick(wxStyledTextEvent& event);
     void OnCharAdded(wxStyledTextEvent& event);
+    void OnDocumentModified(wxStyledTextEvent &event);
     void OnCallTipClick(wxStyledTextEvent& event);
 
     // call tips

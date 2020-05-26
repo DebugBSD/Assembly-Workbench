@@ -42,7 +42,6 @@ TODO
 Tomorrow
 --------
 
-* Improve the way we store code files.
 * Add Basic Find/Replace tools with windows.
 	* When finding over open files, don't find anything from real file cause you have to find into buffer.
 * Configure the tool chain based on the configuration file.
@@ -51,3 +50,4 @@ Tomorrow
 * Implement Rebuild and Clean.
 * When there is no change in the project, we shouldn't rewrite the project file because. When it does, the order of the files is different.
 * When there is just one project open, whe should build it whether is open a file or not.
+* Improve the projects window. We should be able to see all files and directories under a project.

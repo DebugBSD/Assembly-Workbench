@@ -32,10 +32,20 @@
 #include "stdafx.h"
 #include "WindowManager.h"
 
+wxBEGIN_EVENT_TABLE(WindowManager, wxAuiManager)
+    EVT_AUI_PANE_ACTIVATED(WindowManager::OnActivated)
+wxEND_EVENT_TABLE()
+
+
 void WindowManager::AddWindow(wxWindow* pWindow)
 {
 }
 
 void WindowManager::RemoveWindow(wxWindow* pWindow)
 {
+}
+
+void WindowManager::OnActivated(wxAuiManagerEvent& event)
+{
+    int stop = 1;
 }

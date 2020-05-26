@@ -96,8 +96,9 @@ public:
 #pragma endregion
 
 #pragma region Public Methods
-    void SetStatusBar(const wxString& text) { GetStatusBar()->SetStatusText(text); }
+    void SetStatusBar(const wxString& text) { m_pStatusBar->SetStatusText(text); }
     void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
+    class wxStatusBar* GetStatusBar() { return m_pStatusBar; }
 
     void Log(class wxArrayString *pArrayLog);
     void Log(class wxString* pError);
@@ -136,6 +137,7 @@ private:
     class CompilerBase* m_pCompilerBase;
     class FileSettings *m_pGlobalFileSettings;
 
+    class wxStatusBar* m_pStatusBar;
 
     // Create a map with assemblers, compilers and linkers.
     // Then, set a default.

@@ -77,6 +77,7 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxStyledTextCtrl)
     EVT_STC_MARGINCLICK(wxID_ANY, CodeEditor::OnMarginClick)
     EVT_STC_CHARADDED(wxID_ANY, CodeEditor::OnCharAdded)
     EVT_STC_CALLTIP_CLICK(wxID_ANY, CodeEditor::OnCallTipClick)
+    EVT_STC_MODIFIED(wxID_ANY, CodeEditor::OnDocumentModified)
 
 	EVT_KEY_DOWN(CodeEditor::OnKeyDown)
 	EVT_LEFT_DOWN(CodeEditor::OnMouseDown)
@@ -85,7 +86,7 @@ wxEND_EVENT_TABLE()
 
 CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
 	wxStyledTextCtrl(parent, wxID_ANY, { 0, 0 }, parent->GetClientSize(), wxVSCROLL), // Base class
-	m_pMainFrame{ static_cast<MainFrame*>(parent) },
+	m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) },
 	m_pFile{pFile}
 {
     wxFont font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
@@ -475,6 +476,11 @@ void CodeEditor::OnCharAdded(wxStyledTextEvent& event) {
             "ifndef?0 include?0 line?0 pragma?0 undef?0";
         AutoCompShow(0, s);
     }*/
+}
+
+void CodeEditor::OnDocumentModified(wxStyledTextEvent& event)
+{
+    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount(), GetCurrentLine(), GetCurrentPos());
 }
 
 void CodeEditor::OnCallTipClick(wxStyledTextEvent& event)

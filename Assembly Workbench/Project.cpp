@@ -40,7 +40,7 @@
 #include "Main.h"
 
 Project::Project(wxWindow* parent):
-    m_pMainFrame{static_cast<MainFrame*>(parent)},
+    m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) },
     m_pAssembler{nullptr},
     m_pCompiler{nullptr},
     m_pLinker{nullptr}

@@ -41,6 +41,7 @@
 wxBEGIN_EVENT_TABLE(EditorsWindow, wxAuiNotebook)
 EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, EditorsWindow::OnCloseTab)
 EVT_AUINOTEBOOK_PAGE_CLOSED(ID_Notebook, EditorsWindow::OnClosedTab)
+EVT_AUINOTEBOOK_PAGE_CHANGED(ID_Notebook, EditorsWindow::OnOpenTab)
 wxEND_EVENT_TABLE()
 
 
@@ -62,7 +63,7 @@ void EditorsWindow::OnCloseTab(wxAuiNotebookEvent& event)
 }
 
 EditorsWindow::EditorsWindow(wxWindow* pWindow) : wxAuiNotebook(pWindow, ID_Notebook),
-    m_pMainFrame{ static_cast<MainFrame*>(pWindow) }
+    m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) }
 {
 }
 
@@ -122,6 +123,14 @@ int EditorsWindow::CloseFile()
         m_pMainFrame->RemoveFile(pCodeEditor->GetFile());
         return wxYES;
     }
+}
+
+void EditorsWindow::OnOpenTab(wxAuiNotebookEvent& event)
+{
+    CodeEditor* pCodeEditor = static_cast<CodeEditor*>(GetCurrentPage());
+    if (!pCodeEditor) return;
+
+    m_pMainFrame->SetStatusBar(pCodeEditor->GetTextLength(), pCodeEditor->GetLineCount(), pCodeEditor->GetCurrentLine(), pCodeEditor->GetCurrentPos());
 }
 
 void EditorsWindow::OnClosedTab(wxAuiNotebookEvent& event)
