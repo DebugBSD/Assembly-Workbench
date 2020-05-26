@@ -80,6 +80,7 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxStyledTextCtrl)
     EVT_STC_MODIFIED(wxID_ANY, CodeEditor::OnDocumentModified)
     EVT_STC_AUTOCOMP_CHAR_DELETED(wxID_ANY, CodeEditor::OnDocumentModified)
 
+    EVT_KEY_UP(CodeEditor::OnKeyUp)
 	EVT_KEY_DOWN(CodeEditor::OnKeyDown)
 	EVT_LEFT_DOWN(CodeEditor::OnMouseDown)
 	EVT_LEFT_UP(CodeEditor::OnMouseUp)
@@ -200,6 +201,11 @@ void CodeEditor::OnSize(wxSizeEvent& event) {
 }
 
 
+void CodeEditor::OnKeyUp(wxKeyEvent& event)
+{
+    UpdateStatusBar();
+}
+
 void CodeEditor::OnKeyDown(wxKeyEvent& event)
 {
     if (CallTipActive())
@@ -222,13 +228,12 @@ void CodeEditor::OnKeyDown(wxKeyEvent& event)
 
 void CodeEditor::OnMouseDown(wxMouseEvent& event)
 {
-    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount() + 1, GetColumn(GetCurrentPos()), GetCurrentLine());
-
 	event.Skip();
 }
 
 void CodeEditor::OnMouseUp(wxMouseEvent& event)
 {
+    UpdateStatusBar();
 	event.Skip();
 }
 
@@ -384,6 +389,11 @@ void CodeEditor::ShowCallTipAt(int position)
     CallTipShow(position, ctString);
 }
 
+void CodeEditor::UpdateStatusBar()
+{
+    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount(), GetColumn(GetCurrentPos()), GetCurrentLine() + 1);
+}
+
 void CodeEditor::OnEditClear(wxCommandEvent& WXUNUSED(event)) {
     if (GetReadOnly()) return;
     Clear();
@@ -475,13 +485,12 @@ void CodeEditor::OnCharAdded(wxStyledTextEvent& event) {
             "ifndef?0 include?0 line?0 pragma?0 undef?0";
         AutoCompShow(0, s);
     }*/
-    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount() + 1, GetColumn(GetCurrentPos()), GetCurrentLine());
+    UpdateStatusBar();
 }
 
 void CodeEditor::OnDocumentModified(wxStyledTextEvent& event)
 {
-
-    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount() + 1, GetColumn(GetCurrentPos()), GetCurrentLine());
+    UpdateStatusBar();
 }
 
 void CodeEditor::OnCallTipClick(wxStyledTextEvent& event)

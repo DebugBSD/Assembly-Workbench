@@ -1,8 +1,8 @@
 # Assembly-Workbench
 IDE to program in Assembly Language
 
-SETTINGS
---------
+GENERAL SETTINGS
+----------------
 * Colors for every style.
 * Open layout
 * Open last projects and files
@@ -47,5 +47,4 @@ Tomorrow
 * Ensure every file outside the project has an absolute path. When file is absolute, we should set up this configuration on the project file.
 * Implement a Console Log to log the output of the assembler, linker, and compiler.
 * Implement Rebuild and Clean.
-* When there is no change in the project, we shouldn't rewrite the project file because. When it does, the order of the files is different.
 * Improve the projects window. We should be able to see all files and directories under a project.

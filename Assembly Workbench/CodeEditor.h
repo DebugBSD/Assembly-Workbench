@@ -130,6 +130,8 @@ public:
     void SetFile(class File* pFile) { m_pFile = pFile; }
     void RemoveFile(class File* pFile) { if (m_pMainFrame) m_pMainFrame->RemoveFile(pFile); }
 
+    // Update status bar info
+    void UpdateStatusBar();
 private:
 	MainFrame* m_pMainFrame;
 
@@ -152,6 +154,7 @@ private:
 	void GetCursorPosition(size_t &lnPos, size_t &colPos);
 	void SetCursorPosition(const EventType &evtType = EventType::EVENT_NONE);
 
+    void OnKeyUp(wxKeyEvent& event);
 	void OnKeyDown(wxKeyEvent& event);
 	void OnMouseDown(wxMouseEvent& event);
 	void OnMouseUp(wxMouseEvent& event);
@@ -211,6 +214,7 @@ private:
 
     // call tips
     void ShowCallTipAt(int position);
+
 
     //! language/lexer
     wxString DeterminePrefs(const wxString& filename);

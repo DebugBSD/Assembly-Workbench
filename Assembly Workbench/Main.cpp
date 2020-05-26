@@ -423,7 +423,7 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
     // We save the project configuration
     for (Project* pProject : m_Projects)
     {
-        pProject->Save();
+        if(pProject->IsModified()) pProject->Save();
     }
 
     // Save cache

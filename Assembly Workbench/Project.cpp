@@ -43,7 +43,8 @@ Project::Project(wxWindow* parent):
     m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) },
     m_pAssembler{nullptr},
     m_pCompiler{nullptr},
-    m_pLinker{nullptr}
+    m_pLinker{nullptr},
+    m_IsModified{false}
 {
 }
 
@@ -114,6 +115,8 @@ int Project::Load(const wxString& fileName)
         child = child->GetNext();
     }
 
+    m_IsModified = false;
+
     return 0;
 }
 
@@ -125,6 +128,7 @@ int Project::Create(const wxString& projectDirectory, const wxString& fileName)
 {
     // Here we need to create the Project Settings too based on the configuration file.
     int retCode = 0; // 0 -> OK
+    m_IsModified = true;
     m_ProjectDirectory = projectDirectory;
     m_ProjectFile = fileName;
     wxString path = projectDirectory;
@@ -174,6 +178,12 @@ bool Project::Build()
 
 void Project::Clean()
 {
+}
+
+void Project::AddFile(File* pFile)
+{
+    m_IsModified = true;
+    m_Files.push_back(pFile);
 }
 
 void Project::Save()

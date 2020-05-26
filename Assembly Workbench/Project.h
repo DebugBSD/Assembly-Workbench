@@ -78,7 +78,7 @@ public:
 
 	void ReBuild() { Clean(); Build(); }
 
-    void AddFile(class File* pFile) { m_Files.push_back(pFile); }
+    void AddFile(class File* pFile);
     const std::vector<class File*>& GetFiles() const { return m_Files; }
 
     wxString GetName() const { return wxFileName(m_ProjectFile).GetName(); }
@@ -86,7 +86,8 @@ public:
     void Save();
 
     const wxString GetRelativePathToFile(const wxString& absoultePathToFile);
-
+    void SetModified(bool modified) { m_IsModified = modified; }
+    bool IsModified() { return m_IsModified; }
 
 private:
     class MainFrame* m_pMainFrame;
@@ -99,5 +100,7 @@ private:
     class AssemblerBase* m_pAssembler;
     class LinkerBase* m_pLinker;
     class CompilerBase* m_pCompiler;
+
+    bool m_IsModified;
 };
 
