@@ -75,6 +75,7 @@ private:
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
     void OnCMDTool(wxCommandEvent& event);
+    void OnEdit(wxCommandEvent& event);
 
     // Project Menu
     void OnProjectPreferences(wxCommandEvent& event);

@@ -38,12 +38,74 @@
 #include <wx/stc/stc.h>
 #include <wx/sizer.h>
 
+#include "Languages.h"
 #include "Main.h"
 
 enum
 {
 	ID_TextChanged = 1,
-	ID_KeyEnter
+	ID_KeyEnter,// menu IDs
+    myID_PROPERTIES = wxID_HIGHEST,
+    myID_EDIT_FIRST,
+    myID_INDENTINC = myID_EDIT_FIRST,
+    myID_INDENTRED,
+    myID_FINDNEXT,
+    myID_REPLACE,
+    myID_REPLACENEXT,
+    myID_BRACEMATCH,
+    myID_GOTO,
+    myID_PAGEACTIVE,
+    myID_DISPLAYEOL,
+    myID_INDENTGUIDE,
+    myID_LINENUMBER,
+    myID_LONGLINEON,
+    myID_WHITESPACE,
+    myID_FOLDTOGGLE,
+    myID_OVERTYPE,
+    myID_READONLY,
+    myID_WRAPMODEON,
+    myID_ANNOTATION_ADD,
+    myID_ANNOTATION_REMOVE,
+    myID_ANNOTATION_CLEAR,
+    myID_ANNOTATION_STYLE_HIDDEN,
+    myID_ANNOTATION_STYLE_STANDARD,
+    myID_ANNOTATION_STYLE_BOXED,
+    myID_CHANGECASE,
+    myID_CHANGELOWER,
+    myID_CHANGEUPPER,
+    myID_HIGHLIGHTLANG,
+    myID_HIGHLIGHTFIRST,
+    myID_HIGHLIGHTLAST = myID_HIGHLIGHTFIRST + 99,
+    myID_CONVERTEOL,
+    myID_CONVERTCR,
+    myID_CONVERTCRLF,
+    myID_CONVERTLF,
+    myID_MULTIPLE_SELECTIONS,
+    myID_MULTI_PASTE,
+    myID_MULTIPLE_SELECTIONS_TYPING,
+    myID_CUSTOM_POPUP,
+    myID_USECHARSET,
+    myID_CHARSETANSI,
+    myID_CHARSETMAC,
+    myID_PAGEPREV,
+    myID_PAGENEXT,
+    myID_SELECTLINE,
+    myID_EDIT_LAST = myID_SELECTLINE,
+    myID_WINDOW_MINIMAL,
+
+    // other IDs
+    myID_STATUSBAR,
+    myID_TITLEBAR,
+    myID_ABOUTTIMER,
+    myID_UPDATETIMER,
+
+    // dialog find IDs
+    myID_DLG_FIND_TEXT,
+
+    // preferences IDs
+    myID_PREFS_LANGUAGE,
+    myID_PREFS_STYLETYPE,
+    myID_PREFS_KEYWORDS,
 };
 
 enum class EventType
@@ -54,10 +116,11 @@ enum class EventType
 	EVENT_UP,
 	EVENT_DOWN,
 	EVENT_LMOUSE
+    
 };
 
 class CodeEditor :
-	public wxTextCtrl
+	public wxStyledTextCtrl
 {
 public:
 	CodeEditor(wxWindow* parent, class File *pFile);
@@ -72,17 +135,95 @@ private:
 	MainFrame* m_pMainFrame;
 
     class File* m_pFile;
+
+    // language properties
+    LanguageInfo const* m_language;
+
+    // margin variables
+    int m_LineNrID;
+    int m_LineNrMargin;
+    int m_FoldingID;
+    int m_FoldingMargin;
+    int m_DividerID;
+
+    // call tip data
+    int m_calltipNo;
 private:
 
 	void GetCursorPosition(size_t &lnPos, size_t &colPos);
 	void SetCursorPosition(const EventType &evtType = EventType::EVENT_NONE);
 
-	void TextChanged(wxCommandEvent& event);
-	void OnKeyEnter(wxCommandEvent &event);
 	void OnKeyDown(wxKeyEvent& event);
-	void OnKeyUp(wxKeyEvent& event);
 	void OnMouseDown(wxMouseEvent& event);
 	void OnMouseUp(wxMouseEvent& event);
 
+    // event handlers
+    // common
+    void OnSize(wxSizeEvent& event);
+    // edit
+    void OnEditRedo(wxCommandEvent& event);
+    void OnEditUndo(wxCommandEvent& event);
+    void OnEditClear(wxCommandEvent& event);
+    void OnEditCut(wxCommandEvent& event);
+    void OnEditCopy(wxCommandEvent& event);
+    void OnEditPaste(wxCommandEvent& event);
+    // find
+    void OnFind(wxCommandEvent& event);
+    void OnFindNext(wxCommandEvent& event);
+    void OnReplace(wxCommandEvent& event);
+    void OnReplaceNext(wxCommandEvent& event);
+    void OnBraceMatch(wxCommandEvent& event);
+    void OnGoto(wxCommandEvent& event);
+    void OnEditIndentInc(wxCommandEvent& event);
+    void OnEditIndentRed(wxCommandEvent& event);
+    void OnEditSelectAll(wxCommandEvent& event);
+    void OnEditSelectLine(wxCommandEvent& event);
+    //! view
+    void OnHighlightLang(wxCommandEvent& event);
+    void OnDisplayEOL(wxCommandEvent& event);
+    void OnIndentGuide(wxCommandEvent& event);
+    void OnLineNumber(wxCommandEvent& event);
+    void OnLongLineOn(wxCommandEvent& event);
+    void OnWhiteSpace(wxCommandEvent& event);
+    void OnFoldToggle(wxCommandEvent& event);
+    void OnSetOverType(wxCommandEvent& event);
+    void OnSetReadOnly(wxCommandEvent& event);
+    void OnWrapmodeOn(wxCommandEvent& event);
+    void OnUseCharset(wxCommandEvent& event);
+    // annotations
+    void OnAnnotationAdd(wxCommandEvent& event);
+    void OnAnnotationRemove(wxCommandEvent& event);
+    void OnAnnotationClear(wxCommandEvent& event);
+    void OnAnnotationStyle(wxCommandEvent& event);
+    //! extra
+    void OnChangeCase(wxCommandEvent& event);
+    void OnConvertEOL(wxCommandEvent& event);
+    void OnMultipleSelections(wxCommandEvent& event);
+    void OnMultiPaste(wxCommandEvent& event);
+    void OnMultipleSelectionsTyping(wxCommandEvent& event);
+    void OnCustomPopup(wxCommandEvent& evt);
+    // stc
+    void OnMarginClick(wxStyledTextEvent& event);
+    void OnCharAdded(wxStyledTextEvent& event);
+    void OnCallTipClick(wxStyledTextEvent& event);
+
+    // call tips
+    void ShowCallTipAt(int position);
+
+    //! language/lexer
+    wxString DeterminePrefs(const wxString& filename);
+    bool InitializePrefs(const wxString& filename);
+    bool UserSettings(const wxString& filename);
+    LanguageInfo const* GetLanguageInfo() { return m_language; }
+
+    //! load/save file
+    /*bool LoadFile();
+    bool LoadFile(const wxString& filename);
+    bool SaveFile();
+    bool SaveFile(const wxString& filename);
+    bool Modified();
+    wxString GetFilename() { return m_filename; }
+    void SetFilename(const wxString& filename) { m_filename = filename; }
+    */
 	wxDECLARE_EVENT_TABLE();
 };

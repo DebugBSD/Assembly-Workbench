@@ -114,6 +114,9 @@
     <ClInclude Include="FindAndReplaceWindow.h">
       <Filter>Archivos de encabezado\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="Languages.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -163,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="FindAndReplaceWindow.cpp">
       <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Languages.cpp">
+      <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

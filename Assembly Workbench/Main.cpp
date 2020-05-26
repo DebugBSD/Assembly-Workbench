@@ -73,26 +73,30 @@ constexpr int ICON_SIZE = 16;
 wxIMPLEMENT_APP(MyApp);
 
 wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
-EVT_MENU(wxID_EXIT, MainFrame::OnExit)
-EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
-EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
-EVT_MENU(ID_Open_Project, MainFrame::OnOpenProject)
-EVT_MENU(wxID_SAVE, MainFrame::OnSave)
-EVT_MENU(wxID_NEW, MainFrame::OnNew)
-EVT_MENU(ID_New_File, MainFrame::OnNewFile)
-EVT_MENU(ID_New_Project, MainFrame::OnNewProject)
-EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
-EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
+    EVT_MENU(wxID_EXIT, MainFrame::OnExit)
+    EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
+    EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
+    EVT_MENU(wxID_CUT, MainFrame::OnEdit)
+    EVT_MENU(wxID_COPY, MainFrame::OnEdit)
+    EVT_MENU(wxID_PASTE, MainFrame::OnEdit)
 
-EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
+    EVT_MENU(ID_Open_Project, MainFrame::OnOpenProject)
+    EVT_MENU(wxID_SAVE, MainFrame::OnSave)
+    EVT_MENU(wxID_NEW, MainFrame::OnNew)
+    EVT_MENU(ID_New_File, MainFrame::OnNewFile)
+    EVT_MENU(ID_New_Project, MainFrame::OnNewProject)
+    EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
+    EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
 
-EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
-EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
-EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
+    EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
 
-EVT_MENU(ID_Debug_LaunchWinDbg, MainFrame::OnLaunchDebugger)
+    EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
+    EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
+    EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
 
-EVT_CLOSE(MainFrame::OnExitProgram)
+    EVT_MENU(ID_Debug_LaunchWinDbg, MainFrame::OnLaunchDebugger)
+
+    EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
 
 bool MyApp::OnInit()
@@ -450,6 +454,20 @@ void MainFrame::OnCMDTool(wxCommandEvent& event)
     // Note: X32 - wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"");
     //wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"&&dir");
 }
+
+void MainFrame::OnEdit(wxCommandEvent& event)
+{
+    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+    if (ctrl)
+    {
+        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        if (pCodeEditor)
+        {
+            pCodeEditor->GetEventHandler()->ProcessEvent(event);
+        }
+    }
+}
+
 
 void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 {

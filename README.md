@@ -16,7 +16,6 @@ TODO
 * Think about how to integrate git/github into Assembly Workbench
 * Add Github/Git window to control the changes
 * Integratte GIT/GitHUB/Bitbucket/Any other CVS into the IDE
-* Integration with Scintilla
 * Add the possibility to add/remove/modify files to the project in run time. This means that the editor will check such files and will show a pop up with a message in case some files had been added/removed/modified into the project directory. (look for wxFileSystemWatcher)
 * Add the possibility to save/reload the layout of the IDE and set the default option in the menu.
 * Change paths to files and directories from strings to wxFileName

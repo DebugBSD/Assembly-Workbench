@@ -176,6 +176,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClInclude Include="FileSettingsDlg.h" />
     <ClInclude Include="FindAndReplaceWindow.h" />
     <ClInclude Include="Git.h" />
+    <ClInclude Include="Languages.h" />
     <ClInclude Include="LinkerBase.h" />
     <ClInclude Include="MASM.h" />
     <ClInclude Include="MLINKER.h" />
@@ -199,6 +200,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClCompile Include="FileSettingsDlg.cpp" />
     <ClCompile Include="FindAndReplaceWindow.cpp" />
     <ClCompile Include="Git.cpp" />
+    <ClCompile Include="Languages.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MASM.cpp" />
     <ClCompile Include="MLINKER.cpp" />
