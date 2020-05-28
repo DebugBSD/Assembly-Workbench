@@ -1,6 +1,6 @@
 #pragma once
 #include <wx/panel.h>
-#include <wx/treectrl.h>
+#include <wx/dataview.h>
 
 /*!
  * Control identifiers
@@ -24,7 +24,7 @@
 #define ID_REPLACE_ALL 10013
 #define ID_FIND_ALL 10014
 #define ID_FIND_AND_REPLACE_RESULTS_TREECTRL 10015
-#define SYMBOL_FINDANDREPLACEWINDOW_STYLE wxTR_DEFAULT_STYLE | wxNO_BORDER
+#define SYMBOL_FINDANDREPLACEWINDOW_STYLE wxDV_SINGLE | wxNO_BORDER
 #define SYMBOL_FINDANDREPLACEWINDOW_TITLE _("Find and Replace")
 #define SYMBOL_FINDANDREPLACEWINDOW_IDNAME ID_FINDANDREPLACEWINDOW
 #define SYMBOL_FINDANDREPLACEWINDOW_SIZE wxSize(640, 480)
@@ -73,7 +73,7 @@ private:
     class wxComboBox* m_FindComboBox;
     class wxComboBox* m_ReplaceComboBox;
     class wxButton* m_FindInDirectory;
-    class wxTreeCtrl* m_pSearchResultTreeCtrl;
+    class wxDataViewCtrl* m_pSearchResultTreeCtrl;
     ////@end FindAndReplaceWindow member variables
 
 private:

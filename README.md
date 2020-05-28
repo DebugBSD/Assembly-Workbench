@@ -15,7 +15,6 @@ GENERAL SETTINGS
 BUGS
 ----
 
-* When building projects with whitespaces into the name, it doesn't builds anything.
 * On Windows there is a bug when using wxExecute with environment variables. It doesn't recognise the ml64.exe from the PATH environment variable. So, right now it's hardcoded.
 * We shouldn't ask for save changes when closing the application without any modification in the files.
 * On the settings window we need to pass arrays of strings to paths instead of a single string in one line.
@@ -37,6 +36,9 @@ TODO
 * Add a Window which holds a list of all symbols defined in a project or file.
 * Add support to international (Spanish, English)
 * Add general Settings (see section Settings)
+* Add support to Doxygen.
+* Add support to some kind of unit testing.
+* Execute the Find and Replace tool on other thread (so main thread is not busy)
 
 Tomorrow
 --------
@@ -45,6 +47,6 @@ Tomorrow
 	* When finding over open files, don't find anything from real file cause you have to find into buffer.
 * Configure the tool chain based on the configuration file.
 * Ensure every file outside the project has an absolute path. When file is absolute, we should set up this configuration on the project file.
-* Implement a Console Log to log the output of the assembler, linker, and compiler.
+* Implement a Console Log to log the output of the assembler, linker, and compiler. When I click on an error on the console, I want to go to the line which caused such an error if possible (some kinds of error are not clickable.
 * Implement Rebuild and Clean.
 * Improve the projects window. We should be able to see all files and directories under a project.

@@ -417,7 +417,6 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
             event.Veto();
             return;
         }
-        
     }
 
     // We save the project configuration
@@ -517,8 +516,10 @@ void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 
 void MainFrame::OnBuildSolution(wxCommandEvent& event)
 {
-    // Compilamos el proyecto actual unica y exclusivamente cuando solo tenemos un proyecto abierto 
-    // y ninguna de las tabs abiertas pertenecen a ficheros de fuera.
+    wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_pWindowManager->GetPane("ConsoleLog").window);
+    if(pTextControl)
+        pTextControl->Clear();
+
     if (m_Projects.size() == 1)
     {
         wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
@@ -624,6 +625,7 @@ void MainFrame::Log(wxArrayString* pArrayLog)
 {
 
     wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_pWindowManager->GetPane("ConsoleLog").window);
+    
     for (wxString str : *pArrayLog)
     {
         pTextControl->AppendText(str + "\n");
