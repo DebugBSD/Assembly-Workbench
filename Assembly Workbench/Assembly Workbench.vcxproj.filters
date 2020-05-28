@@ -43,6 +43,12 @@
     <Filter Include="Archivos de origen\Windows">
       <UniqueIdentifier>{bc2a1416-6aa7-470b-a422-aa9a4c57bf2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Models">
+      <UniqueIdentifier>{bc86ee01-e9e1-4de8-b71a-755e295dc8c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Models">
+      <UniqueIdentifier>{3956516c-135f-4b63-b8a4-03bf42bd6e31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -117,6 +123,12 @@
     <ClInclude Include="Languages.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="SearchModel.h">
+      <Filter>Archivos de encabezado\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchModelNode.h">
+      <Filter>Archivos de encabezado\Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -169,6 +181,12 @@
     </ClCompile>
     <ClCompile Include="Languages.cpp">
       <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchModel.cpp">
+      <Filter>Archivos de origen\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchModelNode.cpp">
+      <Filter>Archivos de origen\Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

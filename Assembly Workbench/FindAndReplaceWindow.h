@@ -6,7 +6,6 @@
  * Control identifiers
  */
 
- ////@begin control identifiers
 #define ID_FINDANDREPLACEWINDOW 10000
 #define ID_FIND_COMBOBOX 10001
 #define ID_REPLACE_COMBOBOX 10002
@@ -29,7 +28,6 @@
 #define SYMBOL_FINDANDREPLACEWINDOW_IDNAME ID_FINDANDREPLACEWINDOW
 #define SYMBOL_FINDANDREPLACEWINDOW_SIZE wxSize(640, 480)
 #define SYMBOL_FINDANDREPLACEWINDOW_POSITION wxDefaultPosition
-////@end control identifiers
 
 
 /*!
@@ -54,31 +52,24 @@ public:
     /// Creates the controls and sizers
     void CreateControls();
 
-    ////@begin FindAndReplaceWindow event handler declarations
-    ////@end FindAndReplaceWindow event handler declarations
-
-    ////@begin FindAndReplaceWindow member function declarations
         /// Retrieves bitmap resources
     wxBitmap GetBitmapResource(const wxString& name);
 
     /// Retrieves icon resources
     wxIcon GetIconResource(const wxString& name);
-    ////@end FindAndReplaceWindow member function declarations
 
         /// Should we show tooltips?
     static bool ShowToolTips();
 
 private:
-    ////@begin FindAndReplaceWindow member variables
     class wxComboBox* m_FindComboBox;
     class wxComboBox* m_ReplaceComboBox;
     class wxButton* m_FindInDirectory;
     class wxDataViewCtrl* m_pSearchResultTreeCtrl;
-    ////@end FindAndReplaceWindow member variables
-
+    wxObjectDataPtr<class SearchModel> m_searchModel;
 private:
     // Event table methods
-
+    void OnFindAllBtnClicked(wxCommandEvent& event);
     wxDECLARE_EVENT_TABLE();
 };
 

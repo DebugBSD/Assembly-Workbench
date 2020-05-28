@@ -38,14 +38,11 @@
  * Forward declarations
  */
 
- ////@begin forward declarations
- ////@end forward declarations
 
  /*!
   * Control identifiers
   */
 
-  ////@begin control identifiers
 #define ID_PROJECTWINDOW 10000
 #define ID_PROJECTS_WINDOW_TEXTCTRL 10001
 #define ID_TREECTRL 10002
@@ -54,7 +51,6 @@
 #define SYMBOL_PROJECTWINDOW_IDNAME ID_PROJECTWINDOW
 #define SYMBOL_PROJECTWINDOW_SIZE wxSize(200, 300)
 #define SYMBOL_PROJECTWINDOW_POSITION wxDefaultPosition
-////@end control identifiers
 
 enum {
     // Tree Control IDs
@@ -85,16 +81,11 @@ public:
     /// Creates the controls and sizers
     void CreateControls();
 
-    ////@begin ProjectWindow event handler declarations
-    ////@end ProjectWindow event handler declarations
-
-    ////@begin ProjectWindow member function declarations
         /// Retrieves bitmap resources
     wxBitmap GetBitmapResource(const wxString& name);
 
     /// Retrieves icon resources
     wxIcon GetIconResource(const wxString& name);
-    ////@end ProjectWindow member function declarations
 
         /// Should we show tooltips?
     static bool ShowToolTips();
@@ -119,8 +110,6 @@ private:
 private:
 
     class Project* GetProject(const wxString& text);
-    ////@begin ProjectWindow member variables
-    ////@end ProjectWindow member variables
 
     // Tree Events
     void SelectedElement(wxTreeEvent& event);

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "FindAndReplaceWindow.h"
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -11,18 +10,13 @@
 #include "wx/wx.h"
 #endif
 
-////@begin includes
 #include <wx/imaglist.h>
 #include <wx/frame.h>
 #include <wx/combobox.h>
-////@end includes
 
+#include "SearchModelNode.h"
+#include "SearchModel.h"
 #include "FindAndReplaceWindow.h"
-
-////@begin XPM images
-
-////@end XPM images
-
 
 
 /*
@@ -30,10 +24,7 @@
  */
 
 wxBEGIN_EVENT_TABLE(FindAndReplaceWindow, wxPanel)
-
-////@begin ProjectWindow event table entries
-////@end ProjectWindow event table entries
-
+EVT_BUTTON(ID_FIND_ALL, FindAndReplaceWindow::OnFindAllBtnClicked)
 wxEND_EVENT_TABLE()
 
 
@@ -194,8 +185,38 @@ void FindAndReplaceWindow::CreateControls()
 
     m_pSearchResultTreeCtrl = new wxDataViewCtrl(itemFrame1, ID_FIND_AND_REPLACE_RESULTS_TREECTRL, wxDefaultPosition, wxSize(100, 100), wxDV_SINGLE);
     itemBoxSizer2->Add(m_pSearchResultTreeCtrl, 1, wxGROW | wxALL, 5);
+    m_searchModel = new SearchModel();
+    m_pSearchResultTreeCtrl->AssociateModel(m_searchModel.get());
 
-    ////@end FindAndReplaceWindow content construction
+    // Append columns
+    wxDataViewTextRenderer* tr0 =
+        new wxDataViewTextRenderer("string", wxDATAVIEW_CELL_INERT);
+    wxDataViewColumn* column0 =
+        new wxDataViewColumn("Code", tr0, 0, FromDIP(200), wxALIGN_LEFT,
+            wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_RESIZABLE);
+    m_pSearchResultTreeCtrl->AppendColumn(column0);
+
+    wxDataViewTextRenderer* tr1 =
+        new wxDataViewTextRenderer("string", wxDATAVIEW_CELL_INERT);
+    wxDataViewColumn* column1 =
+        new wxDataViewColumn("Filename", tr1, 1, FromDIP(80), wxALIGN_LEFT,
+            wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_RESIZABLE);
+    m_pSearchResultTreeCtrl->AppendColumn(column1);
+
+    wxDataViewTextRenderer* tr2 =
+        new wxDataViewTextRenderer("long", wxDATAVIEW_CELL_INERT);
+    wxDataViewColumn* column2 =
+        new wxDataViewColumn("Line", tr2, 2, FromDIP(25), wxALIGN_LEFT,
+            wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_RESIZABLE);
+    m_pSearchResultTreeCtrl->AppendColumn(column2);
+
+
+    wxDataViewTextRenderer* tr3 =
+        new wxDataViewTextRenderer("long", wxDATAVIEW_CELL_INERT);
+    wxDataViewColumn* column3 =
+        new wxDataViewColumn("Column", tr3, 2, FromDIP(25), wxALIGN_LEFT,
+            wxDATAVIEW_COL_SORTABLE | wxDATAVIEW_COL_RESIZABLE);
+    m_pSearchResultTreeCtrl->AppendColumn(column3);
 }
 
 
@@ -208,17 +229,20 @@ bool FindAndReplaceWindow::ShowToolTips()
     return true;
 }
 
+void FindAndReplaceWindow::OnFindAllBtnClicked(wxCommandEvent& event)
+{
+    
+    m_searchModel->Init();
+}
+
 /*
  * Get bitmap resources
  */
 
 wxBitmap FindAndReplaceWindow::GetBitmapResource(const wxString& name)
 {
-    // Bitmap retrieval
-////@begin FindAndReplaceWindow bitmap retrieval
     wxUnusedVar(name);
     return wxNullBitmap;
-    ////@end FindAndReplaceWindow bitmap retrieval
 }
 
 /*
@@ -227,9 +251,6 @@ wxBitmap FindAndReplaceWindow::GetBitmapResource(const wxString& name)
 
 wxIcon FindAndReplaceWindow::GetIconResource(const wxString& name)
 {
-    // Icon retrieval
-////@begin FindAndReplaceWindow icon retrieval
     wxUnusedVar(name);
     return wxNullIcon;
-    ////@end FindAndReplaceWindow icon retrieval
 }

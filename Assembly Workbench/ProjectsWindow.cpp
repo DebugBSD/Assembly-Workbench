@@ -46,13 +46,7 @@
 #include "wx/wx.h"
 #endif
 
-////@begin includes
 #include "wx/imaglist.h"
-////@end includes
-
-////@begin XPM images
-
-////@end XPM images
 
 
 
@@ -62,12 +56,10 @@
 
 wxBEGIN_EVENT_TABLE(ProjectsWindow, wxPanel)
 
-    ////@begin ProjectWindow event table entries
     // Tree control events
     EVT_TREE_ITEM_RIGHT_CLICK(ID_TreeCtrl_Projects_View, ProjectsWindow::OnRightClickOverTreeCtrl)
     EVT_TREE_ITEM_ACTIVATED(ID_TreeCtrl_Projects_View, ProjectsWindow::SelectedElement)
     EVT_MENU(ID_Project_View_Add_New_File, ProjectsWindow::OnPopupNewFile)
-    ////@end ProjectWindow event table entries
 
 wxEND_EVENT_TABLE()
 
@@ -94,13 +86,11 @@ ProjectsWindow::ProjectsWindow(wxWindow* parent, wxWindowID id, const wxString& 
 
 bool ProjectsWindow::Create(wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style)
 {
-    ////@begin ProjectWindow creation
     wxPanel::Create(parent, id, pos, size, style);
 
     CreateControls();
     //SetMinSize(size);
     //Centre();
-    ////@end ProjectWindow creation
     return true;
 }
 
@@ -111,8 +101,6 @@ bool ProjectsWindow::Create(wxWindow* parent, wxWindowID id, const wxString& cap
 
 ProjectsWindow::~ProjectsWindow()
 {
-    ////@begin ProjectWindow destruction
-    ////@end ProjectWindow destruction
 }
 
 
@@ -122,8 +110,6 @@ ProjectsWindow::~ProjectsWindow()
 
 void ProjectsWindow::Init()
 {
-    ////@begin ProjectWindow member initialisation
-    ////@end ProjectWindow member initialisation
 }
 
 
@@ -133,7 +119,6 @@ void ProjectsWindow::Init()
 
 void ProjectsWindow::CreateControls()
 {
-    ////@begin ProjectWindow content construction
     m_MenuPopUp = new wxMenu;
     m_MenuPopUp->Append(ID_Project_View_Add_New_File, "Add New File");                      // Open a new window 
     ProjectsWindow* itemFrame1 = this;
@@ -151,7 +136,6 @@ void ProjectsWindow::CreateControls()
     m_pTreeCtrl->AddRoot("Projects");
     itemBoxSizer2->Add(m_pTreeCtrl, 1, wxGROW | wxALL, 0);
 
-    ////@end ProjectWindow content construction
 }
 
 
@@ -202,11 +186,8 @@ void ProjectsWindow::RemoveProject(const wxString& projectName)
 
 wxBitmap ProjectsWindow::GetBitmapResource(const wxString& name)
 {
-    // Bitmap retrieval
-////@begin ProjectWindow bitmap retrieval
     wxUnusedVar(name);
     return wxNullBitmap;
-    ////@end ProjectWindow bitmap retrieval
 }
 
 /*
@@ -215,11 +196,8 @@ wxBitmap ProjectsWindow::GetBitmapResource(const wxString& name)
 
 wxIcon ProjectsWindow::GetIconResource(const wxString& name)
 {
-    // Icon retrieval
-////@begin ProjectWindow icon retrieval
     wxUnusedVar(name);
     return wxNullIcon;
-    ////@end ProjectWindow icon retrieval
 }
 
 void ProjectsWindow::SelectedElement(wxTreeEvent& event)

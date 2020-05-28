@@ -40,19 +40,12 @@
 #include "wx/wx.h"
 #endif
 
-////@begin includes
 #include <wx/stdpaths.h>
 #include <wx/imaglist.h>
 #include <wx/dirdlg.h>
 #include <wx/combobox.h>
-////@end includes
 
 #include "NewProjectDlg.h"
-
-////@begin XPM images
-
-////@end XPM images
-
 
 /*
  * NewProjectDlg type definition
@@ -64,12 +57,8 @@
  */
 
 BEGIN_EVENT_TABLE( NewProjectDlg, wxDialog )
-
-////@begin NewProjectDlg event table entries
 EVT_BUTTON(ID_CREATE, NewProjectDlg::OnCreate)
 EVT_BUTTON(ID_SELECT_PROJECT_DIR_BTN, NewProjectDlg::OnSelectDirectory)
-////@end NewProjectDlg event table entries
-
 END_EVENT_TABLE()
 
 
@@ -95,14 +84,12 @@ NewProjectDlg::NewProjectDlg( wxWindow* parent, const wxArrayString& choices, wx
 
 bool NewProjectDlg::Create( wxWindow* parent, const wxArrayString& choices, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style )
 {
-////@begin NewProjectDlg creation
     SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY|wxWS_EX_BLOCK_EVENTS);
     wxDialog::Create( parent, id, caption, pos, size, style );
 
     CreateControls(choices);
     SetMinSize(size);
     Centre();
-////@end NewProjectDlg creation
     return true;
 }
 
@@ -113,8 +100,6 @@ bool NewProjectDlg::Create( wxWindow* parent, const wxArrayString& choices, wxWi
 
 NewProjectDlg::~NewProjectDlg()
 {
-////@begin NewProjectDlg destruction
-////@end NewProjectDlg destruction
 }
 
 
@@ -124,8 +109,6 @@ NewProjectDlg::~NewProjectDlg()
 
 void NewProjectDlg::Init()
 {
-////@begin NewProjectDlg member initialisation
-////@end NewProjectDlg member initialisation
 }
 
 
@@ -194,7 +177,6 @@ void NewProjectDlg::CreateControls(const wxArrayString& choices)
     wxButton* itemButton3 = new wxButton( itemDialog1, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer10->Add(itemButton3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-////@end NewProjectDlg content construction
 }
 
 
@@ -272,11 +254,8 @@ void NewProjectDlg::OnSelectDirectory(wxCommandEvent& event)
 
 wxBitmap NewProjectDlg::GetBitmapResource( const wxString& name )
 {
-    // Bitmap retrieval
-////@begin NewProjectDlg bitmap retrieval
     wxUnusedVar(name);
     return wxNullBitmap;
-////@end NewProjectDlg bitmap retrieval
 }
 
 /*
@@ -285,9 +264,6 @@ wxBitmap NewProjectDlg::GetBitmapResource( const wxString& name )
 
 wxIcon NewProjectDlg::GetIconResource( const wxString& name )
 {
-    // Icon retrieval
-////@begin NewProjectDlg icon retrieval
     wxUnusedVar(name);
     return wxNullIcon;
-////@end NewProjectDlg icon retrieval
 }

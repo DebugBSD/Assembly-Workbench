@@ -39,12 +39,8 @@
  */
 
 BEGIN_EVENT_TABLE(NewFileDlg, wxDialog)
-
-////@begin NewProjectDlg event table entries
 EVT_BUTTON(ID_CREATE, NewFileDlg::OnCreate)
 EVT_BUTTON(ID_SELECT_FILE_DIR_BTN, NewFileDlg::OnSelectDirectory)
-////@end NewProjectDlg event table entries
-
 END_EVENT_TABLE()
 
 
@@ -70,14 +66,12 @@ NewFileDlg::NewFileDlg(wxWindow* parent, wxWindowID id, const wxString& caption,
 
 bool NewFileDlg::Create(wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style)
 {
-    ////@begin NewFileDlg creation
     SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY | wxWS_EX_BLOCK_EVENTS);
     wxDialog::Create(parent, id, caption, pos, size, style);
 
     CreateControls();
     SetMinSize(size);
     Centre();
-    ////@end NewFileDlg creation
     return true;
 }
 
@@ -88,8 +82,6 @@ bool NewFileDlg::Create(wxWindow* parent, wxWindowID id, const wxString& caption
 
 NewFileDlg::~NewFileDlg()
 {
-    ////@begin NewFileDlg destruction
-    ////@end NewFileDlg destruction
 }
 
 
@@ -99,8 +91,6 @@ NewFileDlg::~NewFileDlg()
 
 void NewFileDlg::Init()
 {
-    ////@begin NewFileDlg member initialisation
-    ////@end NewFileDlg member initialisation
 }
 
 
@@ -168,7 +158,6 @@ void NewFileDlg::CreateControls()
     wxButton* itemButton19 = new wxButton(itemDialog1, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0);
     itemBoxSizer16->Add(itemButton19, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-    ////@end NewFileDlg content construction
 }
 
 
@@ -215,11 +204,8 @@ void NewFileDlg::OnSelectDirectory(wxCommandEvent& event)
 
 wxBitmap NewFileDlg::GetBitmapResource(const wxString& name)
 {
-    // Bitmap retrieval
-////@begin NewFileDlg bitmap retrieval
     wxUnusedVar(name);
     return wxNullBitmap;
-    ////@end NewFileDlg bitmap retrieval
 }
 
 /*
@@ -228,10 +214,7 @@ wxBitmap NewFileDlg::GetBitmapResource(const wxString& name)
 
 wxIcon NewFileDlg::GetIconResource(const wxString& name)
 {
-    // Icon retrieval
-////@begin NewFileDlg icon retrieval
     wxUnusedVar(name);
     return wxNullIcon;
-    ////@end NewFileDlg icon retrieval
 }
 

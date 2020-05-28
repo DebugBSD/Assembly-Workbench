@@ -37,28 +37,22 @@
  * Includes
  */
 
- ////@begin includes
 #include <wx/splitter.h>
 #include <wx/treectrl.h>
 #include <wx/propgrid/propgrid.h>
 #include <wx/artprov.h>
 
 #include "FileSettings.h"
-////@end includes
 
 /*!
  * Forward declarations
  */
 
- ////@begin forward declarations
 class wxSplitterWindow;
-////@end forward declarations
 
 /*!
  * Control identifiers
  */
-
- ////@begin control identifiers
 #define ID_FILESETTINGS 10000
 #define ID_COMBOBOX 10006
 #define ID_COMBOBOX1 10009
@@ -73,7 +67,6 @@ class wxSplitterWindow;
 #define SYMBOL_FILESETTINGS_IDNAME ID_FILESETTINGS
 #define SYMBOL_FILESETTINGS_SIZE wxSize(640, 480)
 #define SYMBOL_FILESETTINGS_POSITION wxDefaultPosition
-////@end control identifiers
 
 
 /*!
@@ -99,25 +92,18 @@ public:
     /// Creates the controls and sizers
     void CreateControls();
 
-    ////@begin FileSettings event handler declarations
-    ////@end FileSettings event handler declarations
-
-    ////@begin FileSettings member function declarations
-        /// Retrieves bitmap resources
+    /// Retrieves bitmap resources
     wxBitmap GetBitmapResource(const wxString& name);
 
     /// Retrieves icon resources
     wxIcon GetIconResource(const wxString& name);
-    ////@end FileSettings member function declarations
 
-        /// Should we show tooltips?
+    /// Should we show tooltips?
     static bool ShowToolTips();
 private:
     class wxTreeCtrl* SetTree();
 
 private:
-    ////@begin FileSettings member variables
-#if defined(__WXMSW__)
     wxComboBox* m_pProjectConfigCtrl;
     wxComboBox* m_pPlatformConfCtrl;
     wxSplitterWindow* m_pSplitter;
@@ -125,8 +111,6 @@ private:
     wxTreeCtrl* m_pTreeCtrl;
     class FileSettings* m_pFileSettings;
     std::unordered_map<void*, FileSettings::EProperty> m_Settings;
-#endif
-    ////@end FileSettings member variables
 
     void OnBeginSelection(wxTreeEvent& event);
     void OnEndSelection(wxTreeEvent& event);
