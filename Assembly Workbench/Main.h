@@ -176,7 +176,7 @@ private:
     wxStaticText* m_staticText2;
     wxStaticText* m_staticTitle;
     wxAuiNotebook* m_auinotebook5;
-    class SceneView* m_pSceneView;
+    class CodeEditor* m_pSceneView;
     class EntitySystemView* m_pEntitySystemView;
     wxPanel* m_panel19;
     class AssetBrowserView* m_pAssetBrowserViewPanel;

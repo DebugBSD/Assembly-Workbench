@@ -92,9 +92,9 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
 	m_pFile{pFile}
 {
     wxFont font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
-	/*SetFont(f);
-    SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
-	SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));*/
+	/*SetFont(f);*/
+    SetBackgroundColour(m_pMainFrame->GetAppSettings()->m_backgroundColor);
+	SetForegroundColour(m_pMainFrame->GetAppSettings()->m_foregroundColor);
 
     m_calltipNo = 1;
 
@@ -122,9 +122,9 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
     //wxFont font(wxFontInfo(10).Family(wxFONTFAMILY_MODERN));
     StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxBLACK);
-    StyleSetBackground(wxSTC_STYLE_DEFAULT, *wxWHITE);
+    StyleSetBackground(wxSTC_STYLE_DEFAULT, m_pMainFrame->GetAppSettings()->m_backgroundColor);
     StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour("DARK GREY"));
-    StyleSetBackground(wxSTC_STYLE_LINENUMBER, *wxWHITE);
+    StyleSetBackground(wxSTC_STYLE_LINENUMBER, m_pMainFrame->GetAppSettings()->m_backgroundColor);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour("DARK GREY"));
     InitializePrefs(DEFAULT_LANGUAGE);
 
@@ -262,8 +262,8 @@ bool CodeEditor::InitializePrefs(const wxString& name) {
 
     // set margin for line numbers
     SetMarginType(m_LineNrID, wxSTC_MARGIN_NUMBER);
-    StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour("DARK GREY"));
-    StyleSetBackground(wxSTC_STYLE_LINENUMBER, *wxWHITE);
+    StyleSetForeground(wxSTC_STYLE_LINENUMBER, m_pMainFrame->GetAppSettings()->m_foregroundColor);
+    StyleSetBackground(wxSTC_STYLE_LINENUMBER, m_pMainFrame->GetAppSettings()->m_backgroundColor);
     SetMarginWidth(m_LineNrID, g_CommonPrefs.lineNumberEnable ? m_LineNrMargin : 0); // start out not visible
 
     // annotations style
@@ -297,7 +297,7 @@ bool CodeEditor::InitializePrefs(const wxString& name) {
                 StyleSetForeground(Nr, wxColour(curType.foreground));
             }
             if (curType.background.length()) {
-                StyleSetBackground(Nr, wxColour(curType.background));
+                StyleSetBackground(Nr, m_pMainFrame->GetAppSettings()->m_backgroundColor);
             }
             StyleSetBold(Nr, (curType.fontstyle & mySTC_STYLE_BOLD) > 0);
             StyleSetItalic(Nr, (curType.fontstyle & mySTC_STYLE_ITALIC) > 0);

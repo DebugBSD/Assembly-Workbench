@@ -166,7 +166,7 @@ MainFrame::MainFrame():
     //SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
     //SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
     //ShowFullScreen(true); // Show the window maximized but, without any close, minimize or maximize button.
-    Maximize(true); // Show the window maximized
+    //Maximize(true); // Show the window maximized
     wxBoxSizer* bSizer11;
     bSizer11 = new wxBoxSizer(wxVERTICAL);
 
@@ -641,7 +641,7 @@ void MainFrame::OnLaunchDebugger(wxCommandEvent& event)
 
 void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t currentColumn, size_t currentLine)
 {
-    wxString statusText;
+    /*wxString statusText;
 
     // Longitud total en caracteres
     statusText << " Characters: " << totalChars;
@@ -655,7 +655,7 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
     // Columna actual del cursor
     statusText << " Col: " << currentColumn;
 
-    m_pStatusBar->SetStatusText(statusText,1);
+    m_pStatusBar->SetStatusText(statusText,1);*/
 
 }
 
@@ -811,10 +811,11 @@ wxSizer* MainFrame::InitViews()
     mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_SASH_SIZE, 2);
     mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_SASH_COLOUR, m_pAppSettings->m_backgroundColor);
     m_auinotebook5->SetArtProvider(m_pArtProvider);
-    /*
-    m_pSceneView = new SceneView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+
+    File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
+    m_pSceneView = new CodeEditor(m_auinotebook5, pFile);
     m_auinotebook5->AddPage(m_pSceneView, wxT("Scene"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_public_white_18dp.png", wxBITMAP_TYPE_ANY));
-    m_pEntitySystemView = new EntitySystemView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    /*m_pEntitySystemView = new EntitySystemView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     m_auinotebook5->AddPage(m_pEntitySystemView, wxT("Entities"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_widgets_white_18dp.png", wxBITMAP_TYPE_ANY));
     m_panel19 = new MaterialsView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     m_auinotebook5->AddPage(m_panel19, wxT("Materials"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_layers_white_18dp.png", wxBITMAP_TYPE_ANY)); // From selected model 
