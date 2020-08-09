@@ -126,6 +126,9 @@ public:
     // Get/Set project directory entries
     wxArrayString& GetProjectDirectoryEntries() { return m_ProjectDirectoryEntries; }
     void SetProjectDirectoryEntries(wxArrayString& projectDirectoryEntries) { m_ProjectDirectoryEntries = projectDirectoryEntries; }
+
+    // Get files (those wich are not binded to a project)
+    void GetFiles(std::vector<class CodeEditor*>& outOpenFiles);
 #pragma endregion
 
 private:
@@ -143,7 +146,7 @@ private:
     // Then, set a default.
     // On a new file created, set the default based on the file type.
 
-    // Map with File Editor so, we can know which file foes into a editor.
+    // Map with File Editor so, we can know which file goes into a editor.
     std::unordered_map<class File*, class CodeEditor*> m_Files;
     std::vector<class Project*> m_Projects;
 

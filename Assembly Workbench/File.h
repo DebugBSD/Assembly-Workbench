@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-
+#include <wx/filename.h>
 #include <string>
 
 enum class FileType
@@ -59,6 +59,7 @@ public:
 
     void SetFileName(const wxString file) { m_FileName = file; }
     const wxString& GetFileName() const { return m_FileName; }
+    const wxString GetAbsoluteFileName() const { return m_FilePath + wxFileName::GetPathSeparator() + m_FileName; }
 
     void SetFile(const wxString file) { m_FilePath = file; }
     const wxString& GetFile() const { return m_FilePath; }
@@ -71,6 +72,7 @@ public:
     class Project* GetProject() { return m_pProject; }
 private:
 
+    // Use wxFileName instead of wxString
     wxString m_FileName;
     wxString m_FilePath; // Absolute or relative path to file without name of file.
 

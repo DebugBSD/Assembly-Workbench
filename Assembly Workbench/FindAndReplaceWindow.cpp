@@ -1,3 +1,34 @@
+/*
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2020, DebugBSD
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 #include "stdafx.h"
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
@@ -10,10 +41,16 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/string.h>
+#include <wx/filename.h>
 #include <wx/imaglist.h>
 #include <wx/frame.h>
 #include <wx/combobox.h>
 
+#include "Main.h"
+#include "Project.h"
+#include "File.h"
+#include "CodeEditor.h"
 #include "SearchModelNode.h"
 #include "SearchModel.h"
 #include "FindAndReplaceWindow.h"
@@ -37,7 +74,8 @@ FindAndReplaceWindow::FindAndReplaceWindow()
     Init();
 }
 
-FindAndReplaceWindow::FindAndReplaceWindow(wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style)
+FindAndReplaceWindow::FindAndReplaceWindow(wxWindow* parent, wxWindowID id, const wxString& caption, const wxPoint& pos, const wxSize& size, long style):
+    m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) }
 {
     Init();
     Create(parent, id, caption, pos, size, style);
@@ -141,9 +179,9 @@ void FindAndReplaceWindow::CreateControls()
     itemComboBox6Strings.Add(_("Current File"));
     itemComboBox6Strings.Add(_("Current Project Directory"));
     itemComboBox6Strings.Add(_("Current File Directory"));
-    wxComboBox* itemComboBox6 = new wxComboBox(itemFrame1, ID_COMBOBOX2, _("All Projects"), wxDefaultPosition, wxDefaultSize, itemComboBox6Strings, wxCB_DROPDOWN);
-    itemComboBox6->SetStringSelection(_("All Projects"));
-    itemBoxSizer4->Add(itemComboBox6, 1, wxGROW | wxALL, 3);
+    m_WhereToFind = new wxComboBox(itemFrame1, ID_COMBOBOX2, _("All Projects"), wxDefaultPosition, wxDefaultSize, itemComboBox6Strings, wxCB_DROPDOWN);
+    m_WhereToFind->SetStringSelection(_("All Projects"));
+    itemBoxSizer4->Add(m_WhereToFind, 1, wxGROW | wxALL, 3);
 
     wxCheckBox* itemCheckBox1 = new wxCheckBox(itemFrame1, ID_CHECKBOX, _("Include subfolders"), wxDefaultPosition, wxDefaultSize, 0);
     itemCheckBox1->SetValue(false);
@@ -229,10 +267,107 @@ bool FindAndReplaceWindow::ShowToolTips()
     return true;
 }
 
+/* 
+ * Funciones a usar para la busqueda de strings: LineFromPosition, GetColumn, FindText  
+ */
+void FindAndReplaceWindow::Find(const wxString& pattern, std::vector<wxStyledTextCtrl*>& inputBuffers, int flags, std::unordered_map<std::pair<int, int>, wxString, pair_hash>& elementsFound)
+{
+    for (wxStyledTextCtrl *iStream : inputBuffers)
+    {
+
+    }
+}
+
 void FindAndReplaceWindow::OnFindAllBtnClicked(wxCommandEvent& event)
 {
-    
+    wxArrayString itemComboBox6Strings;
+    itemComboBox6Strings.Add(_("All Projects"));
+    itemComboBox6Strings.Add(_("All Projects and Files"));
+    itemComboBox6Strings.Add(_("All Files"));
+    itemComboBox6Strings.Add(_("Current Project"));
+    itemComboBox6Strings.Add(_("Current File"));
+    itemComboBox6Strings.Add(_("Current Project Directory"));
+    itemComboBox6Strings.Add(_("Current File Directory"));
+    // 1º Miramos donde hay que buscar consultando el combobox de buscar donde (m_WhereToFind)
+    std::vector<wxStyledTextCtrl*> bufferedFiles;
+    std::vector<CodeEditor*> openFiles;
+    std::unordered_map < std::pair<int, int>, wxString, pair_hash> elementsFound;
+
+    switch (itemComboBox6Strings.Index(m_WhereToFind->GetStringSelection()))
+    {
+    case 0: // All Projects
+        // Get all open files
+        m_pMainFrame->GetFiles(openFiles);
+
+        for (Project* pProject : m_pMainFrame->GetProjects())
+        {
+            for (File* pFile : pProject->GetFiles())
+            {
+                bool fileFound = false;
+                for (CodeEditor* pOpenFile : openFiles)
+                {
+                    if (pOpenFile->GetFile() == pFile)
+                    {
+                        fileFound = true;
+                        bufferedFiles.push_back(static_cast<wxStyledTextCtrl*>(pOpenFile));
+                    }
+                }
+                if (!fileFound)
+                {
+                    wxStyledTextCtrl* pBufferFile = new wxStyledTextCtrl();
+                    if (pBufferFile->LoadFile(pFile->GetAbsoluteFileName()))
+                    {
+                        bufferedFiles.push_back(pBufferFile);
+                    }
+                }
+            }
+        }
+
+        Find("pattern", bufferedFiles, 0, elementsFound);
+        break;
+    case 1: // All Projects and Files
+
+        // Get all open files
+        m_pMainFrame->GetFiles(openFiles);
+
+        // Get all files from all projects
+        for (Project* pProject : m_pMainFrame->GetProjects())
+        {
+            for (File* pFile : pProject->GetFiles())
+            {
+                bool fileFound = false;
+                for (CodeEditor* pOpenFile : openFiles)
+                {
+                    if (pOpenFile->GetFile() == pFile)
+                    {
+                        fileFound = true;
+                    }
+                }
+                /*if(!fileFound)
+                    arrayOfFiles.Add(pFile->GetAbsoluteFileName());*/
+            }
+        }
+        Find("pattern", bufferedFiles, 0, elementsFound);
+        break;
+    case 2: // All Files
+        break;
+    case 3: // Current Project
+        break;
+    case 4: // Current File
+        break;
+    case 5: // Current Project Directory
+        break;
+    case 6: // Current File Directory
+        break;
+    default:
+
+        break;
+    }
+    // 2º Open and search the pattern into the files or buffers (CodeEDitor*)
     m_searchModel->Init();
+
+    // 3º search for a pattern
+
 }
 
 /*

@@ -218,7 +218,7 @@ void ProjectsWindow::SelectedElement(wxTreeEvent& event)
         }
 
         CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
-        pCodeEditor->LoadFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName());
+        pCodeEditor->LoadFile(pFile->GetAbsoluteFileName());
         m_pMainFrame->AddFile(pFile, pCodeEditor);
 
         dockWindows->Freeze();

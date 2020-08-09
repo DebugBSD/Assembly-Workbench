@@ -19,6 +19,7 @@ BUGS
 * We shouldn't ask for save changes when closing the application without any modification in the files.
 * On the settings window we need to pass arrays of strings to paths instead of a single string in one line.
 * We need more control over the environment variables. We need to get/set them for the different kind of assemblers and options.
+* We need to clean the model and the control when finding elements, but I don't know how to do that right now. The application crashes!
 
 TODO
 ----
@@ -41,6 +42,7 @@ TODO
 * Execute the Find and Replace tool on other thread (so main thread is not busy)
 
 Tomorrow
+
 --------
 
 * Add Basic Find/Replace tools with windows.
@@ -50,3 +52,18 @@ Tomorrow
 * Implement a Console Log to log the output of the assembler, linker, and compiler. When I click on an error on the console, I want to go to the line which caused such an error if possible (some kinds of error are not clickable.
 * Implement Rebuild and Clean.
 * Improve the projects window. We should be able to see all files and directories under a project.
+
+Git/Github integration
+----------------------
+
+* Commit
+* Push
+* Pull
+* Fetch
+* Branch
+* Merge
+* Stash
+* Discard
+* Tags
+* Stage All / Unstage All
+* Stage Selected / Unstage Selected

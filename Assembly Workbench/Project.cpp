@@ -157,7 +157,7 @@ bool Project::Build()
     for (File* pFile:m_Files)
     {
         wxString path, fileName, extension;
-        wxString obj{ pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName() };
+        wxString obj{ pFile->GetAbsoluteFileName() };
         wxFileName::SplitPath(obj, &path, &fileName, &extension);
 
         objects.Add("\""+path + wxFileName::GetPathSeparator() + fileName + ".obj\"");
@@ -206,7 +206,7 @@ void Project::Save()
         wxXmlNode* name = new wxXmlNode(fileNodeConf, wxXML_ELEMENT_NODE, "Name");
         name->AddAttribute("Assembler", "MASM64");
         name->AddAttribute("File", "SRC");
-        wxString srcFile{ GetRelativePathToFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName()) };
+        wxString srcFile{ GetRelativePathToFile(pFile->GetAbsoluteFileName()) };
         name->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", srcFile));
     }
     

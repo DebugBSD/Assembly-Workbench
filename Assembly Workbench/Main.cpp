@@ -276,7 +276,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
             }
             else
             {
-                if (!pCodeEditor->SaveFile(pFile->GetFile()+ wxFileName::GetPathSeparator() + pFile->GetFileName()))
+                if (!pCodeEditor->SaveFile(pFile->GetAbsoluteFileName()))
                 {
                     wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
                     return;
@@ -545,7 +545,7 @@ void MainFrame::OnBuildSolution(wxCommandEvent& event)
                     if (file.first->GetProject() == pProject && file.second->IsModified())
                     {
                         File* pFile = file.first;
-                        file.second->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName());
+                        file.second->SaveFile(pFile->GetAbsoluteFileName());
                     }
                 }
                 pProject->Build();
@@ -575,7 +575,7 @@ void MainFrame::OnBuildSolution(wxCommandEvent& event)
                     if (file.first->GetProject() == pProject && file.second->IsModified())
                     {
                         File* pFile = file.first;
-                        file.second->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName());
+                        file.second->SaveFile(pFile->GetAbsoluteFileName());
                     }
                 }
                 pProject->Build();
@@ -648,6 +648,14 @@ CodeEditor* MainFrame::GetCodeEditor(File* pFile)
         }
     }
     return pCodeEditor;
+}
+
+void MainFrame::GetFiles(std::vector<class CodeEditor*>& outOpenFiles)
+{
+    for (std::pair<File* , CodeEditor*> openFile : m_Files)
+    {
+        outOpenFiles.push_back(openFile.second);
+    }
 }
 
 /*****************************************************************************/
