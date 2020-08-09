@@ -49,6 +49,24 @@
     <Filter Include="Archivos de origen\Models">
       <UniqueIdentifier>{3956516c-135f-4b63-b8a4-03bf42bd6e31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Controls">
+      <UniqueIdentifier>{cda24d67-3c91-4124-930b-edf4229ce6b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Controls">
+      <UniqueIdentifier>{46a4b1ab-333a-4894-8832-1ca677914de9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Settings">
+      <UniqueIdentifier>{d0c0c2d2-ec5a-4ede-9a5e-0c6cda35655d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Settings">
+      <UniqueIdentifier>{807b8a07-fd83-423c-9b4a-6834ab8d4733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\ArtProvider">
+      <UniqueIdentifier>{ad20708f-79a7-425e-909d-5b36a979c71c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\ArtProvider">
+      <UniqueIdentifier>{718f6bee-6f8a-4b13-9198-5f2ee0c7d958}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -129,6 +147,18 @@
     <ClInclude Include="SearchModelNode.h">
       <Filter>Archivos de encabezado\Models</Filter>
     </ClInclude>
+    <ClInclude Include="CustomFrame.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="AWButton.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="AppSettings.h">
+      <Filter>Archivos de encabezado\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="AWArtProvider.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -187,6 +217,18 @@
     </ClCompile>
     <ClCompile Include="SearchModelNode.cpp">
       <Filter>Archivos de origen\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomFrame.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="AWButton.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="AppSettings.cpp">
+      <Filter>Archivos de origen\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="AWArtProvider.cpp">
+      <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -62,7 +62,7 @@
 // NOTE: Right now is hardcoded. In the future, will be autodetected.
 #include "MASM.h"
 #include "MLINKER.h"
-
+#include "AWButton.h"
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
@@ -120,15 +120,22 @@ int MyApp::OnExit()
 }
 
 MainFrame::MainFrame(): 
-    wxFrame(NULL, wxID_ANY, "Assembly Workbench", { 0,0 }, { 1280, 1000 }),
+    CustomFrame(NULL, wxID_ANY, "Assembly Workbench", wxDefaultPosition, wxSize(1280, 1000), wxNO_BORDER | wxCLIP_CHILDREN),
+    m_pAppSettings{ new AppSettings() },
     m_pAssemblerBase{nullptr},
     m_pLinkerBase{nullptr},
     m_pCompilerBase{nullptr},
     m_pGlobalFileSettings{nullptr},
-    m_pWindowManager{new WindowManager()}
+    m_pArtProvider{ new AWArtProvider() }/*,
+    m_pWindowManager{new WindowManager()}*/
 {
+    wxInitAllImageHandlers();
     InitToolChain();
 
+    m_pArtProvider->SetColour(m_pAppSettings->m_backgroundColor);
+    m_pArtProvider->SetActiveColour(m_pAppSettings->m_activeTabColor);
+
+    SetBackgroundColour(m_pAppSettings->m_backgroundColor);
     // Load cache
     wxString userDir{ wxStandardPaths::Get().GetUserLocalDataDir() };
     if (!wxFileName::DirExists(userDir))
@@ -149,7 +156,7 @@ MainFrame::MainFrame():
     }
 
     // Layout
-    m_pWindowManager->SetManagedWindow(this);
+    //m_pWindowManager->SetManagedWindow(this);
 
     // Set Icon
     // SetIcon();
@@ -160,57 +167,72 @@ MainFrame::MainFrame():
     //SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
     //ShowFullScreen(true); // Show the window maximized but, without any close, minimize or maximize button.
     Maximize(true); // Show the window maximized
-    
-    CreateMenubar();
+    wxBoxSizer* bSizer11;
+    bSizer11 = new wxBoxSizer(wxVERTICAL);
 
-    m_pStatusBar = CreateStatusBar(2);
-    m_pStatusBar->SetStatusText("Welcome to Assembly Workbench!",0);
+    wxBoxSizer* bSizer12;
+    bSizer12 = new wxBoxSizer(wxVERTICAL);
 
-    // Add toolbars
-    wxAuiToolBar* tb1 = CreateMainToolBar();
+    /*
+     * Init menus and frame buttons
+     */
+    bSizer12->Add(InitFrameButtons(), 0, wxEXPAND, 0);
 
-    // Add panels
-    m_pWindowManager->AddPane(new ProjectsWindow(this), wxAuiPaneInfo().
-        Name("ProjectsWindow").Caption("Projects").
-        Left().Layer(0).Row(0).Position(0).
-        CloseButton(true).MaximizeButton(true));
+    /*
+     * Init the toolbar
+     */
+    bSizer12->Add(InitToolbar(), 0, wxEXPAND, 0);
 
-    // Add panels
-    m_pWindowManager->AddPane(new FindAndReplaceWindow(this), wxAuiPaneInfo().
-        Name("FindAndReplaceWindow").Caption("Find And Replace").
-        Right().Layer(0).Row(0).Position(0).
-        CloseButton(true).MaximizeButton(true));
+    wxBoxSizer* bSizer14;
+    bSizer14 = new wxBoxSizer(wxHORIZONTAL);
 
-    // Create bottom panel
-    wxTextCtrl* wnd10 = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-        wxPoint(0, 0), FromDIP(wxSize(150, 90)),
-        wxNO_BORDER | wxTE_MULTILINE);
+    wxBoxSizer* bSizer16;
+    bSizer16 = new wxBoxSizer(wxVERTICAL);
 
-    m_pWindowManager->AddPane(wnd10, wxAuiPaneInfo().
-        Name("ConsoleLog").Caption("Console Output").
-        Bottom().Layer(1).Position(1).
-        CloseButton(true).MaximizeButton(true));
 
-    //EditorsWindow* pEditor = new EditorsWindow(this);
-    // create center panels
-    m_pWindowManager->AddPane(new EditorsWindow(this), wxAuiPaneInfo().Name("notebook_content").
-        CenterPane().PaneBorder(false));
+    bSizer16->Add(InitViews(), 1, wxALL | wxEXPAND /*| wxALIGN_CENTER_VERTICAL*/, 5);
 
-    m_pWindowManager->AddPane(tb1, wxAuiPaneInfo().Name("tb1").Caption("File Toolbar").ToolbarPane().Top());
 
-    /*Bind(wxEVT_MENU, &MainFrame::OnHello, this, ID_Hello);
-    Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
-    Bind(wxEVT_MENU, &MainFrame::OnExit, this, wxID_EXIT);
-    Bind(wxEVT_SIZE, &MainFrame::OnResize, this);*/
+    bSizer14->Add(bSizer16, 1, wxEXPAND, 0);
 
-    // "commit" all changes made to wxAuiManager
-    m_pWindowManager->Update();
+
+    bSizer12->Add(bSizer14, 1, wxEXPAND, 0);
+
+    wxBoxSizer* bSizer17;
+    bSizer17 = new wxBoxSizer(wxVERTICAL);
+
+    m_staticText2 = new wxStaticText(this, wxID_ANY, wxT("Welcome to Assembly Workbench!"), wxDefaultPosition, wxDefaultSize, 0);
+    m_staticText2->SetForegroundColour(m_pAppSettings->m_foregroundColor);
+    m_staticText2->Wrap(-1);
+    bSizer17->Add(m_staticText2, 0, wxALL, 5);
+
+
+    bSizer12->Add(bSizer17, 0, 0, 5);
+
+
+    bSizer11->Add(bSizer12, 1, wxEXPAND, 5);
+
+    this->SetSizer(bSizer11);
+    this->Layout();
+
+    /*wxString lastProjectOpen;
+    m_Config->Read("LastProject", &lastProjectOpen);
+    if (lastProjectOpen != "")
+    {
+
+        m_pProject = new Project();
+        m_pProject->SetFileName(lastProjectOpen);
+        m_pProject->Load();
+        UpdateViews();
+        m_HasProject = true;
+        wxLogWarning("Epa!");
+    }*/
 }
 
 MainFrame::~MainFrame()
 {
     UnInitToolChain();
-    m_pWindowManager->UnInit();
+    //m_pWindowManager->UnInit();
 
 }
 
@@ -242,6 +264,7 @@ void MainFrame::OnResize(wxSizeEvent& event)
 // It save the current file currently edited.
 void MainFrame::OnSave(wxCommandEvent& event)
 {
+#if 0
     wxFileDialog
         saveFileDialog(this, _("Save Assembly file"), "", "",
             "ASM files (*.asm)|*.asm", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
@@ -292,10 +315,12 @@ void MainFrame::OnSave(wxCommandEvent& event)
     {
         // TODO: Handle errors.
     }
+#endif
 }
 
 void MainFrame::OnOpenProject(wxCommandEvent &event)
 {
+#if 0
     wxFileDialog
         openFileDialog(this, _("Open Project file"), "", "",
             "Project files (*.awp)|*.awp", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -317,10 +342,12 @@ void MainFrame::OnOpenProject(wxCommandEvent &event)
         // Add the project to the vector of projects.
         m_Projects.push_back(pProject);
     }
+#endif
 }
 
 void MainFrame::OnOpen(wxCommandEvent& event)
 {
+#if 0
     wxFileDialog
         openFileDialog(this, _("Open Assembly file"), "", "",
             "ASM and Include files (*.asm;*.inc)|*.asm;*.inc", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -341,10 +368,12 @@ void MainFrame::OnOpen(wxCommandEvent& event)
     m_Files.insert({ pFile,pCodeEditor });
 
     ctrl->AddPage(pCodeEditor, tempFile.filename().string());
+#endif
 }
 
 void MainFrame::OnNew(wxCommandEvent& event)
 {
+#if 0
     wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
 
     File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
@@ -359,10 +388,12 @@ void MainFrame::OnNew(wxCommandEvent& event)
     ctrl->Thaw();
 
     m_pWindowManager->Update();
+#endif
 }
 
 void MainFrame::OnNewProject(wxCommandEvent& event)
 {
+#if 0
     NewProjectDlg* pNewProjectDlg = new NewProjectDlg(nullptr, m_ProjectDirectoryEntries);
 
     if (pNewProjectDlg->ShowModal() == 0)
@@ -394,6 +425,7 @@ void MainFrame::OnNewProject(wxCommandEvent& event)
     }
 
     pNewProjectDlg->Destroy();
+#endif
 }
 
 void MainFrame::OnNewFile(wxCommandEvent& event)
@@ -463,6 +495,7 @@ void MainFrame::OnCMDTool(wxCommandEvent& event)
 
 void MainFrame::OnEdit(wxCommandEvent& event)
 {
+#if 0
     wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
@@ -472,6 +505,7 @@ void MainFrame::OnEdit(wxCommandEvent& event)
             pCodeEditor->GetEventHandler()->ProcessEvent(event);
         }
     }
+#endif
 }
 
 void MainFrame::OnModifySettings(wxCommandEvent& event)
@@ -498,6 +532,7 @@ void MainFrame::OnModifySettings(wxCommandEvent& event)
 
 void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 {
+#if 0
     wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
     if (ctrl)
     {
@@ -512,10 +547,12 @@ void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 
         }
     }
+#endif
 }
 
 void MainFrame::OnBuildSolution(wxCommandEvent& event)
 {
+#if 0
     wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_pWindowManager->GetPane("ConsoleLog").window);
     if(pTextControl)
         pTextControl->Clear();
@@ -582,6 +619,7 @@ void MainFrame::OnBuildSolution(wxCommandEvent& event)
             }
         }
     }
+#endif
 }
 
 void MainFrame::OnRebuildSolution(wxCommandEvent& event)
@@ -623,13 +661,14 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 
 void MainFrame::Log(wxArrayString* pArrayLog)
 {
-
+#if 0
     wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_pWindowManager->GetPane("ConsoleLog").window);
     
     for (wxString str : *pArrayLog)
     {
         pTextControl->AppendText(str + "\n");
     }
+#endif
 }
 
 void MainFrame::Log(wxString* pError)
@@ -656,6 +695,150 @@ void MainFrame::GetFiles(std::vector<class CodeEditor*>& outOpenFiles)
     {
         outOpenFiles.push_back(openFile.second);
     }
+}
+
+wxSizer* MainFrame::InitFrameButtons()
+{
+    wxBoxSizer* bSizer13;
+
+    struct menuInfo {
+        AWButton** pButton;
+        wxWindowID windowId;
+        wxString text;
+        wxPoint pos;
+        wxSize size;
+        long style;
+    } menuButtons[] =
+    {
+        {&m_pFileBtn, wxID_ANY, wxT("File"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pEditBtn, wxID_ANY, wxT("Edit"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pCreateBtn, wxID_ANY, wxT("Create"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pToolsBtn, wxID_ANY, wxT("Tools"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pWindowsBtn, wxID_ANY, wxT("Windows"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pRenderingBtn, wxID_ANY, wxT("Rendering"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pHelpBtn, wxID_ANY, wxT("Help"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {NULL, -1, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1), 0}
+    };
+
+    bSizer13 = new wxBoxSizer(wxHORIZONTAL);
+
+    // Logo
+
+    wxBitmap logo = wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/jollyroger.png"), wxBITMAP_TYPE_ANY);
+    wxStaticBitmap* pBitmap = new wxStaticBitmap(this, wxID_ANY, logo, wxDefaultPosition, wxSize(32, 32), 0);
+    bSizer13->Add(pBitmap, 0, 0, 0);
+
+    // Menu buttons
+    for (int i = 0; menuButtons[i].pButton != NULL; i++)
+    {
+        (*menuButtons[i].pButton) = new AWButton(this, menuButtons[i].windowId, menuButtons[i].text, menuButtons[i].pos, menuButtons[i].size, menuButtons[i].style);
+        bSizer13->Add(*(menuButtons[i].pButton), 0, wxALL, 5);
+    }
+
+    // Project name 
+    m_staticTitle = new wxStaticText(this, wxID_ANY, wxT(""), wxDefaultPosition, wxSize(100, 24), wxBORDER_SIMPLE | wxALIGN_CENTRE_HORIZONTAL);
+    m_staticTitle->SetFont(wxFont(m_pAppSettings->m_fontSize, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString));
+    m_staticTitle->SetBackgroundColour(m_pAppSettings->m_activeTabColor);
+    m_staticTitle->SetForegroundColour(m_pAppSettings->m_foregroundColor);
+
+    bSizer13->Add(m_staticTitle, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
+    // Finder
+    pSearchCtrl = new wxSearchCtrl(this, wxID_ANY, wxT(""), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_SIMPLE);
+    pSearchCtrl->SetBackgroundColour(m_pAppSettings->m_backgroundColor);
+    pSearchCtrl->SetForegroundColour(m_pAppSettings->m_foregroundColor);
+    bSizer13->Add(pSearchCtrl, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+
+    bSizer13->Add(0, 0, 1, wxEXPAND | wxRIGHT, 0);
+
+    // Top left frame buttons
+    m_pMinimizeBtn = new AWButton(this, wxID_ANY, wxT("MyButton"), wxDefaultPosition, m_pAppSettings->m_frameIconsSize, wxBORDER_NONE | wxBU_EXACTFIT | wxBU_NOTEXT, wxDefaultValidator, wxButtonNameStr, wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/Minimize.png"), wxBITMAP_TYPE_ANY));
+    bSizer13->Add(m_pMinimizeBtn, 0, wxALL, 5);
+
+    m_pMaximizeBtn = new AWButton(this, wxID_ANY, wxT("MyButton"), wxDefaultPosition, m_pAppSettings->m_frameIconsSize, wxBORDER_NONE | wxBU_EXACTFIT | wxBU_NOTEXT, wxDefaultValidator, wxButtonNameStr, wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/Maximize.png"), wxBITMAP_TYPE_ANY));
+    bSizer13->Add(m_pMaximizeBtn, 0, wxALL, 5);
+
+    m_pCloseBtn = new AWButton(this, wxID_EXIT, wxT("MyButton"), wxDefaultPosition, m_pAppSettings->m_frameIconsSize, wxBORDER_NONE | wxBU_EXACTFIT | wxBU_NOTEXT, wxDefaultValidator, wxButtonNameStr, wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/Close.png"), wxBITMAP_TYPE_ANY));
+    bSizer13->Add(m_pCloseBtn, 0, wxALL, 5);
+    return bSizer13;
+}
+
+wxSizer* MainFrame::InitToolbar()
+{
+    struct menuInfo {
+        AWButton** pButton;
+        wxWindowID windowId;
+        wxString text;
+        wxPoint pos;
+        wxSize size;
+        long style;
+        wxString tooltip;
+    } menuButtons[] =
+    {
+        {&m_pGoBackBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_arrow_left_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Go back"},
+        {&m_pGoForwardBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_arrow_right_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Go forward"},
+        {&m_pNewBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_create_new_folder_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "New"},
+        {&m_pOpenBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Open"},
+        {&m_pSaveBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_save_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Save"},
+        {&m_pUndoBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_undo_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Undo"},
+        {&m_pRedoBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_redo_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Redo"},
+        {&m_pPlayBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_play_arrow_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Play"},
+        {&m_pBuildBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_build_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Build"},
+        {&m_pSettingsBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_settings_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Settings"},
+        {&m_pCodeEditorBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_code_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Code editor"},
+        {NULL, -1, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1), 0}
+    };
+
+    wxBoxSizer* bSizerToolBar;
+    bSizerToolBar = new wxBoxSizer(wxHORIZONTAL);
+
+    for (int i = 0; menuButtons[i].pButton != NULL; i++)
+    {
+        (*menuButtons[i].pButton) = new AWButton(this, menuButtons[i].windowId, wxT("MyButton"), menuButtons[i].pos, menuButtons[i].size, menuButtons[i].style, wxDefaultValidator, wxButtonNameStr, wxBitmap(menuButtons[i].text, wxBITMAP_TYPE_ANY), menuButtons[i].tooltip);
+        bSizerToolBar->Add((*menuButtons[i].pButton), 0, wxALL, 4);
+    }
+
+    return bSizerToolBar;
+}
+
+wxSizer* MainFrame::InitViews()
+{
+    wxBoxSizer* bSizer2;
+    bSizer2 = new wxBoxSizer(wxHORIZONTAL);
+
+    m_auinotebook5 = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER);
+    wxAuiManager& mgr = const_cast <wxAuiManager&> (m_auinotebook5->GetAuiManager());
+    mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_SASH_SIZE, 2);
+    mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_SASH_COLOUR, m_pAppSettings->m_backgroundColor);
+    m_auinotebook5->SetArtProvider(m_pArtProvider);
+    /*
+    m_pSceneView = new SceneView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_auinotebook5->AddPage(m_pSceneView, wxT("Scene"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_public_white_18dp.png", wxBITMAP_TYPE_ANY));
+    m_pEntitySystemView = new EntitySystemView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_auinotebook5->AddPage(m_pEntitySystemView, wxT("Entities"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_widgets_white_18dp.png", wxBITMAP_TYPE_ANY));
+    m_panel19 = new MaterialsView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_auinotebook5->AddPage(m_panel19, wxT("Materials"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_layers_white_18dp.png", wxBITMAP_TYPE_ANY)); // From selected model 
+    m_pAssetBrowserViewPanel = new AssetBrowserView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_auinotebook5->AddPage(m_pAssetBrowserViewPanel, wxT("Asset Browser"), true, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_library_books_white_18dp.png", wxBITMAP_TYPE_ANY));
+    m_pConsoleView = new ConsoleView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_auinotebook5->AddPage(m_pConsoleView, wxT("Console"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_message_white_18dp.png", wxBITMAP_TYPE_ANY));
+    m_panel22 = new RenderView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_auinotebook5->AddPage(m_panel22, wxT("Render"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_camera_alt_white_18dp.png", wxBITMAP_TYPE_ANY));
+    m_pComponentSystemView = new ComponentSystemView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_auinotebook5->AddPage(m_pComponentSystemView, wxT("Components"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_clear_all_white_18dp.png", wxBITMAP_TYPE_ANY));
+    */
+    // BUG: wxAuiManager from wxAuiNotebook doesn't works as expected or maybe I don't understand how is supposed to work
+    /*wxString auiPerspective;
+    if (wxConfig::Get()->Read(CFG_AUI_PERSPECTIVE, &auiPerspective)) {
+        mgr.LoadPerspective(auiPerspective, false);
+    }
+    mgr.Update();*/
+
+    //m_panel24 = new DefaultPanelView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    //m_auinotebook5->AddPage(m_panel24, wxT("Properties"), false, wxNullBitmap);
+
+    bSizer2->Add(m_auinotebook5, 1, wxEXPAND | wxALL, 5);
+    return bSizer2;
 }
 
 /*****************************************************************************/
