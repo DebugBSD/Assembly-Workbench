@@ -54,6 +54,7 @@
 #include "EditorsWindow.h"
 #include "ProjectsWindow.h"
 #include "FindAndReplaceWindow.h"
+#include "ConsoleView.h"
 #include "resource.h"
 #include "Main.h"
 #include "File.h"
@@ -207,10 +208,10 @@ MainFrame::MainFrame():
     wxBoxSizer* bSizer17;
     bSizer17 = new wxBoxSizer(wxVERTICAL);
 
-    m_staticText2 = new wxStaticText(this, wxID_ANY, wxT("Welcome to Assembly Workbench!"), wxDefaultPosition, wxDefaultSize, 0);
-    m_staticText2->SetForegroundColour(m_pAppSettings->m_foregroundColor);
-    m_staticText2->Wrap(-1);
-    bSizer17->Add(m_staticText2, 0, wxALL, 5);
+    m_pStatusBar = new wxStaticText(this, wxID_ANY, wxT("Welcome to Assembly Workbench!"), wxDefaultPosition, wxDefaultSize, 0);
+    m_pStatusBar->SetForegroundColour(m_pAppSettings->m_foregroundColor);
+    m_pStatusBar->Wrap(-1);
+    bSizer17->Add(m_pStatusBar, 0, wxALL, 5);
 
 
     bSizer12->Add(bSizer17, 0, 0, 5);
@@ -647,7 +648,7 @@ void MainFrame::OnLaunchDebugger(wxCommandEvent& event)
 
 void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t currentColumn, size_t currentLine)
 {
-    /*wxString statusText;
+    wxString statusText;
 
     // Longitud total en caracteres
     statusText << " Characters: " << totalChars;
@@ -661,7 +662,7 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
     // Columna actual del cursor
     statusText << " Col: " << currentColumn;
 
-    m_pStatusBar->SetStatusText(statusText,1);*/
+    m_pStatusBar->SetLabelText(statusText);
 
 }
 
@@ -718,10 +719,11 @@ wxSizer* MainFrame::InitFrameButtons()
     {
         {&m_pFileBtn, wxID_ANY, wxT("File"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pEditBtn, wxID_ANY, wxT("Edit"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pCreateBtn, wxID_ANY, wxT("Create"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pViewBtn, wxID_ANY, wxT("View"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pProjectBtn, wxID_ANY, wxT("Project"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pBuildMenuBtn, wxID_ANY, wxT("Build"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pDebugBtn, wxID_ANY, wxT("Debug"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pToolsBtn, wxID_ANY, wxT("Tools"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pWindowsBtn, wxID_ANY, wxT("Windows"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pRenderingBtn, wxID_ANY, wxT("Rendering"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pHelpBtn, wxID_ANY, wxT("Help"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {NULL, -1, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1), 0}
     };
@@ -738,7 +740,7 @@ wxSizer* MainFrame::InitFrameButtons()
     for (int i = 0; menuButtons[i].pButton != NULL; i++)
     {
         (*menuButtons[i].pButton) = new AWButton(this, menuButtons[i].windowId, menuButtons[i].text, menuButtons[i].pos, menuButtons[i].size, menuButtons[i].style);
-        bSizer13->Add(*(menuButtons[i].pButton), 0, wxALL, 5);
+        bSizer13->Add(*(menuButtons[i].pButton), 0, wxTOP, 5);
     }
 
     // Project name 
@@ -818,33 +820,29 @@ wxSizer* MainFrame::InitViews()
     mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_SASH_COLOUR, m_pAppSettings->m_backgroundColor);
     m_auinotebook5->SetArtProvider(m_pArtProvider);
 
+    // Projects view
+    m_pProjectWindow = new ProjectsWindow(m_auinotebook5);
+    m_auinotebook5->AddPage(m_pProjectWindow, wxT("Project"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_clear_all_white_18dp.png", wxBITMAP_TYPE_ANY));
+
+    // Code editor view
     File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     m_pSceneView = new CodeEditor(m_auinotebook5, pFile);
     m_auinotebook5->AddPage(m_pSceneView, wxT("New File*"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_code_white_18dp.png", wxBITMAP_TYPE_ANY));
-    m_pSceneView = new CodeEditor(m_auinotebook5, pFile);
-    m_auinotebook5->AddPage(m_pSceneView, wxT("New File*"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_code_white_18dp.png", wxBITMAP_TYPE_ANY));
-    /*m_pEntitySystemView = new EntitySystemView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    m_auinotebook5->AddPage(m_pEntitySystemView, wxT("Entities"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_widgets_white_18dp.png", wxBITMAP_TYPE_ANY));
-    m_panel19 = new MaterialsView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    m_auinotebook5->AddPage(m_panel19, wxT("Materials"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_layers_white_18dp.png", wxBITMAP_TYPE_ANY)); // From selected model 
-    m_pAssetBrowserViewPanel = new AssetBrowserView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    m_auinotebook5->AddPage(m_pAssetBrowserViewPanel, wxT("Asset Browser"), true, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_library_books_white_18dp.png", wxBITMAP_TYPE_ANY));
-    m_pConsoleView = new ConsoleView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+
+    // Console view
+    m_pConsoleView = new ConsoleView(m_auinotebook5);
     m_auinotebook5->AddPage(m_pConsoleView, wxT("Console"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_message_white_18dp.png", wxBITMAP_TYPE_ANY));
-    m_panel22 = new RenderView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    m_auinotebook5->AddPage(m_panel22, wxT("Render"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_camera_alt_white_18dp.png", wxBITMAP_TYPE_ANY));
-    m_pComponentSystemView = new ComponentSystemView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    m_auinotebook5->AddPage(m_pComponentSystemView, wxT("Components"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_clear_all_white_18dp.png", wxBITMAP_TYPE_ANY));
-    */
+
+    // Find and Replace view
+    m_pFindAndReplaceView = new FindAndReplaceWindow(m_auinotebook5);
+    m_auinotebook5->AddPage(m_pFindAndReplaceView, wxT("Find And Replace"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_message_white_18dp.png", wxBITMAP_TYPE_ANY));
+
     // BUG: wxAuiManager from wxAuiNotebook doesn't works as expected or maybe I don't understand how is supposed to work
     /*wxString auiPerspective;
     if (wxConfig::Get()->Read(CFG_AUI_PERSPECTIVE, &auiPerspective)) {
         mgr.LoadPerspective(auiPerspective, false);
     }
     mgr.Update();*/
-
-    //m_panel24 = new DefaultPanelView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    //m_auinotebook5->AddPage(m_panel24, wxT("Properties"), false, wxNullBitmap);
 
     bSizer2->Add(m_auinotebook5, 1, wxEXPAND | wxALL, 5);
     return bSizer2;

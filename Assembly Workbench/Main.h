@@ -104,9 +104,7 @@ public:
 
 #pragma region Public Methods
     class AppSettings* GetAppSettings() { return m_pAppSettings; }
-    void SetStatusBar(const wxString& text) { m_pStatusBar->SetStatusText(text); }
     void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
-    class wxStatusBar* GetStatusBar() { return m_pStatusBar; }
 
     void Log(class wxArrayString *pArrayLog);
     void Log(class wxString* pError);
@@ -150,8 +148,6 @@ private:
     class CompilerBase* m_pCompilerBase;
     class FileSettings *m_pGlobalFileSettings;
 
-    class wxStatusBar* m_pStatusBar;
-
     // Create a map with assemblers, compilers and linkers.
     // Then, set a default.
     // On a new file created, set the default based on the file type.
@@ -162,30 +158,26 @@ private:
 
     wxArrayString m_ProjectDirectoryEntries;
 
-    // From Caronte Editor...
-
     class AWButton* m_pFileBtn;
     class AWButton* m_pEditBtn;
-    class AWButton* m_pCreateBtn;
+    class AWButton* m_pViewBtn;
+    class AWButton* m_pProjectBtn;
+    class AWButton* m_pBuildMenuBtn;
+    class AWButton* m_pDebugBtn;
     class AWButton* m_pToolsBtn;
-    class AWButton* m_pWindowsBtn;
-    class AWButton* m_pRenderingBtn;
     class AWButton* m_pHelpBtn;
     class AWButton* m_pMinimizeBtn;
     class AWButton* m_pMaximizeBtn;
     class AWButton* m_pCloseBtn;
-    wxPanel* m_panel9;
-    wxStaticText* m_staticText2;
+
+    wxStaticText* m_pStatusBar;
     wxStaticText* m_staticTitle;
     wxAuiNotebook* m_auinotebook5;
     class CodeEditor* m_pSceneView;
-    class EntitySystemView* m_pEntitySystemView;
-    wxPanel* m_panel19;
-    class AssetBrowserView* m_pAssetBrowserViewPanel;
     class ConsoleView* m_pConsoleView;
-    wxPanel* m_panel22;
     class ComponentSystemView* m_pComponentSystemView;
-    wxPanel* m_panel24;
+    class ProjectsWindow* m_pProjectWindow;
+    class FindAndReplaceWindow* m_pFindAndReplaceView;
     wxSearchCtrl* pSearchCtrl;
 
 
@@ -202,8 +194,8 @@ private:
     class AWButton* m_pCodeEditorBtn;
 
     // Popup menus
-    class CEMenuFile* m_pMenuFile;
-    class CEMenuEdit* m_pMenuEdit;
+    class AWMenuFile* m_pMenuFile;
+    class AWMenuEdit* m_pMenuEdit;
 
 #pragma endregion
 

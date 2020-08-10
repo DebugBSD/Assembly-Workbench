@@ -159,6 +159,9 @@
     <ClInclude Include="AWArtProvider.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="ConsoleView.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -228,6 +231,9 @@
       <Filter>Archivos de origen\Settings</Filter>
     </ClCompile>
     <ClCompile Include="AWArtProvider.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleView.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

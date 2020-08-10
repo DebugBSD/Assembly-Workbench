@@ -91,6 +91,7 @@ bool ProjectsWindow::Create(wxWindow* parent, wxWindowID id, const wxString& cap
     CreateControls();
     //SetMinSize(size);
     //Centre();
+
     return true;
 }
 
@@ -119,6 +120,9 @@ void ProjectsWindow::Init()
 
 void ProjectsWindow::CreateControls()
 {
+
+    MainFrame* pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) };
+
     m_MenuPopUp = new wxMenu;
     m_MenuPopUp->Append(ID_Project_View_Add_New_File, "Add New File");                      // Open a new window 
     ProjectsWindow* itemFrame1 = this;
@@ -130,9 +134,13 @@ void ProjectsWindow::CreateControls()
     itemBoxSizer1->Add(itemBoxSizer2, 1, wxGROW | wxALL, 0);
 
     m_pSearchCtrl = new wxSearchCtrl(itemFrame1, ID_PROJECTS_WINDOW_TEXTCTRL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    m_pSearchCtrl->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_pSearchCtrl->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer2->Add(m_pSearchCtrl, 0, wxGROW | wxALL, 0);
 
     m_pTreeCtrl = new wxTreeCtrl(itemFrame1, ID_TreeCtrl_Projects_View, wxDefaultPosition, wxSize(100, 100), wxTR_DEFAULT_STYLE | wxNO_BORDER);
+    m_pTreeCtrl->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_pTreeCtrl->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     m_pTreeCtrl->AddRoot("Projects");
     itemBoxSizer2->Add(m_pTreeCtrl, 1, wxGROW | wxALL, 0);
 
