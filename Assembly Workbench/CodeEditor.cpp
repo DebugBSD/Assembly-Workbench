@@ -121,7 +121,7 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
         wxSTC_WRAP_WORD : wxSTC_WRAP_NONE);
     //wxFont font(wxFontInfo(10).Family(wxFONTFAMILY_MODERN));
     StyleSetFont(wxSTC_STYLE_DEFAULT, font);
-    StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxBLACK);
+    StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxWHITE);
     StyleSetBackground(wxSTC_STYLE_DEFAULT, m_pMainFrame->GetAppSettings()->m_backgroundColor);
     StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour("DARK GREY"));
     StyleSetBackground(wxSTC_STYLE_LINENUMBER, m_pMainFrame->GetAppSettings()->m_backgroundColor);
@@ -132,6 +132,7 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
     SetVisiblePolicy(wxSTC_VISIBLE_STRICT | wxSTC_VISIBLE_SLOP, 1);
     SetXCaretPolicy(wxSTC_CARET_EVEN | wxSTC_VISIBLE_STRICT | wxSTC_CARET_SLOP, 1);
     SetYCaretPolicy(wxSTC_CARET_EVEN | wxSTC_VISIBLE_STRICT | wxSTC_CARET_SLOP, 1);
+    SetCaretForeground(*wxWHITE);
 
     // set caret visibility in current line
     SetCaretLineVisible(g_CommonPrefs.caretLineEnable ? true : false);
