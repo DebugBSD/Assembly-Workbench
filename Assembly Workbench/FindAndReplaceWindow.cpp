@@ -125,6 +125,7 @@ void FindAndReplaceWindow::Init()
 void FindAndReplaceWindow::CreateControls()
 {
 
+    MainFrame* pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) };
     FindAndReplaceWindow* itemFrame1 = this;
 
     wxBoxSizer* itemBoxSizer1 = new wxBoxSizer(wxVERTICAL);
@@ -138,6 +139,8 @@ void FindAndReplaceWindow::CreateControls()
 
     wxArrayString m_FindComboBoxStrings;
     m_FindComboBox = new wxComboBox(itemFrame1, ID_FIND_COMBOBOX, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_FindComboBoxStrings, wxCB_DROPDOWN);
+    m_FindComboBox->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_FindComboBox->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     m_FindComboBox->SetHelpText(_("Find"));
     if (FindAndReplaceWindow::ShowToolTips())
         m_FindComboBox->SetToolTip(_("Find"));
@@ -145,6 +148,8 @@ void FindAndReplaceWindow::CreateControls()
 
     wxArrayString m_ReplaceComboBoxStrings;
     m_ReplaceComboBox = new wxComboBox(itemFrame1, ID_REPLACE_COMBOBOX, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_ReplaceComboBoxStrings, wxCB_DROPDOWN);
+    m_ReplaceComboBox->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_ReplaceComboBox->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     m_ReplaceComboBox->SetHelpText(_("Replace"));
     if (FindAndReplaceWindow::ShowToolTips())
         m_ReplaceComboBox->SetToolTip(_("Replace"));
@@ -154,14 +159,20 @@ void FindAndReplaceWindow::CreateControls()
     itemBoxSizer2->Add(itemBoxSizer6, 0, wxGROW | wxALL, 3);
 
     wxCheckBox* itemCheckBox7 = new wxCheckBox(itemFrame1, ID_CASE_SENSITIVE_CBOX, _("Case Sensitive"), wxDefaultPosition, wxDefaultSize, 0);
+    itemCheckBox7->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemCheckBox7->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemCheckBox7->SetValue(false);
     itemBoxSizer6->Add(itemCheckBox7, 0, wxGROW | wxALL, 3);
 
     wxCheckBox* itemCheckBox8 = new wxCheckBox(itemFrame1, ID_COMPLETE_WORDS_CBOX, _("Complete Words"), wxDefaultPosition, wxDefaultSize, 0);
+    itemCheckBox8->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemCheckBox8->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemCheckBox8->SetValue(false);
     itemBoxSizer6->Add(itemCheckBox8, 0, wxGROW | wxALL, 3);
 
     wxCheckBox* itemCheckBox9 = new wxCheckBox(itemFrame1, ID_REG_EX_CBOX, _("Use regular expresions"), wxDefaultPosition, wxDefaultSize, 0);
+    itemCheckBox9->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemCheckBox9->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemCheckBox9->SetValue(false);
     itemBoxSizer6->Add(itemCheckBox9, 0, wxGROW | wxALL, 3);
 
@@ -169,6 +180,8 @@ void FindAndReplaceWindow::CreateControls()
     itemBoxSizer2->Add(itemBoxSizer4, 0, wxGROW | wxALL, 3);
 
     wxStaticText* itemStaticText5 = new wxStaticText(itemFrame1, wxID_STATIC, _("Find In"), wxDefaultPosition, wxDefaultSize, 0);
+    itemStaticText5->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemStaticText5->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer4->Add(itemStaticText5, 0, wxALIGN_CENTER_VERTICAL | wxALL, 3);
 
     wxArrayString itemComboBox6Strings;
@@ -180,51 +193,75 @@ void FindAndReplaceWindow::CreateControls()
     itemComboBox6Strings.Add(_("Current Project Directory"));
     itemComboBox6Strings.Add(_("Current File Directory"));
     m_WhereToFind = new wxComboBox(itemFrame1, ID_COMBOBOX2, _("All Projects"), wxDefaultPosition, wxDefaultSize, itemComboBox6Strings, wxCB_DROPDOWN);
+    m_WhereToFind->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_WhereToFind->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     m_WhereToFind->SetStringSelection(_("All Projects"));
     itemBoxSizer4->Add(m_WhereToFind, 1, wxGROW | wxALL, 3);
 
     wxCheckBox* itemCheckBox1 = new wxCheckBox(itemFrame1, ID_CHECKBOX, _("Include subfolders"), wxDefaultPosition, wxDefaultSize, 0);
+    itemCheckBox1->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemCheckBox1->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemCheckBox1->SetValue(false);
     itemBoxSizer4->Add(itemCheckBox1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
     m_FindInDirectory = new wxButton(itemFrame1, ID_FIND_IN_DIRECTORY_BTN, _("..."), wxDefaultPosition, wxSize(30, -1), 0);
+    m_FindInDirectory->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_FindInDirectory->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer4->Add(m_FindInDirectory, 0, wxGROW | wxALL, 3);
 
     wxBoxSizer* itemBoxSizer8 = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer2->Add(itemBoxSizer8, 0, wxGROW | wxALL, 5);
 
     wxStaticText* itemStaticText9 = new wxStaticText(itemFrame1, wxID_STATIC, _("File Types"), wxDefaultPosition, wxDefaultSize, 0);
+    itemStaticText9->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemStaticText9->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer8->Add(itemStaticText9, 0, wxALIGN_CENTER_VERTICAL | wxALL, 3);
 
     wxArrayString itemComboBox10Strings;
     wxComboBox* itemComboBox10 = new wxComboBox(itemFrame1, ID_COMBOBOX3, wxEmptyString, wxDefaultPosition, wxDefaultSize, itemComboBox10Strings, wxCB_DROPDOWN);
+    itemComboBox10->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemComboBox10->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer8->Add(itemComboBox10, 1, wxGROW | wxALL, 3);
 
     wxGridSizer* itemGridSizer11 = new wxGridSizer(2, 3, 0, 0);
     itemBoxSizer2->Add(itemGridSizer11, 0, wxALIGN_RIGHT | wxALL, 2);
 
     wxButton* itemButton12 = new wxButton(itemFrame1, ID_FIND_BEFORE_BTN, _("Find Before"), wxDefaultPosition, wxDefaultSize, 0);
+    itemButton12->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton12->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemGridSizer11->Add(itemButton12, 0, wxGROW | wxALL, 2);
 
     wxButton* itemButton13 = new wxButton(itemFrame1, ID_FIND_NEXT_BTN, _("Find Next"), wxDefaultPosition, wxDefaultSize, 0);
+    itemButton13->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton13->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemGridSizer11->Add(itemButton13, 0, wxGROW | wxALL, 2);
 
     wxButton* itemButton14 = new wxButton(itemFrame1, ID_OMIT_FILE_BTN, _("Omit File"), wxDefaultPosition, wxDefaultSize, 0);
+    itemButton14->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton14->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemGridSizer11->Add(itemButton14, 0, wxGROW | wxALL, 2);
 
     wxButton* itemButton15 = new wxButton(itemFrame1, ID_REPLACE_NEXT_BTN, _("Replace Next"), wxDefaultPosition, wxDefaultSize, 0);
+    itemButton15->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton15->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemGridSizer11->Add(itemButton15, 0, wxGROW | wxALL, 2);
 
     wxButton* itemButton16 = new wxButton(itemFrame1, ID_REPLACE_ALL, _("Replace All"), wxDefaultPosition, wxDefaultSize, 0);
+    itemButton16->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton16->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemGridSizer11->Add(itemButton16, 0, wxGROW | wxALL, 2);
 
     wxButton* itemButton17 = new wxButton(itemFrame1, ID_FIND_ALL, _("Find All"), wxDefaultPosition, wxDefaultSize, 0);
+    itemButton17->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton17->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemGridSizer11->Add(itemButton17, 0, wxGROW | wxALL, 2);
 
     m_pSearchResultTreeCtrl = new wxDataViewCtrl(itemFrame1, ID_FIND_AND_REPLACE_RESULTS_TREECTRL, wxDefaultPosition, wxSize(100, 100), wxDV_SINGLE);
     itemBoxSizer2->Add(m_pSearchResultTreeCtrl, 1, wxGROW | wxALL, 5);
     m_searchModel = new SearchModel();
     m_pSearchResultTreeCtrl->AssociateModel(m_searchModel.get());
+    m_pSearchResultTreeCtrl->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_pSearchResultTreeCtrl->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
 
     // Append columns
     wxDataViewTextRenderer* tr0 =
