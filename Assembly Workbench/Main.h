@@ -93,6 +93,8 @@ private:
 
     void OnLaunchDebugger(wxCommandEvent& event);
 
+    void OnMaximizeBtn(wxCommandEvent& event);
+    void OnMinimizeBtn(wxCommandEvent& event);
 
 
 public:
@@ -251,5 +253,6 @@ enum
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
     ID_Tool_Graph,
-
+    ID_FRAME_BUTTON_MINIMIZE,
+    ID_FRAME_BUTTON_MAXIMIZE
 };

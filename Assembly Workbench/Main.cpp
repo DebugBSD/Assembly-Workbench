@@ -72,7 +72,13 @@ constexpr int ICON_SIZE = 16;
 
 wxIMPLEMENT_APP(MyApp);
 
-wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
+wxBEGIN_EVENT_TABLE(MainFrame, CustomFrame)
+    // Minimize button
+    EVT_BUTTON(ID_FRAME_BUTTON_MINIMIZE, MainFrame::OnMinimizeBtn)
+    // Maximize button
+    EVT_BUTTON(ID_FRAME_BUTTON_MAXIMIZE, MainFrame::OnMaximizeBtn)
+    // Close button
+    EVT_BUTTON(wxID_EXIT, MainFrame::OnExit)
     EVT_MENU(wxID_EXIT, MainFrame::OnExit)
     EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
     EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
@@ -161,7 +167,7 @@ MainFrame::MainFrame():
     // Set Icon
     // SetIcon();
 
-    m_notebook_style = wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER;
+    //m_notebook_style = wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER;
 
     //SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
     //SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
@@ -752,10 +758,10 @@ wxSizer* MainFrame::InitFrameButtons()
     bSizer13->Add(0, 0, 1, wxEXPAND | wxRIGHT, 0);
 
     // Top left frame buttons
-    m_pMinimizeBtn = new AWButton(this, wxID_ANY, wxT("MyButton"), wxDefaultPosition, m_pAppSettings->m_frameIconsSize, wxBORDER_NONE | wxBU_EXACTFIT | wxBU_NOTEXT, wxDefaultValidator, wxButtonNameStr, wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/Minimize.png"), wxBITMAP_TYPE_ANY));
+    m_pMinimizeBtn = new AWButton(this, ID_FRAME_BUTTON_MINIMIZE, wxT("MyButton"), wxDefaultPosition, m_pAppSettings->m_frameIconsSize, wxBORDER_NONE | wxBU_EXACTFIT | wxBU_NOTEXT, wxDefaultValidator, wxButtonNameStr, wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/Minimize.png"), wxBITMAP_TYPE_ANY));
     bSizer13->Add(m_pMinimizeBtn, 0, wxALL, 5);
 
-    m_pMaximizeBtn = new AWButton(this, wxID_ANY, wxT("MyButton"), wxDefaultPosition, m_pAppSettings->m_frameIconsSize, wxBORDER_NONE | wxBU_EXACTFIT | wxBU_NOTEXT, wxDefaultValidator, wxButtonNameStr, wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/Maximize.png"), wxBITMAP_TYPE_ANY));
+    m_pMaximizeBtn = new AWButton(this, ID_FRAME_BUTTON_MAXIMIZE, wxT("MyButton"), wxDefaultPosition, m_pAppSettings->m_frameIconsSize, wxBORDER_NONE | wxBU_EXACTFIT | wxBU_NOTEXT, wxDefaultValidator, wxButtonNameStr, wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/Maximize.png"), wxBITMAP_TYPE_ANY));
     bSizer13->Add(m_pMaximizeBtn, 0, wxALL, 5);
 
     m_pCloseBtn = new AWButton(this, wxID_EXIT, wxT("MyButton"), wxDefaultPosition, m_pAppSettings->m_frameIconsSize, wxBORDER_NONE | wxBU_EXACTFIT | wxBU_NOTEXT, wxDefaultValidator, wxButtonNameStr, wxBitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/Close.png"), wxBITMAP_TYPE_ANY));
@@ -1059,3 +1065,12 @@ wxAuiToolBar* MainFrame::CreateMainToolBar()
     return tb1;
 }
 
+void MainFrame::OnMaximizeBtn(wxCommandEvent& event)
+{
+    Maximize(!IsMaximized());
+}
+
+void MainFrame::OnMinimizeBtn(wxCommandEvent& event)
+{
+    Iconize(!IsIconized());
+}
