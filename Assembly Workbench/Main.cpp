@@ -820,7 +820,9 @@ wxSizer* MainFrame::InitViews()
 
     File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     m_pSceneView = new CodeEditor(m_auinotebook5, pFile);
-    m_auinotebook5->AddPage(m_pSceneView, wxT("Scene"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_public_white_18dp.png", wxBITMAP_TYPE_ANY));
+    m_auinotebook5->AddPage(m_pSceneView, wxT("New File*"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_code_white_18dp.png", wxBITMAP_TYPE_ANY));
+    m_pSceneView = new CodeEditor(m_auinotebook5, pFile);
+    m_auinotebook5->AddPage(m_pSceneView, wxT("New File*"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_code_white_18dp.png", wxBITMAP_TYPE_ANY));
     /*m_pEntitySystemView = new EntitySystemView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     m_auinotebook5->AddPage(m_pEntitySystemView, wxT("Entities"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_widgets_white_18dp.png", wxBITMAP_TYPE_ANY));
     m_panel19 = new MaterialsView(m_auinotebook5, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);

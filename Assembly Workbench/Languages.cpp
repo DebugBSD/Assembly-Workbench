@@ -233,12 +233,12 @@ const int g_LanguagePrefsSize = WXSIZEOF(g_LanguagePrefs);
 const StyleInfo g_StylePrefs[] = {
     // mySTC_TYPE_DEFAULT
     {"Default",
-    "BLACK", "WHITE",
+    "MEDIUM BLUE", "WHITE",
     "", 10, 0, 0},
 
     // mySTC_TYPE_WORD1
     {"Keyword1",
-    "BLUE", "WHITE",
+    "LIGHT BLUE", "WHITE",
     "", 10, mySTC_STYLE_BOLD, 0},
 
     // mySTC_TYPE_WORD2
