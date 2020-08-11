@@ -45,6 +45,7 @@
 #include <wx/dirdlg.h>
 #include <wx/combobox.h>
 
+#include "Main.h"
 #include "NewProjectDlg.h"
 
 /*
@@ -119,6 +120,10 @@ void NewProjectDlg::Init()
 void NewProjectDlg::CreateControls(const wxArrayString& choices)
 {    
 
+    MainFrame* pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) };
+    SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
+
     NewProjectDlg* itemDialog1 = this;
 
     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer(wxVERTICAL);
@@ -131,15 +136,21 @@ void NewProjectDlg::CreateControls(const wxArrayString& choices)
     itemBoxSizer1->Add(itemBoxSizer3, 0, wxGROW|wxALL, 5);
 
     wxStaticText* itemStaticText4 = new wxStaticText( itemDialog1, wxID_STATIC, _("Create a new project based on a template or custom project."), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStaticText4->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemStaticText4->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer3->Add(itemStaticText4, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxSplitterWindow* itemSplitterWindow5 = new wxSplitterWindow( itemDialog1, ID_SPLITTERWINDOW, wxDefaultPosition, wxSize(100, 100), wxSP_3DBORDER|wxSP_3DSASH|wxNO_BORDER );
     itemSplitterWindow5->SetMinimumPaneSize(0);
 
     wxTreeCtrl* itemTreeCtrl6 = new wxTreeCtrl( itemSplitterWindow5, ID_TREECTRL, wxDefaultPosition, wxSize(100, 100), wxTR_SINGLE );
+    itemTreeCtrl6->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemTreeCtrl6->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
 
     wxArrayString itemListBox7Strings;
     wxListBox* itemListBox7 = new wxListBox( itemSplitterWindow5, ID_LISTBOX, wxDefaultPosition, wxDefaultSize, itemListBox7Strings, wxLB_SINGLE );
+    itemListBox7->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemListBox7->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
 
     itemSplitterWindow5->SplitVertically(itemTreeCtrl6, itemListBox7, 50);
     itemBoxSizer1->Add(itemSplitterWindow5, 1, wxGROW|wxALL, 5);
@@ -148,22 +159,32 @@ void NewProjectDlg::CreateControls(const wxArrayString& choices)
     itemBoxSizer1->Add(itemBoxSizer4, 0, wxGROW|wxALL, 2);
 
     wxStaticText* itemStaticText5 = new wxStaticText( itemDialog1, wxID_STATIC, _("Project Name:"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStaticText5->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemStaticText5->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer4->Add(itemStaticText5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_pProjectNameTextCtrl = new wxTextCtrl( itemDialog1, ID_TEXTCTRL, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_pProjectNameTextCtrl->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_pProjectNameTextCtrl->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer4->Add(m_pProjectNameTextCtrl, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxBoxSizer* itemBoxSizer7 = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizer1->Add(itemBoxSizer7, 0, wxGROW|wxALL, 2);
 
     wxStaticText* itemStaticText8 = new wxStaticText( itemDialog1, wxID_STATIC, _("Project Directory:"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStaticText8->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemStaticText8->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer7->Add(itemStaticText8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxString currentChoice = choices[choices.GetCount() - 1];
     m_pProjectBaseDirectoryComboBoxCtrl = new wxComboBox( itemDialog1, ID_TEXTCTRL1, currentChoice, wxDefaultPosition, wxDefaultSize, choices);
+    m_pProjectBaseDirectoryComboBoxCtrl->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    m_pProjectBaseDirectoryComboBoxCtrl->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer7->Add(m_pProjectBaseDirectoryComboBoxCtrl, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxButton* itemButton1 = new wxButton( itemDialog1, ID_SELECT_PROJECT_DIR_BTN, _("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    itemButton1->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton1->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer7->Add(itemButton1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxBoxSizer* itemBoxSizer10 = new wxBoxSizer(wxHORIZONTAL);
@@ -172,9 +193,13 @@ void NewProjectDlg::CreateControls(const wxArrayString& choices)
     itemBoxSizer10->Add(5, 5, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxButton* itemButton2 = new wxButton( itemDialog1, ID_CREATE, _("Create"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemButton2->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton2->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer10->Add(itemButton2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxButton* itemButton3 = new wxButton( itemDialog1, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemButton3->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
+    itemButton3->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer10->Add(itemButton3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
 }

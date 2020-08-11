@@ -59,6 +59,10 @@
 #include "Main.h"
 #include "File.h"
 #include "Project.h"
+
+#include "AWMenuFile.h"
+#include "AWMenuEdit.h"
+
 // Toolchain of Microsoft
 // NOTE: Right now is hardcoded. In the future, will be autodetected.
 #include "MASM.h"
@@ -81,34 +85,9 @@ wxBEGIN_EVENT_TABLE(MainFrame, CustomFrame)
     // Close button
     EVT_BUTTON(wxID_EXIT, MainFrame::OnExit)
     EVT_MENU(wxID_EXIT, MainFrame::OnExit)
-    EVT_MENU(wxID_ABOUT, MainFrame::OnAbout)
-    EVT_MENU(wxID_OPEN, MainFrame::OnOpen)
-    EVT_MENU(wxID_CUT, MainFrame::OnEdit)
-    EVT_MENU(wxID_COPY, MainFrame::OnEdit)
-    EVT_MENU(wxID_PASTE, MainFrame::OnEdit)
 
-    EVT_MENU(ID_Open_Project, MainFrame::OnOpenProject)
-    EVT_MENU(wxID_SAVE, MainFrame::OnSave)
-    EVT_MENU(wxID_NEW, MainFrame::OnNew)
-    EVT_MENU(ID_New_File, MainFrame::OnNewFile)
-    EVT_MENU(ID_New_Project, MainFrame::OnNewProject)
-    EVT_MENU(wxID_CLOSE, MainFrame::OnClose)
-    EVT_MENU(ID_Tools_Command_Line, MainFrame::OnCMDTool)
-
-    // View
-    EVT_MENU(ID_View_LineNumber, MainFrame::OnModifySettings)
-    EVT_MENU(ID_View_LongLine, MainFrame::OnModifySettings)
-    EVT_MENU(ID_View_CaretLine, MainFrame::OnModifySettings)
-
-    // Project
-    EVT_MENU(ID_Project_Preferences, MainFrame::OnProjectPreferences)
-
-    // Build
-    EVT_MENU(ID_Build_Build_Solution, MainFrame::OnBuildSolution)
-    EVT_MENU(ID_Build_Rebuild_Solution, MainFrame::OnRebuildSolution)
-    EVT_MENU(ID_Build_Clean_Solution, MainFrame::OnCleanSolution)
-
-    EVT_MENU(ID_Debug_LaunchWinDbg, MainFrame::OnLaunchDebugger)
+    EVT_BUTTON(ID_Menu_File, MainFrame::OnMenuFile)
+    EVT_BUTTON(ID_Menu_Edit, MainFrame::OnMenuEdit)
 
     EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
@@ -243,6 +222,48 @@ MainFrame::~MainFrame()
 
 }
 
+void MainFrame::OnMenuFile(wxCommandEvent& event)
+{
+    wxString projectName;
+    wxString projectDirectory;
+    wxPoint pos = m_pFileBtn->GetScreenPosition();
+    pos.y += m_pFileBtn->GetSize().y + 5;
+    AWMenuFile menuFile = AWMenuFile(NULL, wxID_ANY, pos, wxDefaultSize, 0, wxEmptyString);
+    int option = menuFile.ShowModal();
+    if (option == ID_MENU_FILE_NEW_FILE)
+    {
+        NewFile();
+    }
+    else if (option == ID_MENU_FILE_NEW_PROJECT)
+    {
+        NewProject();
+    }
+    else if (option == ID_MENU_FILE_OPEN_FILE)
+    {
+        OpenFile();
+    }
+    else if (option == ID_MENU_FILE_OPEN_PROJECT)
+    {
+        OpenProject();
+    }
+    else if (option == ID_MENU_FILE_SAVE)
+    {
+        SaveCurrent();
+    }
+    else if (option == ID_MENU_FILE_CLOSE)
+    {
+
+    }
+    else if (option == ID_MENU_FILE_EXIT)
+    {
+
+    }
+}
+
+void MainFrame::OnMenuEdit(wxCommandEvent& event)
+{
+}
+
 void MainFrame::OnExit(wxCommandEvent& event)
 {
     if(!m_Files.empty())
@@ -269,14 +290,13 @@ void MainFrame::OnResize(wxSizeEvent& event)
 }
 
 // It save the current file currently edited.
-void MainFrame::OnSave(wxCommandEvent& event)
+void MainFrame::SaveCurrent(void)
 {
-#if 0
     wxFileDialog
         saveFileDialog(this, _("Save Assembly file"), "", "",
             "ASM files (*.asm)|*.asm", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
     
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = m_auinotebook5;
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
@@ -302,7 +322,7 @@ void MainFrame::OnSave(wxCommandEvent& event)
                 ctrl->Freeze();
                 ctrl->SetPageText(pageNum, pFile->GetFileName());
                 ctrl->Thaw();
-                m_pWindowManager->Update();
+                m_auinotebook5->Update();
             }
             else
             {
@@ -322,12 +342,10 @@ void MainFrame::OnSave(wxCommandEvent& event)
     {
         // TODO: Handle errors.
     }
-#endif
 }
 
-void MainFrame::OnOpenProject(wxCommandEvent &event)
+void MainFrame::OpenProject(void)
 {
-#if 0
     wxFileDialog
         openFileDialog(this, _("Open Project file"), "", "",
             "Project files (*.awp)|*.awp", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -342,19 +360,17 @@ void MainFrame::OnOpenProject(wxCommandEvent &event)
     else
     {
         // TODO: WindowManager has the control over this window, so, pass to WindowManager instead of accessing this control in this way.
-        ProjectsWindow* ctrl = static_cast<ProjectsWindow*>(m_pWindowManager->GetPane("ProjectsWindow").window);
+        ProjectsWindow* ctrl = m_pProjectWindow;
         // Add the project and files and everything to the main tree.
         if (ctrl) ctrl->AddProject(pProject);
 
         // Add the project to the vector of projects.
         m_Projects.push_back(pProject);
     }
-#endif
 }
 
-void MainFrame::OnOpen(wxCommandEvent& event)
+void MainFrame::OpenFile(void)
 {
-#if 0
     wxFileDialog
         openFileDialog(this, _("Open Assembly file"), "", "",
             "ASM and Include files (*.asm;*.inc)|*.asm;*.inc", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
@@ -370,19 +386,16 @@ void MainFrame::OnOpen(wxCommandEvent& event)
         wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
         return;
     }
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = m_auinotebook5;
 
     m_Files.insert({ pFile,pCodeEditor });
 
     ctrl->AddPage(pCodeEditor, tempFile.filename().string());
-#endif
 }
 
-void MainFrame::OnNew(wxCommandEvent& event)
+void MainFrame::NewFile(void)
 {
-#if 0
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
-
+    wxAuiNotebook* ctrl = m_auinotebook5;
     File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     CodeEditor* pCodeEditor = new CodeEditor(ctrl, pFile);
     
@@ -393,14 +406,10 @@ void MainFrame::OnNew(wxCommandEvent& event)
     ctrl->AddPage(pCodeEditor, "New File");
     
     ctrl->Thaw();
-
-    m_pWindowManager->Update();
-#endif
 }
 
-void MainFrame::OnNewProject(wxCommandEvent& event)
+void MainFrame::NewProject(void)
 {
-#if 0
     NewProjectDlg* pNewProjectDlg = new NewProjectDlg(nullptr, m_ProjectDirectoryEntries);
 
     if (pNewProjectDlg->ShowModal() == 0)
@@ -422,7 +431,7 @@ void MainFrame::OnNewProject(wxCommandEvent& event)
         if (res == 0)
         {
             // TODO: WindowManager has the control over this window, so, pass to WindowManager instead of accessing this control in this way.
-            ProjectsWindow* ctrl = static_cast<ProjectsWindow*>(m_pWindowManager->GetPane("ProjectsWindow").window);
+            ProjectsWindow* ctrl = m_pProjectWindow;
             // Add the project and files and everything to the main tree.
             if(ctrl) ctrl->AddProject(pProject);
 
@@ -432,12 +441,6 @@ void MainFrame::OnNewProject(wxCommandEvent& event)
     }
 
     pNewProjectDlg->Destroy();
-#endif
-}
-
-void MainFrame::OnNewFile(wxCommandEvent& event)
-{
-    
 }
 
 void MainFrame::OnClose(wxCommandEvent& event)
@@ -717,8 +720,8 @@ wxSizer* MainFrame::InitFrameButtons()
         long style;
     } menuButtons[] =
     {
-        {&m_pFileBtn, wxID_ANY, wxT("File"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pEditBtn, wxID_ANY, wxT("Edit"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pFileBtn, ID_Menu_File, wxT("File"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pEditBtn, ID_Menu_Edit, wxT("Edit"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pViewBtn, wxID_ANY, wxT("View"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pProjectBtn, wxID_ANY, wxT("Project"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pBuildMenuBtn, wxID_ANY, wxT("Build"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},

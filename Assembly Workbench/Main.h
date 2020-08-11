@@ -68,15 +68,11 @@ public:
 
 private:
 
+    void OnMenuFile(wxCommandEvent& event);
+    void OnMenuEdit(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
-    void OnSave(wxCommandEvent& event);
-    void OnOpenProject(wxCommandEvent& event);
-    void OnOpen(wxCommandEvent& event);
-    void OnNew(wxCommandEvent& event);
-    void OnNewProject(wxCommandEvent& event);
-    void OnNewFile(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
     void OnCMDTool(wxCommandEvent& event);
@@ -135,6 +131,13 @@ public:
 
     // Get files (those wich are not binded to a project)
     void GetFiles(std::vector<class CodeEditor*>& outOpenFiles);
+
+
+    void OpenFile(void);
+    void OpenProject(void);
+    void SaveCurrent(void);
+    void NewFile(void);
+    void NewProject(void);
 #pragma endregion
 
 private:
@@ -214,8 +217,10 @@ private:
 };
 enum
 {
-    ID_Hello = wxID_HIGHEST+1,
+    ID_Hello = wxID_HIGHEST + 1,
     ID_Size,
+    ID_Menu_File,
+    ID_Menu_Edit,
     ID_New_File,
     ID_New_Project,
     ID_Clone,

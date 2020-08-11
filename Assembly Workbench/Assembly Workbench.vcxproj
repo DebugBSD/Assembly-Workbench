@@ -171,6 +171,8 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase314u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClInclude Include="AssemblerBase.h" />
     <ClInclude Include="AWArtProvider.h" />
     <ClInclude Include="AWButton.h" />
+    <ClInclude Include="AWMenuEdit.h" />
+    <ClInclude Include="AWMenuFile.h" />
     <ClInclude Include="CodeEditor.h" />
     <ClInclude Include="CompilerBase.h" />
     <ClInclude Include="ConsoleView.h" />
@@ -203,6 +205,8 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase314u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClCompile Include="AppSettings.cpp" />
     <ClCompile Include="AWArtProvider.cpp" />
     <ClCompile Include="AWButton.cpp" />
+    <ClCompile Include="AWMenuEdit.cpp" />
+    <ClCompile Include="AWMenuFile.cpp" />
     <ClCompile Include="CodeEditor.cpp" />
     <ClCompile Include="ConsoleView.cpp" />
     <ClCompile Include="CustomFrame.cpp" />

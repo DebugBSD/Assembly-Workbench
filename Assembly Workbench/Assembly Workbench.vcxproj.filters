@@ -162,6 +162,12 @@
     <ClInclude Include="ConsoleView.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="AWMenuFile.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="AWMenuEdit.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -235,6 +241,12 @@
     </ClCompile>
     <ClCompile Include="ConsoleView.cpp">
       <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="AWMenuFile.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="AWMenuEdit.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
