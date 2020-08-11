@@ -99,7 +99,8 @@ WXLRESULT AWMenuBuild::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM l
 				{
 					//if (m_pProjectSettingsView == nullptr && m_pAppSettingsView == nullptr)
 					//{
-					EndModal(-1);
+					if (IsModal()) // Is not visible cause is not created
+						EndModal(-1);
 					//}
 				}
 			}

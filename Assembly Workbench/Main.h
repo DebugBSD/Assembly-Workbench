@@ -102,6 +102,8 @@ public:
     void Log(class wxArrayString *pArrayLog);
     void Log(class wxString* pError);
 
+    class CodeEditor* GetCodeEditorFromWindow(wxWindow* window);
+
     // Access to Projects
     const std::vector<class Project*>& GetProjects() const { return m_Projects; }
 
@@ -178,7 +180,6 @@ private:
     wxStaticText* m_pStatusBar;
     wxStaticText* m_staticTitle;
     wxAuiNotebook* m_auinotebook5;
-    class CodeEditor* m_pSceneView;
     class ConsoleView* m_pConsoleView;
     class ComponentSystemView* m_pComponentSystemView;
     class ProjectsWindow* m_pProjectWindow;

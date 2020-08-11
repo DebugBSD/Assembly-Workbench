@@ -323,7 +323,7 @@ void MainFrame::SaveCurrent(void)
     wxAuiNotebook* ctrl = m_auinotebook5;
     if (ctrl)
     {
-        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        CodeEditor* pCodeEditor = GetCodeEditorFromWindow(ctrl->GetCurrentPage());
         if (pCodeEditor && pCodeEditor->IsModified())
         {
             File* pFile = pCodeEditor->GetFile();
@@ -598,8 +598,8 @@ void MainFrame::BuildSolution(void)
             bool buildProject = true;
             for (int i = 0; i < ctrl->GetPageCount(); i++)
             {
-                CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetPage(i));
-                if (pCodeEditor->GetFile() != nullptr && pCodeEditor->GetFile()->GetProject() != m_Projects[0])
+                CodeEditor* pCodeEditor = GetCodeEditorFromWindow(ctrl->GetPage(i));
+                if (pCodeEditor != nullptr && pCodeEditor->GetFile() != nullptr && pCodeEditor->GetFile()->GetProject() != m_Projects[0])
                 {
                     buildProject = false;
                     break;
@@ -629,7 +629,7 @@ void MainFrame::BuildSolution(void)
     {
         SaveCurrent();
 
-        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+        CodeEditor* pCodeEditor = GetCodeEditorFromWindow(ctrl->GetCurrentPage());
         if (pCodeEditor && pCodeEditor->GetFile())
         {
             Project* pProject = pCodeEditor->GetFile()->GetProject();
@@ -705,6 +705,20 @@ void MainFrame::Log(wxArrayString* pArrayLog)
 
 void MainFrame::Log(wxString* pError)
 {
+}
+
+CodeEditor* MainFrame::GetCodeEditorFromWindow(wxWindow* window)
+{
+    CodeEditor* pCodeEditor = nullptr;
+    for (const auto& e : m_Files)
+    {
+        if (e.second == window)
+        {
+
+            pCodeEditor = e.second;
+        }
+    }
+    return pCodeEditor;
 }
 
 CodeEditor* MainFrame::GetCodeEditor(File* pFile)
@@ -848,11 +862,6 @@ wxSizer* MainFrame::InitViews()
     // Projects view
     m_pProjectWindow = new ProjectsWindow(m_auinotebook5);
     m_auinotebook5->AddPage(m_pProjectWindow, wxT("Project"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_clear_all_white_18dp.png", wxBITMAP_TYPE_ANY));
-
-    // Code editor view
-    File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
-    m_pSceneView = new CodeEditor(m_auinotebook5, pFile);
-    m_auinotebook5->AddPage(m_pSceneView, wxT("New File*"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_code_white_18dp.png", wxBITMAP_TYPE_ANY));
 
     // Console view
     m_pConsoleView = new ConsoleView(m_auinotebook5);
