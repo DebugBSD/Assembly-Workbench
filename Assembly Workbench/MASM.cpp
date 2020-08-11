@@ -52,8 +52,8 @@
   * Environment variables used by ml64.
   * -----------------------------------
   *
-  * - Include - INCLUDE=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\ATLMFC\include;
-  *                     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\include;
+  * - Include - INCLUDE=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\ATLMFC\include;
+  *                     C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include;
   *                     C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um;
   *                     C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\ucrt;
   *                     C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\shared;

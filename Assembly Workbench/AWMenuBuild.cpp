@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "AWMenuEdit.h"
+#include "AWMenuBuild.h"
 #include <Windows.h>
 #include <WinUser.h>
 
@@ -18,12 +18,13 @@
 #define HID_USAGE_GENERIC_MOUSE USHORT(0x02)
 #endif
 
-wxBEGIN_EVENT_TABLE(AWMenuEdit, wxDialog)
-EVT_BUTTON(ID_MENU_EDIT_PROJECT_SETTINGS, AWMenuEdit::OnProjectSettings)
-EVT_BUTTON(ID_MENU_EDIT_APPLICATION_SETTINGS, AWMenuEdit::OnApplicationSettings)
+wxBEGIN_EVENT_TABLE(AWMenuBuild, wxDialog)
+	EVT_BUTTON(ID_BUILD_SOLUTION_BTN, AWMenuBuild::OnBuildSolution)
+	EVT_BUTTON(ID_REBUILD_SOLUTION_BTN, AWMenuBuild::OnRebuildSolution)
+	EVT_BUTTON(ID_CLEAN_SOLUTION_BTN, AWMenuBuild::OnCleanSolution)
 wxEND_EVENT_TABLE()
 
-AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name) : wxDialog(parent, id, wxEmptyString, pos, size, style)
+AWMenuBuild::AWMenuBuild(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name) : wxDialog(parent, id, wxEmptyString, pos, size, style)
 {
 
 	MainFrame* pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) };
@@ -49,8 +50,9 @@ AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 		wxBitmap icon;
 	} menuButtons[] =
 	{
-		{&m_pProjectSettingsBtn, ID_MENU_EDIT_PROJECT_SETTINGS, wxT(" Project Settings"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_create_new_folder_white_18dp.png", wxBITMAP_TYPE_ANY)},
-		{&m_pApplicationSettingsBtn, ID_MENU_EDIT_APPLICATION_SETTINGS, wxT(" Application Settings"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pBuildSolutionBtn, ID_BUILD_SOLUTION_BTN, wxT(" Build Solution"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_create_new_folder_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pRebuildSolutionBtn, ID_REBUILD_SOLUTION_BTN, wxT(" Rebuild Solution"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pCleanSolutionBtn, ID_CLEAN_SOLUTION_BTN, wxT(" Clean Solution"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
 		{NULL, -1, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1), 0}
 	};
 
@@ -73,11 +75,11 @@ AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 	SetSizerAndFit(m_pSizer);
 }
 
-AWMenuEdit::~AWMenuEdit()
+AWMenuBuild::~AWMenuBuild()
 {
 }
 
-WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lparam) {
+WXLRESULT AWMenuBuild::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lparam) {
 	if (message == WM_INPUT) {
 		unsigned size = sizeof(RAWINPUT);
 		static RAWINPUT raw[sizeof(RAWINPUT)];
@@ -97,7 +99,7 @@ WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lp
 				{
 					//if (m_pProjectSettingsView == nullptr && m_pAppSettingsView == nullptr)
 					//{
-						EndModal(-1);
+					EndModal(-1);
 					//}
 				}
 			}
@@ -117,23 +119,17 @@ WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lp
 #endif
 }
 
-void AWMenuEdit::OnProjectSettings(wxCommandEvent& event)
+void AWMenuBuild::OnBuildSolution(wxCommandEvent& event)
 {
-
-	/*m_pProjectSettingsView = new ProjectSettingsView(this, wxID_ANY);
-	if (m_pProjectSettingsView->ShowModal())
-	{
-		m_pProjectSettingsView->Destroy();
-	}*/
-	EndModal(0);
+	EndModal(ID_BUILD_SOLUTION_BTN);
 }
 
-void AWMenuEdit::OnApplicationSettings(wxCommandEvent& event)
+void AWMenuBuild::OnRebuildSolution(wxCommandEvent& event)
 {
-	/*m_pAppSettingsView = new AppSettingsView(this, wxID_ANY);
-	if (m_pAppSettingsView->ShowModal())
-	{
-		m_pAppSettingsView->Destroy();
-	}*/
-	EndModal(0);
+	EndModal(ID_REBUILD_SOLUTION_BTN);
+}
+
+void AWMenuBuild::OnCleanSolution(wxCommandEvent& event)
+{
+	EndModal(ID_CLEAN_SOLUTION_BTN);
 }

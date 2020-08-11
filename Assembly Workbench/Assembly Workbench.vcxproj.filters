@@ -168,6 +168,9 @@
     <ClInclude Include="AWMenuEdit.h">
       <Filter>Archivos de encabezado\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="AWMenuBuild.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -246,6 +249,9 @@
       <Filter>Archivos de origen\Controls</Filter>
     </ClCompile>
     <ClCompile Include="AWMenuEdit.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="AWMenuBuild.cpp">
       <Filter>Archivos de origen\Controls</Filter>
     </ClCompile>
   </ItemGroup>

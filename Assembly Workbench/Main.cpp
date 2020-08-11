@@ -62,6 +62,7 @@
 
 #include "AWMenuFile.h"
 #include "AWMenuEdit.h"
+#include "AWMenuBuild.h"
 
 // Toolchain of Microsoft
 // NOTE: Right now is hardcoded. In the future, will be autodetected.
@@ -88,6 +89,7 @@ wxBEGIN_EVENT_TABLE(MainFrame, CustomFrame)
 
     EVT_BUTTON(ID_Menu_File, MainFrame::OnMenuFile)
     EVT_BUTTON(ID_Menu_Edit, MainFrame::OnMenuEdit)
+    EVT_BUTTON(ID_Menu_Build, MainFrame::OnMenuBuild)
 
     EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
@@ -262,6 +264,28 @@ void MainFrame::OnMenuFile(wxCommandEvent& event)
 
 void MainFrame::OnMenuEdit(wxCommandEvent& event)
 {
+}
+
+void MainFrame::OnMenuBuild(wxCommandEvent& event)
+{
+    wxString projectName;
+    wxString projectDirectory;
+    wxPoint pos = m_pBuildMenuBtn->GetScreenPosition();
+    pos.y += m_pBuildMenuBtn->GetSize().y + 5;
+    AWMenuBuild menuFile = AWMenuBuild(NULL, wxID_ANY, pos, wxDefaultSize, 0, wxEmptyString);
+    int option = menuFile.ShowModal();
+    if (option == ID_BUILD_SOLUTION_BTN)
+    {
+        BuildSolution();
+    }
+    else if (option == ID_REBUILD_SOLUTION_BTN)
+    {
+        RebuildSolution();
+    }
+    else if (option == ID_CLEAN_SOLUTION_BTN)
+    {
+        CleanSolution();
+    }
 }
 
 void MainFrame::OnExit(wxCommandEvent& event)
@@ -560,16 +584,15 @@ void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 #endif
 }
 
-void MainFrame::OnBuildSolution(wxCommandEvent& event)
+void MainFrame::BuildSolution(void)
 {
-#if 0
-    wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_pWindowManager->GetPane("ConsoleLog").window);
-    if(pTextControl)
-        pTextControl->Clear();
+
+    if(m_pConsoleView)
+        m_pConsoleView->Clear();
 
     if (m_Projects.size() == 1)
     {
-        wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+        wxAuiNotebook* ctrl = m_auinotebook5;
         if (ctrl)
         {
             bool buildProject = true;
@@ -601,9 +624,11 @@ void MainFrame::OnBuildSolution(wxCommandEvent& event)
         }
     }
 
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = m_auinotebook5;
     if (ctrl)
     {
+        SaveCurrent();
+
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
         if (pCodeEditor && pCodeEditor->GetFile())
         {
@@ -629,15 +654,14 @@ void MainFrame::OnBuildSolution(wxCommandEvent& event)
             }
         }
     }
-#endif
 }
 
-void MainFrame::OnRebuildSolution(wxCommandEvent& event)
+void MainFrame::RebuildSolution(void)
 {
     int stop = 1;
 }
 
-void MainFrame::OnCleanSolution(wxCommandEvent& event)
+void MainFrame::CleanSolution(void)
 {
     int stop = 1;
 }
@@ -671,14 +695,12 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 
 void MainFrame::Log(wxArrayString* pArrayLog)
 {
-#if 0
-    wxTextCtrl* pTextControl = static_cast<wxTextCtrl*>(m_pWindowManager->GetPane("ConsoleLog").window);
-    
+
     for (wxString str : *pArrayLog)
     {
-        pTextControl->AppendText(str + "\n");
+        wxLogWarning(str + "\n");
     }
-#endif
+
 }
 
 void MainFrame::Log(wxString* pError)
@@ -724,7 +746,7 @@ wxSizer* MainFrame::InitFrameButtons()
         {&m_pEditBtn, ID_Menu_Edit, wxT("Edit"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pViewBtn, wxID_ANY, wxT("View"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pProjectBtn, wxID_ANY, wxT("Project"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pBuildMenuBtn, wxID_ANY, wxT("Build"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pBuildMenuBtn, ID_Menu_Build, wxT("Build"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pDebugBtn, wxID_ANY, wxT("Debug"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pToolsBtn, wxID_ANY, wxT("Tools"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pHelpBtn, wxID_ANY, wxT("Help"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},

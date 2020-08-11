@@ -59,3 +59,8 @@ void ConsoleView::CreateControls()
 	SetSizer(bSizer1);
 	Layout();
 }
+
+void ConsoleView::Clear()
+{
+	m_pTextCtrl->Clear();
+}

@@ -55,6 +55,6 @@ private:
     class MainFrame* m_pFrame;
 
     // Right now, hardcoded, in the future, I'll detect the tool chain of Visual Studio.
-    const std::string m_PathToLinker{ "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/bin/Hostx64/x64/link.exe\"" };
+    const std::string m_PathToLinker{ "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.27.29110/bin/Hostx64/x64/link.exe\"" };
 };
 

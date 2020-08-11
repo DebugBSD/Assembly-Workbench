@@ -21,6 +21,8 @@ public:
 
     /// Creates the controls and sizers
     void CreateControls();
+
+    void Clear();
 private:
 
     wxTextCtrl* m_pTextCtrl;
