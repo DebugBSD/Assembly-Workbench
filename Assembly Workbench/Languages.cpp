@@ -82,8 +82,8 @@ const char* CppWordlist3 =
 // C++
 const char* AsmWordlist1 =
 "mov add div mul sub idiv inc dec shr shl rol ror lea call invoke" 
-"xor movsb movsw movsd cmpsb cmpsw cmpsd scasb scasw scasd stosb"
-"stosw stosd lodsb lodsw lodsd ";
+"xor movsb movsw movsd not cmpsb cmpsw cmpsd scasb scasw scasd stosb"
+"stosw stosd lodsb lodsw lodsd";
 const char* AsmWordlist2 =
 "al ah ax eax rax bl bh bx ebx rbx cl ch cx ecx rcx dl dh dx edx rdx "
 "rdi edi di rsi esi si rbp ebp bp rsp esp sp rflags eflags ";
