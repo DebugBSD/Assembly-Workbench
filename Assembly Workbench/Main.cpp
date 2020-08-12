@@ -63,6 +63,8 @@
 #include "AWMenuFile.h"
 #include "AWMenuEdit.h"
 #include "AWMenuBuild.h"
+#include "AWMenuTools.h"
+#include "AWMenuDebug.h"
 
 // Toolchain of Microsoft
 // NOTE: Right now is hardcoded. In the future, will be autodetected.
@@ -90,6 +92,8 @@ wxBEGIN_EVENT_TABLE(MainFrame, CustomFrame)
     EVT_BUTTON(ID_Menu_File, MainFrame::OnMenuFile)
     EVT_BUTTON(ID_Menu_Edit, MainFrame::OnMenuEdit)
     EVT_BUTTON(ID_Menu_Build, MainFrame::OnMenuBuild)
+    EVT_BUTTON(ID_Menu_Tools, MainFrame::OnMenuTools)
+    EVT_BUTTON(ID_Menu_Debug, MainFrame::OnMenuDebug)
 
     EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
@@ -143,16 +147,12 @@ MainFrame::MainFrame():
 
     }
 
-    // Layout
-    //m_pWindowManager->SetManagedWindow(this);
-
     // Set Icon
-    // SetIcon();
+    wxIcon logoIcon;
+    wxBitmap bitmap(wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/logo.bmp"), wxBITMAP_TYPE_BMP);
+    logoIcon.CopyFromBitmap(bitmap);
+    SetIcon(wxIcon(logoIcon));
 
-    //m_notebook_style = wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER;
-
-    //SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
-    //SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));
     //ShowFullScreen(true); // Show the window maximized but, without any close, minimize or maximize button.
     //Maximize(true); // Show the window maximized
     wxBoxSizer* bSizer11;
@@ -285,6 +285,50 @@ void MainFrame::OnMenuBuild(wxCommandEvent& event)
     else if (option == ID_CLEAN_SOLUTION_BTN)
     {
         CleanSolution();
+    }
+}
+
+void MainFrame::OnMenuTools(wxCommandEvent& event)
+{
+    wxString projectName;
+    wxString projectDirectory;
+    wxPoint pos = m_pToolsBtn->GetScreenPosition();
+    pos.y += m_pToolsBtn->GetSize().y + 5;
+    AWMenuTools menuFile = AWMenuTools(NULL, wxID_ANY, pos, wxDefaultSize, 0, wxEmptyString);
+    int option = menuFile.ShowModal();
+    if (option == ID_MENU_TOOLS_CMD_LINE_TOOL)
+    {
+        CMDTool();
+    }
+    else if (option == ID_MENU_TOOLS_HEX_EDITOR)
+    {
+        int stop = 1;
+    }
+    else if (option == ID_MENU_TOOLS_GIT)
+    {
+        int stop = 1;
+    }
+    else if (option == ID_MENU_TOOLS_GRAPH)
+    {
+        int stop = 1;
+    }
+}
+
+void MainFrame::OnMenuDebug(wxCommandEvent& event)
+{
+    wxString projectName;
+    wxString projectDirectory;
+    wxPoint pos = m_pDebugBtn->GetScreenPosition();
+    pos.y += m_pDebugBtn->GetSize().y + 5;
+    AWMenuDebug menuFile = AWMenuDebug(NULL, wxID_ANY, pos, wxDefaultSize, 0, wxEmptyString);
+    int option = menuFile.ShowModal();
+    if (option == ID_MENU_DEBUG_LAUNCH_DEBUGGER)
+    {
+        LaunchDebugger();
+    }
+    else if (option == ID_MENU_DEBUG_WINDOWS)
+    {
+        int stop = 1;
     }
 }
 
@@ -519,7 +563,7 @@ void MainFrame::OnExitProgram(wxCloseEvent& event)
 
 }
 
-void MainFrame::OnCMDTool(wxCommandEvent& event)
+void MainFrame::CMDTool(void)
 {
     // Note: X64
     wxExecute("cmd.exe /k \"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat\"");
@@ -638,6 +682,7 @@ void MainFrame::BuildSolution(void)
                 pCodeEditor->GetFile()->Assemble();
                 pCodeEditor->GetFile()->Compile();
                 pCodeEditor->GetFile()->Link();
+                
             }
             else
             {
@@ -666,12 +711,11 @@ void MainFrame::CleanSolution(void)
     int stop = 1;
 }
 
-void MainFrame::OnLaunchDebugger(wxCommandEvent& event)
+void MainFrame::LaunchDebugger(void)
 {
     // WinDbg accept an executable as argument so, you can pass the program you have built.
     wxExecute("\"C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\WinDbg.exe\"");
 }
-
 
 void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t currentColumn, size_t currentLine)
 {
@@ -695,16 +739,17 @@ void MainFrame::SetStatusBar(size_t totalChars, size_t totalLines, size_t curren
 
 void MainFrame::Log(wxArrayString* pArrayLog)
 {
-
     for (wxString str : *pArrayLog)
     {
-        wxLogWarning(str + "\n");
+        //wxLogWarning(str);
+        wxLogMessage(str);
     }
-
 }
 
 void MainFrame::Log(wxString* pError)
 {
+    //wxLogWarning(*pError);
+    wxLogMessage(*pError);
 }
 
 CodeEditor* MainFrame::GetCodeEditorFromWindow(wxWindow* window)
@@ -714,7 +759,6 @@ CodeEditor* MainFrame::GetCodeEditorFromWindow(wxWindow* window)
     {
         if (e.second == window)
         {
-
             pCodeEditor = e.second;
         }
     }
@@ -761,8 +805,8 @@ wxSizer* MainFrame::InitFrameButtons()
         {&m_pViewBtn, wxID_ANY, wxT("View"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pProjectBtn, wxID_ANY, wxT("Project"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pBuildMenuBtn, ID_Menu_Build, wxT("Build"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pDebugBtn, wxID_ANY, wxT("Debug"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pToolsBtn, wxID_ANY, wxT("Tools"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pDebugBtn, ID_Menu_Debug, wxT("Debug"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pToolsBtn, ID_Menu_Tools, wxT("Tools"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pHelpBtn, wxID_ANY, wxT("Help"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {NULL, -1, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1), 0}
     };
@@ -939,6 +983,7 @@ wxSizer* MainFrame::InitViews()
 //          Rebuild Solution
 //          Clean Solution
 //      Debug - See Visual Studio
+//          Launch Debugger
 //          Windows
 //              Memory
 //              Registers

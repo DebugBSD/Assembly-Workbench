@@ -71,20 +71,18 @@ private:
     void OnMenuFile(wxCommandEvent& event);
     void OnMenuEdit(wxCommandEvent& event);
     void OnMenuBuild(wxCommandEvent& event);
+    void OnMenuTools(wxCommandEvent& event);
+    void OnMenuDebug(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
-    void OnCMDTool(wxCommandEvent& event);
     void OnEdit(wxCommandEvent& event);
     void OnModifySettings(wxCommandEvent &event);
 
     // Project Menu
     void OnProjectPreferences(wxCommandEvent& event);
-
-
-    void OnLaunchDebugger(wxCommandEvent& event);
 
     void OnMaximizeBtn(wxCommandEvent& event);
     void OnMinimizeBtn(wxCommandEvent& event);
@@ -108,7 +106,7 @@ public:
     const std::vector<class Project*>& GetProjects() const { return m_Projects; }
 
     // Access to windows from WindowManager
-    class wxWindow* GetWindow(const wxString& windowName) { /*if (m_pWindowManager) return m_pWindowManager->GetWindow(windowName); else*/ return nullptr; }
+    class wxAuiNotebook* GetWindow() { return m_auinotebook5; }
 
     class AssemblerBase* GetAssembler() { return m_pAssemblerBase; }
     class LinkerBase* GetLinker() { return m_pLinkerBase; }
@@ -142,6 +140,13 @@ public:
     void BuildSolution(void);
     void RebuildSolution(void);
     void CleanSolution(void);
+
+    // Launch command line tool
+    void CMDTool(void);
+
+    // Launch debugger
+    void LaunchDebugger(void);
+
 #pragma endregion
 
 private:
@@ -225,6 +230,8 @@ enum
     ID_Menu_File,
     ID_Menu_Edit,
     ID_Menu_Build,
+    ID_Menu_Tools,
+    ID_Menu_Debug,
     ID_New_File,
     ID_New_Project,
     ID_Clone,

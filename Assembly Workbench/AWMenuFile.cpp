@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "AWMenuFile.h"
-#include "stdafx.h"
 #include <Windows.h>
 #include <WinUser.h>
 

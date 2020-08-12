@@ -171,6 +171,12 @@
     <ClInclude Include="AWMenuBuild.h">
       <Filter>Archivos de encabezado\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="AWMenuTools.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="AWMenuDebug.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -252,6 +258,12 @@
       <Filter>Archivos de origen\Controls</Filter>
     </ClCompile>
     <ClCompile Include="AWMenuBuild.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="AWMenuTools.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="AWMenuDebug.cpp">
       <Filter>Archivos de origen\Controls</Filter>
     </ClCompile>
   </ItemGroup>

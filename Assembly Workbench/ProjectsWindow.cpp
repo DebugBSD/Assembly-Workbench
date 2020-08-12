@@ -214,7 +214,7 @@ void ProjectsWindow::SelectedElement(wxTreeEvent& event)
     File* pFile = m_pTreeFiles[id.GetID()];
     if (pFile)
     {
-        wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_pMainFrame->GetWindow("notebook_content"));
+        wxAuiNotebook* dockWindows = m_pMainFrame->GetWindow();
         
         for (size_t i = 0; i < dockWindows->GetPageCount(); i++)
         {
@@ -280,7 +280,7 @@ void ProjectsWindow::OnPopupNewFile(wxCommandEvent& event)
     pNewFileDlg->Destroy();
 
 
-    wxAuiNotebook* dockWindows = static_cast<wxAuiNotebook*>(m_pMainFrame->GetWindow("notebook_content"));
+    wxAuiNotebook* dockWindows = m_pMainFrame->GetWindow();
 
     File* pFile = new File(file, path, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), m_pSelectedProject);
 

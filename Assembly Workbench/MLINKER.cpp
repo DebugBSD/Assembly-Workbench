@@ -94,8 +94,14 @@ void MLINKER::Link(const wxString& file, FileSettings* pFileSettings)
     wxArrayString errors;
     long res = wxExecute(command, output, errors, wxEXEC_SYNC, &environment);
 
-    if (m_pFrame) m_pFrame->Log(&output);
-    if (m_pFrame) m_pFrame->Log(&errors);
+    m_pFrame->Log(&output);
+    m_pFrame->Log(&errors);
+
+    if (res == 0)
+    {
+        wxString output = "Ok building " + fileOutput;
+        m_pFrame->Log(&output);
+    }
 }
 
 void MLINKER::Link(const wxString& cwd, const wxArrayString& objList, FileSettings* pFileSettings, const wxString &outFile)
@@ -131,8 +137,14 @@ void MLINKER::Link(const wxString& cwd, const wxArrayString& objList, FileSettin
     wxArrayString errors;
     long res = wxExecute(command, output, errors, wxEXEC_SYNC, &environment);
 
-    if (m_pFrame) m_pFrame->Log(&output);
-    if (m_pFrame) m_pFrame->Log(&errors);
+    m_pFrame->Log(&output);
+    m_pFrame->Log(&errors);
+
+    if (res == 0)
+    {
+        wxString output = "Ok building " + outFile;
+        m_pFrame->Log(&output);
+    }
 }
 
 void MLINKER::SetEnvVariables(wxEnvVariableHashMap& envMap)
