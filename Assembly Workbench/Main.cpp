@@ -94,6 +94,7 @@ wxBEGIN_EVENT_TABLE(MainFrame, CustomFrame)
     EVT_BUTTON(ID_Menu_Build, MainFrame::OnMenuBuild)
     EVT_BUTTON(ID_Menu_Tools, MainFrame::OnMenuTools)
     EVT_BUTTON(ID_Menu_Debug, MainFrame::OnMenuDebug)
+    EVT_AUINOTEBOOK_PAGE_CHANGED(ID_TAB_MANAGER, MainFrame::OnPageChanged)
 
     EVT_CLOSE(MainFrame::OnExitProgram)
 wxEND_EVENT_TABLE()
@@ -897,7 +898,7 @@ wxSizer* MainFrame::InitViews()
     wxBoxSizer* bSizer2;
     bSizer2 = new wxBoxSizer(wxHORIZONTAL);
 
-    m_auinotebook5 = new wxAuiNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER);
+    m_auinotebook5 = new wxAuiNotebook(this, ID_TAB_MANAGER, wxDefaultPosition, wxDefaultSize, wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_EXTERNAL_MOVE | wxNO_BORDER);
     wxAuiManager& mgr = const_cast <wxAuiManager&> (m_auinotebook5->GetAuiManager());
     mgr.GetArtProvider()->SetMetric(wxAUI_DOCKART_SASH_SIZE, 2);
     mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_SASH_COLOUR, m_pAppSettings->m_backgroundColor);
@@ -1152,4 +1153,26 @@ void MainFrame::OnMaximizeBtn(wxCommandEvent& event)
 void MainFrame::OnMinimizeBtn(wxCommandEvent& event)
 {
     Iconize(!IsIconized());
+}
+
+void MainFrame::OnPageChanged(wxAuiNotebookEvent& event)
+{
+    CodeEditor* pCodeEditor = GetCodeEditorFromWindow(m_auinotebook5->GetCurrentPage());
+    if (pCodeEditor)
+    {
+        File* pFile = pCodeEditor->GetFile();
+        if (pFile != nullptr)
+        {
+            if (pFile->GetProject())
+            {
+                wxFileName fileName(pFile->GetProject()->GetName());
+                m_staticTitle->SetLabelText(fileName.GetFullName());
+            }
+            else
+            {
+                wxFileName fileName(pFile->GetFileName());
+                m_staticTitle->SetLabelText(fileName.GetFullName());
+            }
+        }
+    }
 }

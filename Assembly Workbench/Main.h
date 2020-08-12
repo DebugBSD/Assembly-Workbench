@@ -87,6 +87,8 @@ private:
     void OnMaximizeBtn(wxCommandEvent& event);
     void OnMinimizeBtn(wxCommandEvent& event);
 
+    // Page changed
+    void OnPageChanged(wxAuiNotebookEvent& event);
 
 public:
 #pragma region Public attributes
@@ -262,5 +264,6 @@ enum
     ID_Tools_CVS,
     ID_Tool_Graph,
     ID_FRAME_BUTTON_MINIMIZE,
-    ID_FRAME_BUTTON_MAXIMIZE
+    ID_FRAME_BUTTON_MAXIMIZE,
+    ID_TAB_MANAGER
 };
