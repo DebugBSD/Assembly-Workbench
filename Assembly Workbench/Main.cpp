@@ -373,16 +373,14 @@ void MainFrame::SaveCurrent(void)
         {
             File* pFile = pCodeEditor->GetFile();
 
-            if (pFile && pFile->GetFile() == "")
+            if (pFile && pFile->GetFile().GetPath() == "")
             {
                 if (saveFileDialog.ShowModal() == wxID_CANCEL)
                     return;     // the user changed idea...
                 
-                std::filesystem::path tempFile{ static_cast<std::string>(saveFileDialog.GetPath()) };
-                pFile->SetFile(tempFile.parent_path().string());
-                pFile->SetFileName(tempFile.filename().string());
+                pFile->SetFileName(saveFileDialog.GetPath());
 
-                if (!pCodeEditor->SaveFile(static_cast<wxString>(tempFile)))
+                if (!pCodeEditor->SaveFile(saveFileDialog.GetPath()))
                 {
                     wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
                     return;
@@ -446,9 +444,7 @@ void MainFrame::OpenFile(void)
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;     // the user changed idea...
 
-    std::filesystem::path tempFile{ static_cast<std::string>(openFileDialog.GetPath()) };
-
-    File* pFile = new File(tempFile.filename().string(),tempFile.parent_path().string(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
+    File* pFile = new File(openFileDialog.GetPath(), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     CodeEditor* pCodeEditor = new CodeEditor(this, pFile);
     if (!pCodeEditor->LoadFile(openFileDialog.GetPath()))
     {
@@ -459,13 +455,13 @@ void MainFrame::OpenFile(void)
 
     m_Files.insert({ pFile,pCodeEditor });
 
-    ctrl->AddPage(pCodeEditor, tempFile.filename().string());
+    ctrl->AddPage(pCodeEditor, wxFileName(openFileDialog.GetPath()).GetFullName());
 }
 
 void MainFrame::NewFile(void)
 {
     wxAuiNotebook* ctrl = m_auinotebook5;
-    File* pFile = new File("New File", m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
+    File* pFile = new File(wxFileName("New File"), m_pAssemblerBase, m_pLinkerBase, m_pCompilerBase, m_pGlobalFileSettings);
     CodeEditor* pCodeEditor = new CodeEditor(ctrl, pFile);
     
     ctrl->Freeze();
@@ -495,7 +491,7 @@ void MainFrame::NewProject(void)
 
         Project* pProject = new Project(this);
 
-        int res = pProject->Create(pNewProjectDlg->GetDirectory()+ wxFileName::GetPathSeparator() +pNewProjectDlg->GetProjectName(), pNewProjectDlg->GetFileName());
+        int res = pProject->Create(pNewProjectDlg->GetDirectory()+ wxFileName::GetPathSeparator() +pNewProjectDlg->GetProjectName() + wxFileName::GetPathSeparator() + pNewProjectDlg->GetFileName());
 
         if (res == 0)
         {
@@ -913,8 +909,8 @@ wxSizer* MainFrame::InitViews()
     m_auinotebook5->AddPage(m_pConsoleView, wxT("Console"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_message_white_18dp.png", wxBITMAP_TYPE_ANY));
 
     // Find and Replace view
-    m_pFindAndReplaceView = new FindAndReplaceWindow(m_auinotebook5);
-    m_auinotebook5->AddPage(m_pFindAndReplaceView, wxT("Find And Replace"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_message_white_18dp.png", wxBITMAP_TYPE_ANY));
+    //m_pFindAndReplaceView = new FindAndReplaceWindow(m_auinotebook5);
+    //m_auinotebook5->AddPage(m_pFindAndReplaceView, wxT("Find And Replace"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_message_white_18dp.png", wxBITMAP_TYPE_ANY));
 
     // BUG: wxAuiManager from wxAuiNotebook doesn't works as expected or maybe I don't understand how is supposed to work
     /*wxString auiPerspective;
@@ -996,108 +992,6 @@ wxSizer* MainFrame::InitViews()
 //              git
 //          Graph Tool
 /*****************************************************************************/
-void MainFrame::CreateMenubar()
-{
-    wxMenu* menuFile = new wxMenu;
-    wxMenu* pSubMenuFile = new wxMenu;
-    /*menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
-        "Help string shown in status bar for this menu item");*/
-    pSubMenuFile->Append(wxID_NEW);                                     // Open a new tab with an empty buffer to start editing.
-    pSubMenuFile->Append(ID_New_File, "New File");                      // Open a new window 
-    pSubMenuFile->Append(ID_New_Project, "New Project");                // Open a new Window 
-    menuFile->AppendSubMenu(pSubMenuFile, "New", "New File/Project");
-    // TODO: Submenu 
-
-    wxMenu* pSubMenuOpen = new wxMenu;
-    pSubMenuOpen->Append(wxID_OPEN);
-    pSubMenuOpen->Append(ID_Open_Project, "Open Project", "Open an existing project");
-    menuFile->AppendSubMenu(pSubMenuOpen, "Open", "Open a File or Project");
-    menuFile->Append(ID_Clone, "Clone a repository", "Clone a repository");
-
-    menuFile->AppendSeparator();
-    menuFile->Append(wxID_CLOSE);
-    menuFile->Append(ID_Close_Project, "Close Project", "Close current project");
-
-    menuFile->AppendSeparator();
-    menuFile->Append(wxID_SAVE);
-    menuFile->Append(ID_Save_Project, "Save Project", "Save current project");
-    
-    menuFile->AppendSeparator();
-    menuFile->Append(ID_Recent_Files, "Recent Files", "Most recently used files");
-    menuFile->Append(ID_Recent_Projects, "Recent Projects", "Most recently used projects");
-    
-    menuFile->AppendSeparator();
-    menuFile->Append(wxID_EXIT);
-
-    wxMenu* menuEdit = new wxMenu;
-
-    menuEdit->Append(ID_Search_Replace, "Search and Replace", "Search and replace in current project or file");
-
-    menuEdit->AppendSeparator();
-    menuEdit->Append(wxID_UNDO);
-    menuEdit->Append(wxID_REDO);
-
-    menuEdit->AppendSeparator();
-    menuEdit->Append(wxID_CUT);
-    menuEdit->Append(wxID_COPY);
-    menuEdit->Append(wxID_PASTE);
-
-    menuEdit->AppendSeparator();
-    menuEdit->Append(wxID_PREFERENCES);
-
-    wxMenu* menuView = new wxMenu;
-
-    menuView->Append(ID_View_Files, "Files", "View current files");
-    menuView->Append(ID_View_Functions, "Functions", "View current functions");
-    menuView->Append(ID_View_Variables, "Variables", "View current variables");
-    menuView->Append(ID_View_Opcodes, "Opcodes", "View current opcodes");
-    menuView->Append(ID_View_LineNumber, "View Line Numbers");
-    menuView->Append(ID_View_LongLine, "View End Line");
-    menuView->Append(ID_View_CaretLine, "Highlight Current Line");
-    
-    
-
-    wxMenu* menuProject = new wxMenu;
-    menuProject->Append(ID_Project_Assembler, "Assembler", "Assembler to use when building the project");
-    // TODO: Add assemblers.
-
-    menuProject->AppendSeparator();
-    menuProject->Append(ID_Project_Linker, "Linker", "Linker to use when building the project");
-    // TODO: Add linkers.
-
-    menuProject->AppendSeparator();
-    menuProject->Append(ID_Project_Preferences, "Settings", "Edit project settings");
-
-    wxMenu* menuBuild = new wxMenu;
-    menuBuild->Append(ID_Build_Build_Solution, "Build solution", "Build current solution");
-    menuBuild->Append(ID_Build_Rebuild_Solution, "Rebuild solution", "Rebuild current solution");
-    menuBuild->Append(ID_Build_Clean_Solution, "Clean solution", "Clean current solution");
-
-    wxMenu* menuDebug = new wxMenu;
-    menuDebug->Append(ID_Debug_LaunchWinDbg, "Launch WindDbg", "Launch the debugger.");
-
-    wxMenu* menuTools = new wxMenu;
-    menuTools->Append(ID_Tools_Command_Line, "Command Line Tool", "Open a command line tool");
-    menuTools->Append(ID_Tools_Hex_Editor, "HexEditor", "Open an Hexadecimal Editor");
-    menuTools->Append(ID_Tools_CVS, "CVS", "Open Control Version System window");
-    menuTools->Append(ID_Tool_Graph, "Graph", "Open the Graph tool");
-
-
-    wxMenu* menuHelp = new wxMenu;
-    menuHelp->Append(wxID_ABOUT);
-    wxMenuBar* menuBar = new wxMenuBar;
-    menuBar->Append(menuFile, "&File");
-    menuBar->Append(menuEdit, "&Edit");
-    menuBar->Append(menuView, "&View");
-    menuBar->Append(menuProject, "&Project");
-    menuBar->Append(menuBuild, "&Build");
-    menuBar->Append(menuDebug, "&Debug");
-    menuBar->Append(menuTools, "&Tools");
-    menuBar->Append(menuHelp, "&Help");
-
-
-    SetMenuBar(menuBar);
-}
 
 void MainFrame::InitToolChain()
 {

@@ -282,11 +282,11 @@ void ProjectsWindow::OnPopupNewFile(wxCommandEvent& event)
 
     wxAuiNotebook* dockWindows = m_pMainFrame->GetWindow();
 
-    File* pFile = new File(file, path, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), m_pSelectedProject);
+    File* pFile = new File(path + wxFileName::GetPathSeparator() + file, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), m_pSelectedProject);
 
     CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
 
-    pCodeEditor->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator() + pFile->GetFileName());
+    pCodeEditor->SaveFile(pFile->GetFile().GetFullPath());
     m_pMainFrame->AddFile(pFile, pCodeEditor);
 
     dockWindows->Freeze();

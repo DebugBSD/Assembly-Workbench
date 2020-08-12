@@ -217,7 +217,6 @@ private:
     class wxSizer* InitFrameButtons();
     class wxSizer* InitToolbar();
     class wxSizer* InitViews();
-    void CreateMenubar();
     void InitToolChain();
     void UnInitToolChain();
     class wxAuiToolBar * CreateMainToolBar();

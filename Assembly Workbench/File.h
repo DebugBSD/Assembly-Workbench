@@ -45,8 +45,7 @@ class File
 {
 public:
     
-	File(const wxString& file, class AssemblerBase*pAssemblerFile = nullptr, class LinkerBase *pLinkerFile = nullptr, class CompilerBase *pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project *pProject = nullptr);
-    File(const wxString& fileName, const wxString&filePath, class AssemblerBase* pAssemblerFile = nullptr, class LinkerBase* pLinkerFile = nullptr, class CompilerBase* pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project* pProject = nullptr);
+	File(const wxFileName& file, class AssemblerBase*pAssemblerFile = nullptr, class LinkerBase *pLinkerFile = nullptr, class CompilerBase *pCompiler = nullptr, class FileSettings* pFileSettings = nullptr, class Project *pProject = nullptr);
     ~File();
 
     void Clean();
@@ -58,11 +57,11 @@ public:
 	void Link(); // For object files. (ASM objects and C/C++ objects)
 
     void SetFileName(const wxString file) { m_FileName = file; }
-    const wxString& GetFileName() const { return m_FileName; }
-    const wxString GetAbsoluteFileName() const { return m_FilePath + wxFileName::GetPathSeparator() + m_FileName; }
+    const wxString GetFileName() const { return m_FileName.GetFullName(); }
+    const wxString GetAbsoluteFileName() const { return m_FileName.GetFullPath(); }
 
-    void SetFile(const wxString file) { m_FilePath = file; }
-    const wxString& GetFile() const { return m_FilePath; }
+    void SetFile(const wxFileName& file) { m_FileName = file; }
+    const wxFileName& GetFile() const { return m_FileName; }
     void SetAssembler(class AssemblerBase* pAssembler) { m_pAssembler = pAssembler; }
     void SetLinker(class LinkerBase* pLinker) { m_pLinker = pLinker; }
     void SetCompiler(class CompilerBase* pCompiler) { m_pCompiler = pCompiler; }
@@ -73,8 +72,7 @@ public:
 private:
 
     // Use wxFileName instead of wxString
-    wxString m_FileName;
-    wxString m_FilePath; // Absolute or relative path to file without name of file.
+    wxFileName m_FileName;
 
     FileType m_FileType;
 

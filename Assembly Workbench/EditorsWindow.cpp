@@ -39,9 +39,9 @@
 #include "File.h"
 
 wxBEGIN_EVENT_TABLE(EditorsWindow, wxAuiNotebook)
-EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, EditorsWindow::OnCloseTab)
-EVT_AUINOTEBOOK_PAGE_CLOSED(ID_Notebook, EditorsWindow::OnClosedTab)
-EVT_AUINOTEBOOK_PAGE_CHANGED(ID_Notebook, EditorsWindow::OnOpenTab)
+    EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, EditorsWindow::OnCloseTab)
+    EVT_AUINOTEBOOK_PAGE_CLOSED(ID_Notebook, EditorsWindow::OnClosedTab)
+    EVT_AUINOTEBOOK_PAGE_CHANGED(ID_Notebook, EditorsWindow::OnOpenTab)
 wxEND_EVENT_TABLE()
 
 
@@ -103,7 +103,7 @@ int EditorsWindow::CloseFile()
                     return wxCANCEL;     // the user changed idea...
 
                 std::filesystem::path tempFile{ static_cast<std::string>(saveFileDialog.GetPath()) };
-                pFile->SetFile(tempFile.parent_path().string());
+                //pFile->SetFile(tempFile.parent_path().string());
                 pFile->SetFileName(tempFile.filename().string());
                 if (!pCodeEditor->SaveFile(static_cast<wxString>(tempFile)))
                 {

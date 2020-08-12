@@ -52,20 +52,20 @@ Project::~Project()
 {
 }
 
-int Project::Load(const wxString& fileName)
+int Project::Load(const wxFileName& fileName)
 {
     wxXmlDocument doc;
-    if (!doc.Load(fileName))
+    if (!doc.Load(fileName.GetFullPath()))
         return -1;
 
     // Start processing the XML file.
     if (doc.GetRoot()->GetName() != "Root")
         return -2;
 
-    wxString path, fName, extension;
-    wxFileName::SplitPath(fileName, &path, &fName, &extension);
-    m_ProjectFile = fName + '.' + extension;
-    m_ProjectDirectory = path;
+    //wxString path, fName, extension;
+    //wxFileName::SplitPath(fileName, &path, &fName, &extension);
+    m_ProjectFile = fileName;
+    //m_ProjectDirectory = path;
 
     wxXmlNode* child = doc.GetRoot()->GetChildren();
     while (child)
@@ -101,11 +101,7 @@ int Project::Load(const wxString& fileName)
                         pContent = pContent->GetNext();
                     }
 
-                    wxString path, fName, extension;
-                    wxFileName::SplitPath(m_ProjectDirectory + wxFileName::GetPathSeparator() + sourceFile, &path, &fName, &extension);
-
-                    wxString completeFileName{ fName + '.' + extension };
-                    File* pFile = new File(completeFileName, path, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), this);
+                    File* pFile = new File(m_ProjectFile.GetPath() + wxFileName::GetPathSeparator() + sourceFile, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), this);
                 }
                 pFilesNode = pFilesNode->GetNext();
             }
@@ -124,14 +120,13 @@ void Project::Close()
 {
 }
 
-int Project::Create(const wxString& projectDirectory, const wxString& fileName)
+int Project::Create(const wxFileName& fileName)
 {
     // Here we need to create the Project Settings too based on the configuration file.
     int retCode = 0; // 0 -> OK
     m_IsModified = true;
-    m_ProjectDirectory = projectDirectory;
     m_ProjectFile = fileName;
-    wxString path = projectDirectory;
+    wxString path = m_ProjectFile.GetPath();
     if (wxMkdir(path))
     {
         wxMkdir(path + "/Config");
@@ -165,13 +160,10 @@ bool Project::Build()
         pFile->Compile();
     }
 
-    wxString program;
-    wxFileName::SplitPath(m_ProjectFile, nullptr, &program, nullptr);
-
     // TODO: Add support tyo multiple linkers.
     // Link time
     MLINKER* pLinker = static_cast<MLINKER*>(m_pMainFrame->GetLinker());
-    pLinker->Link(m_ProjectDirectory, objects, m_pMainFrame->GetFileSettings(), program+".exe");
+    pLinker->Link(m_ProjectFile.GetPath(), objects, m_pMainFrame->GetFileSettings(), m_ProjectFile .GetName()+".exe");
 
 	return false;
 }
@@ -210,7 +202,7 @@ void Project::Save()
         name->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", srcFile));
     }
     
-    xmlDoc.Save(m_ProjectDirectory+ wxFileName::GetPathSeparator() +m_ProjectFile);
+    xmlDoc.Save(m_ProjectFile.GetFullPath());
 }
 
 const wxString Project::GetRelativePathToFile(const wxString& absoultePathToFile)
@@ -218,10 +210,10 @@ const wxString Project::GetRelativePathToFile(const wxString& absoultePathToFile
     wxString pathToFile, fileName, extension, projectName;
 
     wxFileName::SplitPath(absoultePathToFile, &pathToFile, &fileName, &extension);
-    int pos = pathToFile.Find(m_ProjectDirectory);
+    int pos = pathToFile.Find(m_ProjectFile.GetPath());
     if (pos != wxNOT_FOUND)
     {
-        pathToFile.erase(pos, m_ProjectDirectory.Length());
+        pathToFile.erase(pos, m_ProjectFile.GetPath().Length());
     }
 
     wxString relPath;

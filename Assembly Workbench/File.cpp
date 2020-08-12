@@ -37,9 +37,8 @@
 #include "File.h"
 #include "Project.h"
 
-File::File(const wxString& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
+File::File(const wxFileName& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
     m_FileName{file},
-    m_FilePath{""},
     m_pAssembler{pAssemblerFile},
     m_pLinker{pLinkerFile},
     m_pCompiler{pCompiler},
@@ -49,17 +48,6 @@ File::File(const wxString& file, AssemblerBase* pAssemblerFile, LinkerBase* pLin
     if (m_pProject) m_pProject->AddFile(this);
 }
 
-File::File(const wxString& fileName, const wxString& filePath, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
-    m_FileName{ fileName },
-    m_FilePath{ filePath },
-    m_pAssembler{ pAssemblerFile },
-    m_pLinker{ pLinkerFile },
-    m_pCompiler{ pCompiler },
-    m_pProject{ pProject },
-    m_pFileSettings{ pFileSettings }
-{
-    if (m_pProject) m_pProject->AddFile(this);
-}
 
 File::~File()
 {
@@ -67,7 +55,7 @@ File::~File()
 
 void File::Assemble()
 {
-    if (m_pAssembler && m_FilePath != "")
+    if (m_pAssembler && m_FileName.GetFullPath() != "")
     {
         m_pAssembler->AssembleFile(GetAbsoluteFileName(), m_pFileSettings);
     }
@@ -75,7 +63,7 @@ void File::Assemble()
 
 void File::Compile()
 {
-    if (m_pCompiler && m_FilePath != "")
+    if (m_pCompiler && m_FileName.GetFullPath() != "")
     {
         m_pCompiler->Compile(GetAbsoluteFileName());
     }
@@ -83,7 +71,7 @@ void File::Compile()
 
 void File::Link()
 {
-    if (m_pLinker && m_FilePath != "")
+    if (m_pLinker && m_FileName.GetFullPath() != "")
     {
         m_pLinker->Link(GetAbsoluteFileName(), m_pFileSettings);
     }

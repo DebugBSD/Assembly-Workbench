@@ -68,9 +68,9 @@ public:
 	Project(class wxWindow *parent);
     ~Project();
 
-    int Load(const wxString& fileName);
+    int Load(const wxFileName& fileName);
     void Close();
-    int Create(const wxString&projectDirectory, const wxString&fileName);
+    int Create(const wxFileName&fileName);
 
 	bool Build();
 
@@ -81,8 +81,8 @@ public:
     void AddFile(class File* pFile);
     const std::vector<class File*>& GetFiles() const { return m_Files; }
 
-    wxString GetName() const { return wxFileName(m_ProjectFile).GetName(); }
-    wxString GetProjectDirectory() const {return m_ProjectDirectory; }
+    wxString GetName() const { return m_ProjectFile.GetName(); }
+    wxString GetProjectDirectory() const {return m_ProjectFile.GetPath(); }
     void Save();
 
     const wxString GetRelativePathToFile(const wxString& absoultePathToFile);
@@ -92,8 +92,8 @@ public:
 private:
     class MainFrame* m_pMainFrame;
 
-    wxString m_ProjectFile;
-    wxString m_ProjectDirectory;
+    wxFileName m_ProjectFile;
+    //wxString m_ProjectDirectory;
 
 	std::vector<class File*> m_Files;
 

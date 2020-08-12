@@ -45,7 +45,6 @@ TODO
 Tomorrow
 --------
 
-* Change paths to files and directories from strings to wxFileName (see File and Project classes)
 * Improve the projects window. I want to add folders and include files to projects.
 * Add Basic Find/Replace tools with windows.
 	* When finding over open files, don't find anything from real file cause you have to find into buffer.
