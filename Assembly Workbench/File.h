@@ -36,9 +36,11 @@
 enum class FileType
 {
     FT_NONE = -1,
-    FT_ASSEMBLER,
-    FT_C,
-    FT_CPP
+    FT_ASSEMBLER_SOURCE,
+    FT_ASSEMBLER_INCLUDE,
+    FT_C_SOURCE,
+    FT_CPP_SOURCE,
+    FT_CCPP_INCLUDE
 };
 
 class File
@@ -69,6 +71,12 @@ public:
     class FileSettings* GetFileSettings() { return m_pFileSettings; }
 
     class Project* GetProject() { return m_pProject; }
+
+    FileType GetFileType() { return m_FileType; }
+    void SetFileType(FileType ft) { m_FileType = ft; }
+
+    bool IsSourceCode() { return m_FileType == FileType::FT_ASSEMBLER_SOURCE || m_FileType == FileType::FT_CPP_SOURCE || m_FileType == FileType::FT_C_SOURCE; }
+
 private:
 
     // Use wxFileName instead of wxString

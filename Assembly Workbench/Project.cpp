@@ -151,13 +151,15 @@ bool Project::Build()
 
     for (File* pFile:m_Files)
     {
-        wxString path, fileName, extension;
-        wxString obj{ pFile->GetAbsoluteFileName() };
-        wxFileName::SplitPath(obj, &path, &fileName, &extension);
-
-        objects.Add("\""+path + wxFileName::GetPathSeparator() + fileName + ".obj\"");
-        pFile->Assemble();
-        pFile->Compile();
+        if (pFile->IsSourceCode())
+        {
+            wxString path, fileName, extension;
+            wxString obj{ pFile->GetAbsoluteFileName() };
+            wxFileName::SplitPath(obj, &path, &fileName, &extension);
+            objects.Add("\"" + path + wxFileName::GetPathSeparator() + fileName + ".obj\"");
+            pFile->Assemble();
+            pFile->Compile();
+        }
     }
 
     // TODO: Add support tyo multiple linkers.

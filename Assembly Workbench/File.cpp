@@ -46,6 +46,34 @@ File::File(const wxFileName& file, AssemblerBase* pAssemblerFile, LinkerBase* pL
     m_pFileSettings{pFileSettings}
 {
     if (m_pProject) m_pProject->AddFile(this);
+
+    wxString extension = m_FileName.GetExt();
+    if (extension == "asm")
+    {
+        m_FileType = FileType::FT_ASSEMBLER_SOURCE;
+    }
+    else if (extension == "inc")
+    {
+        m_FileType = FileType::FT_ASSEMBLER_INCLUDE;
+    }
+    else if (extension == "cpp")
+    {
+        m_FileType = FileType::FT_CPP_SOURCE;
+    }
+    else if (extension == "h")
+    {
+        m_FileType = FileType::FT_CCPP_INCLUDE;
+    }
+    else if (extension == "c")
+    {
+        m_FileType = FileType::FT_C_SOURCE;
+    } 
+    else
+    {
+        m_FileType = FileType::FT_NONE;
+    }
+
+
 }
 
 
@@ -55,7 +83,7 @@ File::~File()
 
 void File::Assemble()
 {
-    if (m_pAssembler && m_FileName.GetFullPath() != "")
+    if (m_pAssembler && m_FileName.GetFullPath() != "" && IsSourceCode())
     {
         m_pAssembler->AssembleFile(GetAbsoluteFileName(), m_pFileSettings);
     }
@@ -63,7 +91,7 @@ void File::Assemble()
 
 void File::Compile()
 {
-    if (m_pCompiler && m_FileName.GetFullPath() != "")
+    if (m_pCompiler && m_FileName.GetFullPath() != "" && IsSourceCode())
     {
         m_pCompiler->Compile(GetAbsoluteFileName());
     }
@@ -71,7 +99,7 @@ void File::Compile()
 
 void File::Link()
 {
-    if (m_pLinker && m_FileName.GetFullPath() != "")
+    if (m_pLinker && m_FileName.GetFullPath() != "" && IsSourceCode())
     {
         m_pLinker->Link(GetAbsoluteFileName(), m_pFileSettings);
     }
