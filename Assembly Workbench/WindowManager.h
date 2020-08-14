@@ -41,7 +41,8 @@ public:
 	void RemoveWindow(wxWindow *pWindow);
     wxWindow* GetWindow(const wxString& windowName) { return GetPane(windowName).window; }
 private:
+    void OnActivated(wxAuiManagerEvent& event);
 
-	
+    wxDECLARE_EVENT_TABLE();
 };
 

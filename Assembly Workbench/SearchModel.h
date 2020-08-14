@@ -29,76 +29,52 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "stdafx.h"
-#include "AssemblerBase.h"
-#include "LinkerBase.h"
-#include "CompilerBase.h"
-#include "FileSettings.h"
-#include "File.h"
-#include "Project.h"
-
-File::File(const wxFileName& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
-    m_FileName{file},
-    m_pAssembler{pAssemblerFile},
-    m_pLinker{pLinkerFile},
-    m_pCompiler{pCompiler},
-    m_pProject{pProject},
-    m_pFileSettings{pFileSettings}
+#pragma once
+#include <wx/dataview.h>
+class SearchModel :
+	public wxDataViewModel
 {
-    if (m_pProject) m_pProject->AddFile(this);
+public:
+	SearchModel();
+    ~SearchModel() { delete m_Root; }
 
-    wxString extension = m_FileName.GetExt();
-    if (extension == "asm")
-    {
-        m_FileType = FileType::FT_ASSEMBLER_SOURCE;
-    }
-    else if (extension == "inc")
-    {
-        m_FileType = FileType::FT_ASSEMBLER_INCLUDE;
-    }
-    else if (extension == "cpp")
-    {
-        m_FileType = FileType::FT_CPP_SOURCE;
-    }
-    else if (extension == "h")
-    {
-        m_FileType = FileType::FT_CCPP_INCLUDE;
-    }
-    else if (extension == "c")
-    {
-        m_FileType = FileType::FT_C_SOURCE;
-    } 
-    else
-    {
-        m_FileType = FileType::FT_NONE;
-    }
-}
+    void Init();
 
+    // override sorting to always sort branches ascendingly
 
-File::~File()
-{
-}
+    int Compare(const wxDataViewItem& item1, const wxDataViewItem& item2,
+        unsigned int column, bool ascending) const wxOVERRIDE;
 
-void File::Assemble()
-{
-    if (m_pAssembler && m_FileName.GetFullPath() != "" && IsSourceCode())
+    // implementation of base class virtuals to define model
+
+    virtual unsigned int GetColumnCount() const wxOVERRIDE
     {
-        m_pAssembler->AssembleFile(GetAbsoluteFileName(), m_pFileSettings);
+        return 4;
     }
-}
 
-void File::Compile()
-{
-    if (m_pCompiler && m_FileName.GetFullPath() != "" && IsSourceCode())
+    virtual wxString GetColumnType(unsigned int col) const wxOVERRIDE
     {
-        m_pCompiler->Compile(GetAbsoluteFileName());
-    }
-}
+        if (col == 2 || col == 3)
+            return "long";
 
-void File::Link()
-{
-    if (m_pLinker && m_FileName.GetFullPath() != "" && IsSourceCode())
-    {
-        m_pLinker->Link(GetAbsoluteFileName(), m_pFileSettings);
+        return "string";
     }
-}
+
+    virtual void GetValue(wxVariant& variant,
+        const wxDataViewItem& item, unsigned int col) const wxOVERRIDE;
+    virtual bool SetValue(const wxVariant& variant,
+        const wxDataViewItem& item, unsigned int col) wxOVERRIDE;
+
+    virtual bool IsEnabled(const wxDataViewItem& item,
+        unsigned int col) const wxOVERRIDE;
+
+    virtual wxDataViewItem GetParent(const wxDataViewItem& item) const wxOVERRIDE;
+    virtual bool IsContainer(const wxDataViewItem& item) const wxOVERRIDE;
+    virtual unsigned int GetChildren(const wxDataViewItem& parent,
+        wxDataViewItemArray& array) const wxOVERRIDE;
+private:
+
+    class SearchModelNode* m_Root;
+
+};
+

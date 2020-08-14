@@ -33,14 +33,19 @@
 
 // wxWidgets "Hello World" Program
 // For compilers that support precompilation, includes "wx/wx.h".
+#include "wx/config.h"
 #include <wx/aui/framemanager.h>
-#include <wx/aui/auibook.h>
+#include <wx/aui/aui.h>
+#include <wx/srchctrl.h>
 #include <wx/wxprec.h>
 #include <wx/utils.h>
 #include <wx/splitter.h>
 #include <wx/treectrl.h>
 
-#include "WindowManager.h"
+#include "AppSettings.h"
+#include "AWArtProvider.h"
+//#include "WindowManager.h"
+#include "CustomFrame.h"
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -56,57 +61,55 @@ public:
     virtual int OnExit();
 };
 
-class MainFrame : public wxFrame
+class MainFrame : public CustomFrame
 {
 public:
     MainFrame();
     ~MainFrame();
+
 private:
 
+    void OnMenuFile(wxCommandEvent& event);
+    void OnMenuEdit(wxCommandEvent& event);
+    void OnMenuBuild(wxCommandEvent& event);
+    void OnMenuTools(wxCommandEvent& event);
+    void OnMenuDebug(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
-    void OnSave(wxCommandEvent& event);
-    void OnOpenProject(wxCommandEvent& event);
-    void OnOpen(wxCommandEvent& event);
-    void OnNew(wxCommandEvent& event);
-    void OnNewProject(wxCommandEvent& event);
-    void OnNewFile(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
     void OnExitProgram(wxCloseEvent& event);
-    void OnCMDTool(wxCommandEvent& event);
     void OnEdit(wxCommandEvent& event);
     void OnModifySettings(wxCommandEvent &event);
 
     // Project Menu
     void OnProjectPreferences(wxCommandEvent& event);
 
-    // Build Menu
-    void OnBuildSolution(wxCommandEvent& event);
-    void OnRebuildSolution(wxCommandEvent& event);
-    void OnCleanSolution(wxCommandEvent& event);
+    void OnMaximizeBtn(wxCommandEvent& event);
+    void OnMinimizeBtn(wxCommandEvent& event);
 
-    void OnLaunchDebugger(wxCommandEvent& event);
-
-
+    // Page changed
+    void OnPageChanged(wxAuiNotebookEvent& event);
 
 public:
 #pragma region Public attributes
-
+    wxConfig* m_Config;
 #pragma endregion
 
 #pragma region Public Methods
-    void SetStatusBar(const wxString& text) { GetStatusBar()->SetStatusText(text); }
+    class AppSettings* GetAppSettings() { return m_pAppSettings; }
     void SetStatusBar(size_t totalChars = 0, size_t totalLines = 0, size_t currentColumn = 0, size_t currentLine = 0);
 
     void Log(class wxArrayString *pArrayLog);
     void Log(class wxString* pError);
 
+    class CodeEditor* GetCodeEditorFromWindow(wxWindow* window);
+
     // Access to Projects
     const std::vector<class Project*>& GetProjects() const { return m_Projects; }
 
     // Access to windows from WindowManager
-    class wxWindow* GetWindow(const wxString& windowName) { if (m_pWindowManager) return m_pWindowManager->GetWindow(windowName); else return nullptr; }
+    class wxAuiNotebook* GetWindow() { return m_auinotebook5; }
 
     class AssemblerBase* GetAssembler() { return m_pAssemblerBase; }
     class LinkerBase* GetLinker() { return m_pLinkerBase; }
@@ -125,31 +128,96 @@ public:
     // Get/Set project directory entries
     wxArrayString& GetProjectDirectoryEntries() { return m_ProjectDirectoryEntries; }
     void SetProjectDirectoryEntries(wxArrayString& projectDirectoryEntries) { m_ProjectDirectoryEntries = projectDirectoryEntries; }
+
+    // Get files (those wich are not binded to a project)
+    void GetFiles(std::vector<class CodeEditor*>& outOpenFiles);
+
+    // File menu
+    void OpenFile(void);
+    void OpenProject(void);
+    void SaveCurrent(void);
+    void NewFile(void);
+    void NewProject(void);
+
+    // Build Menu
+    void BuildSolution(void);
+    void RebuildSolution(void);
+    void CleanSolution(void);
+
+    // Launch command line tool
+    void CMDTool(void);
+
+    // Launch debugger
+    void LaunchDebugger(void);
+
 #pragma endregion
 
 private:
 #pragma region Private attributes
-    class WindowManager* m_pWindowManager;
+    //class WindowManager* m_pWindowManager;
+    class AppSettings* m_pAppSettings;
+    class AWArtProvider* m_pArtProvider;
     long m_notebook_style;
     class AssemblerBase* m_pAssemblerBase;
     class LinkerBase* m_pLinkerBase;
     class CompilerBase* m_pCompilerBase;
     class FileSettings *m_pGlobalFileSettings;
 
-
     // Create a map with assemblers, compilers and linkers.
     // Then, set a default.
     // On a new file created, set the default based on the file type.
 
-    // Map with File Editor so, we can know which file foes into a editor.
+    // Map with File Editor so, we can know which file goes into a editor.
     std::unordered_map<class File*, class CodeEditor*> m_Files;
     std::vector<class Project*> m_Projects;
 
     wxArrayString m_ProjectDirectoryEntries;
+
+    class AWButton* m_pFileBtn;
+    class AWButton* m_pEditBtn;
+    class AWButton* m_pViewBtn;
+    class AWButton* m_pProjectBtn;
+    class AWButton* m_pBuildMenuBtn;
+    class AWButton* m_pDebugBtn;
+    class AWButton* m_pToolsBtn;
+    class AWButton* m_pHelpBtn;
+    class AWButton* m_pMinimizeBtn;
+    class AWButton* m_pMaximizeBtn;
+    class AWButton* m_pCloseBtn;
+
+    wxStaticText* m_pStatusBar;
+    wxStaticText* m_staticTitle;
+    wxAuiNotebook* m_auinotebook5;
+    class ConsoleView* m_pConsoleView;
+    class ComponentSystemView* m_pComponentSystemView;
+    class ProjectsWindow* m_pProjectWindow;
+    class FindAndReplaceWindow* m_pFindAndReplaceView;
+    wxSearchCtrl* pSearchCtrl;
+
+
+    class AWButton* m_pGoBackBtn;
+    class AWButton* m_pGoForwardBtn;
+    class AWButton* m_pNewBtn;
+    class AWButton* m_pOpenBtn;
+    class AWButton* m_pSaveBtn;
+    class AWButton* m_pUndoBtn;
+    class AWButton* m_pRedoBtn;
+    class AWButton* m_pPlayBtn;
+    class AWButton* m_pBuildBtn;
+    class AWButton* m_pSettingsBtn;
+    class AWButton* m_pCodeEditorBtn;
+
+    // Popup menus
+    class AWMenuFile* m_pMenuFile;
+    class AWMenuEdit* m_pMenuEdit;
+
 #pragma endregion
 
 #pragma region Private Methods
-    void CreateMenubar();
+
+    class wxSizer* InitFrameButtons();
+    class wxSizer* InitToolbar();
+    class wxSizer* InitViews();
     void InitToolChain();
     void UnInitToolChain();
     class wxAuiToolBar * CreateMainToolBar();
@@ -159,8 +227,13 @@ private:
 };
 enum
 {
-    ID_Hello = wxID_HIGHEST+1,
+    ID_Hello = wxID_HIGHEST + 1,
     ID_Size,
+    ID_Menu_File,
+    ID_Menu_Edit,
+    ID_Menu_Build,
+    ID_Menu_Tools,
+    ID_Menu_Debug,
     ID_New_File,
     ID_New_Project,
     ID_Clone,
@@ -190,5 +263,7 @@ enum
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
     ID_Tool_Graph,
-
+    ID_FRAME_BUTTON_MINIMIZE,
+    ID_FRAME_BUTTON_MAXIMIZE,
+    ID_TAB_MANAGER
 };

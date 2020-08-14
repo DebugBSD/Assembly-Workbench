@@ -35,24 +35,18 @@
  * Includes
  */
 
- ////@begin includes
 #include <wx/dialog.h>
 #include <wx/splitter.h>
 #include <wx/treectrl.h>
-////@end includes
 
 /*!
  * Forward declarations
  */
 
- ////@begin forward declarations
- ////@end forward declarations
-
  /*!
   * Control identifiers
   */
 
-  ////@begin control identifiers
 #define ID_NEWFILEDLG 10000
 #define ID_SPLITTERWINDOW 10001
 #define ID_TREECTRL 10002
@@ -66,7 +60,6 @@
 #define SYMBOL_NEWFILEDLG_IDNAME ID_NEWFILEDLG
 #define SYMBOL_NEWFILEDLG_SIZE wxSize(640, 480)
 #define SYMBOL_NEWFILEDLG_POSITION wxDefaultPosition
-////@end control identifiers
 
 
 /*!
@@ -92,10 +85,6 @@ public:
     /// Creates the controls and sizers
     void CreateControls();
 
-    ////@begin NewFileDlg event handler declarations
-    ////@end NewFileDlg event handler declarations
-
-    ////@begin NewFileDlg member function declarations
     /// Sets the text field for file location
     void SetFileLocation(const wxString& fileLocation) { if (m_pFileLocation) m_pFileLocation->SetValue(fileLocation); }
     void GetFileName(wxString& path, wxString& fileName) { path = m_pFileLocation->GetValue();  fileName = m_pFileName->GetValue(); }
@@ -105,14 +94,9 @@ public:
 
     /// Retrieves icon resources
     wxIcon GetIconResource(const wxString& name);
-    ////@end NewFileDlg member function declarations
 
         /// Should we show tooltips?
     static bool ShowToolTips();
-
-    ////@begin NewFileDlg member variables
-    ////@end NewFileDlg member variables
-
 
 private:
     class wxTextCtrl* m_pFileLocation;

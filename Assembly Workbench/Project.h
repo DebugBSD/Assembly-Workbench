@@ -68,9 +68,9 @@ public:
 	Project(class wxWindow *parent);
     ~Project();
 
-    int Load(const wxString& fileName);
+    int Load(const wxFileName& fileName);
     void Close();
-    int Create(const wxString&projectDirectory, const wxString&fileName);
+    int Create(const wxFileName&fileName);
 
 	bool Build();
 
@@ -78,26 +78,29 @@ public:
 
 	void ReBuild() { Clean(); Build(); }
 
-    void AddFile(class File* pFile) { m_Files.push_back(pFile); }
-    const std::vector<class File*>& GetFiles() const { return m_Files; }
+    void AddFile(class File* pFile);
+    const std::vector<class File*>& GetFiles() const { return m_ProjectFiles; }
 
-    wxString GetName() const { return wxFileName(m_ProjectFile).GetName(); }
-    wxString GetProjectDirectory() const {return m_ProjectDirectory; }
+    wxString GetName() const { return m_ProjectFile.GetName(); }
+    wxString GetProjectDirectory() const {return m_ProjectFile.GetPath(); }
+    wxFileName GetFileName() const { return m_ProjectFile; }
     void Save();
 
     const wxString GetRelativePathToFile(const wxString& absoultePathToFile);
-
+    void SetModified(bool modified) { m_IsModified = modified; }
+    bool IsModified() { return m_IsModified; }
 
 private:
     class MainFrame* m_pMainFrame;
 
-    wxString m_ProjectFile;
-    wxString m_ProjectDirectory;
+    wxFileName m_ProjectFile;
 
-	std::vector<class File*> m_Files;
+	std::vector<class File*> m_ProjectFiles;
 
     class AssemblerBase* m_pAssembler;
     class LinkerBase* m_pLinker;
     class CompilerBase* m_pCompiler;
+
+    bool m_IsModified;
 };
 

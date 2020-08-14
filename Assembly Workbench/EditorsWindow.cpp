@@ -39,8 +39,9 @@
 #include "File.h"
 
 wxBEGIN_EVENT_TABLE(EditorsWindow, wxAuiNotebook)
-EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, EditorsWindow::OnCloseTab)
-EVT_AUINOTEBOOK_PAGE_CLOSED(ID_Notebook, EditorsWindow::OnClosedTab)
+    EVT_AUINOTEBOOK_PAGE_CLOSE(ID_Notebook, EditorsWindow::OnCloseTab)
+    EVT_AUINOTEBOOK_PAGE_CLOSED(ID_Notebook, EditorsWindow::OnClosedTab)
+    EVT_AUINOTEBOOK_PAGE_CHANGED(ID_Notebook, EditorsWindow::OnOpenTab)
 wxEND_EVENT_TABLE()
 
 
@@ -62,7 +63,7 @@ void EditorsWindow::OnCloseTab(wxAuiNotebookEvent& event)
 }
 
 EditorsWindow::EditorsWindow(wxWindow* pWindow) : wxAuiNotebook(pWindow, ID_Notebook),
-    m_pMainFrame{ static_cast<MainFrame*>(pWindow) }
+    m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) }
 {
 }
 
@@ -79,7 +80,7 @@ int EditorsWindow::CloseFile()
             int res = wxMessageBox(_("This file has been modifed. Do you want to save it before closing it?"), _("Please confirm"), wxYES_NO | wxCANCEL, this);
             if (res == wxYES) // We save the file before closing it
             {
-                pCodeEditor->SaveFile(pFile->GetFile() + wxFileName::GetPathSeparator().operator char() + pFile->GetFileName());
+                pCodeEditor->SaveFile(pFile->GetAbsoluteFileName());
                 m_pMainFrame->RemoveFile(pFile);
             }
             else if (res == wxNO)
@@ -102,7 +103,7 @@ int EditorsWindow::CloseFile()
                     return wxCANCEL;     // the user changed idea...
 
                 std::filesystem::path tempFile{ static_cast<std::string>(saveFileDialog.GetPath()) };
-                pFile->SetFile(tempFile.parent_path().string());
+                //pFile->SetFile(tempFile.parent_path().string());
                 pFile->SetFileName(tempFile.filename().string());
                 if (!pCodeEditor->SaveFile(static_cast<wxString>(tempFile)))
                 {
@@ -122,6 +123,14 @@ int EditorsWindow::CloseFile()
         m_pMainFrame->RemoveFile(pCodeEditor->GetFile());
         return wxYES;
     }
+}
+
+void EditorsWindow::OnOpenTab(wxAuiNotebookEvent& event)
+{
+    CodeEditor* pCodeEditor = static_cast<CodeEditor*>(GetCurrentPage());
+    if (!pCodeEditor) return;
+
+    pCodeEditor->UpdateStatusBar();
 }
 
 void EditorsWindow::OnClosedTab(wxAuiNotebookEvent& event)

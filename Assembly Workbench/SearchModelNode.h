@@ -30,28 +30,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#include "AssemblerBase.h"
-#include <string>
 
-#include "wx/utils.h"
+#include "wx/dataview.h"
+#include "wx/hashmap.h"
+#include "wx/vector.h"
 
+class SearchModelNode;
+WX_DEFINE_ARRAY_PTR(SearchModelNode*, SearchModelNodePtrArray);
 
-class MASM :
-	public AssemblerBase
+class SearchModelNode
 {
 public:
-    MASM(class MainFrame* pFrame = nullptr);
+	SearchModelNode(SearchModelNode *parent, const wxString &text, const wxString &fileName, int line, int column);
 
-    ~MASM();
+	SearchModelNode(SearchModelNode* parent, const wxString& text);
 
-    void Clean(const wxString& file, class FileSettings* pFileSettings) override;
+	~SearchModelNode();
+    bool IsContainer() const { return m_Container; }
+    SearchModelNode* GetParent() { return m_parent; }
+    SearchModelNodePtrArray &GetChildren() { return m_children; }
+    SearchModelNode* GetNthChild(unsigned int n) { return m_children.Item(n); }
+    void Insert(SearchModelNode* child, unsigned int n) { m_children.Insert(child, n); }
+    void Append(SearchModelNode* child) { m_children.Add(child); }
+    unsigned int GetChildCount() const { return m_children.GetCount(); }
 
-    void AssembleFile(const wxString&file, class FileSettings* pFileSettings) override;
+public:
+#pragma region Public Members
+	wxString m_text;
+	wxString m_fileName;
+	int m_Line;
+	int m_Column;
+
+	bool m_Container;
+#pragma endregion 
 
 private:
-    class MainFrame* m_pFrame;
-
-    // Right now, hardcoded, in the future, I'll detect the tool chain of Visual Studio.
-    //const std::string m_PathToAssembler{"\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.27.29110/bin/Hostx64/x64/ml64.exe\""};
+	SearchModelNode* m_parent;
+	SearchModelNodePtrArray m_children;
 };
 

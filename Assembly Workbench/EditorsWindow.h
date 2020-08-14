@@ -47,6 +47,8 @@ private:
 private:
     int CloseFile();
 
+
+    void OnOpenTab(wxAuiNotebookEvent& event);
     // Close tab
     void OnCloseTab(wxAuiNotebookEvent& event);
     void OnClosedTab(wxAuiNotebookEvent& event);

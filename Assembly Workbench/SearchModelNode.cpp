@@ -30,75 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "stdafx.h"
-#include "AssemblerBase.h"
-#include "LinkerBase.h"
-#include "CompilerBase.h"
-#include "FileSettings.h"
-#include "File.h"
-#include "Project.h"
-
-File::File(const wxFileName& file, AssemblerBase* pAssemblerFile, LinkerBase* pLinkerFile, CompilerBase* pCompiler, FileSettings* pFileSettings, Project* pProject):
-    m_FileName{file},
-    m_pAssembler{pAssemblerFile},
-    m_pLinker{pLinkerFile},
-    m_pCompiler{pCompiler},
-    m_pProject{pProject},
-    m_pFileSettings{pFileSettings}
-{
-    if (m_pProject) m_pProject->AddFile(this);
-
-    wxString extension = m_FileName.GetExt();
-    if (extension == "asm")
-    {
-        m_FileType = FileType::FT_ASSEMBLER_SOURCE;
-    }
-    else if (extension == "inc")
-    {
-        m_FileType = FileType::FT_ASSEMBLER_INCLUDE;
-    }
-    else if (extension == "cpp")
-    {
-        m_FileType = FileType::FT_CPP_SOURCE;
-    }
-    else if (extension == "h")
-    {
-        m_FileType = FileType::FT_CCPP_INCLUDE;
-    }
-    else if (extension == "c")
-    {
-        m_FileType = FileType::FT_C_SOURCE;
-    } 
-    else
-    {
-        m_FileType = FileType::FT_NONE;
-    }
-}
+#include "SearchModelNode.h"
 
 
-File::~File()
+SearchModelNode::SearchModelNode(SearchModelNode* parent, const wxString& text, const wxString& fileName, int line, int column) :
+    m_parent{ parent },
+    m_text{ text },
+    m_fileName{ fileName },
+    m_Line{ line },
+    m_Column{ column },
+    m_Container{ false }
 {
 }
 
-void File::Assemble()
+SearchModelNode::SearchModelNode(SearchModelNode* parent, const wxString& text) :
+    m_parent{ parent },
+    m_text{ text },
+    m_Line{ -1 },
+    m_Column{ -1 },
+    m_Container{ true }
 {
-    if (m_pAssembler && m_FileName.GetFullPath() != "" && IsSourceCode())
-    {
-        m_pAssembler->AssembleFile(GetAbsoluteFileName(), m_pFileSettings);
-    }
 }
 
-void File::Compile()
+SearchModelNode::~SearchModelNode()
 {
-    if (m_pCompiler && m_FileName.GetFullPath() != "" && IsSourceCode())
+    // free all our children nodes
+    size_t count = m_children.GetCount();
+    for (size_t i = 0; i < count; i++)
     {
-        m_pCompiler->Compile(GetAbsoluteFileName());
-    }
-}
-
-void File::Link()
-{
-    if (m_pLinker && m_FileName.GetFullPath() != "" && IsSourceCode())
-    {
-        m_pLinker->Link(GetAbsoluteFileName(), m_pFileSettings);
+        SearchModelNode* child = m_children[i];
+        delete child;
     }
 }

@@ -77,7 +77,10 @@ wxBEGIN_EVENT_TABLE(CodeEditor, wxStyledTextCtrl)
     EVT_STC_MARGINCLICK(wxID_ANY, CodeEditor::OnMarginClick)
     EVT_STC_CHARADDED(wxID_ANY, CodeEditor::OnCharAdded)
     EVT_STC_CALLTIP_CLICK(wxID_ANY, CodeEditor::OnCallTipClick)
+    EVT_STC_MODIFIED(wxID_ANY, CodeEditor::OnDocumentModified)
+    EVT_STC_AUTOCOMP_CHAR_DELETED(wxID_ANY, CodeEditor::OnDocumentModified)
 
+    EVT_KEY_UP(CodeEditor::OnKeyUp)
 	EVT_KEY_DOWN(CodeEditor::OnKeyDown)
 	EVT_LEFT_DOWN(CodeEditor::OnMouseDown)
 	EVT_LEFT_UP(CodeEditor::OnMouseUp)
@@ -85,13 +88,13 @@ wxEND_EVENT_TABLE()
 
 CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
 	wxStyledTextCtrl(parent, wxID_ANY, { 0, 0 }, parent->GetClientSize(), wxVSCROLL), // Base class
-	m_pMainFrame{ static_cast<MainFrame*>(parent) },
+	m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) },
 	m_pFile{pFile}
 {
     wxFont font(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, "Consolas");
-	/*SetFont(f);
-    SetBackgroundColour(wxColour(0x12, 0x12, 0x12));
-	SetForegroundColour(wxColour(0xCC, 0x99, 0xFF));*/
+	/*SetFont(f);*/
+    SetBackgroundColour(m_pMainFrame->GetAppSettings()->m_backgroundColor);
+	SetForegroundColour(m_pMainFrame->GetAppSettings()->m_foregroundColor);
 
     m_calltipNo = 1;
 
@@ -118,10 +121,10 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
         wxSTC_WRAP_WORD : wxSTC_WRAP_NONE);
     //wxFont font(wxFontInfo(10).Family(wxFONTFAMILY_MODERN));
     StyleSetFont(wxSTC_STYLE_DEFAULT, font);
-    StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxBLACK);
-    StyleSetBackground(wxSTC_STYLE_DEFAULT, *wxWHITE);
+    StyleSetForeground(wxSTC_STYLE_DEFAULT, *wxWHITE);
+    StyleSetBackground(wxSTC_STYLE_DEFAULT, m_pMainFrame->GetAppSettings()->m_backgroundColor);
     StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour("DARK GREY"));
-    StyleSetBackground(wxSTC_STYLE_LINENUMBER, *wxWHITE);
+    StyleSetBackground(wxSTC_STYLE_LINENUMBER, m_pMainFrame->GetAppSettings()->m_backgroundColor);
     StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour("DARK GREY"));
     InitializePrefs(DEFAULT_LANGUAGE);
 
@@ -129,6 +132,7 @@ CodeEditor::CodeEditor(wxWindow* parent, File* pFile):
     SetVisiblePolicy(wxSTC_VISIBLE_STRICT | wxSTC_VISIBLE_SLOP, 1);
     SetXCaretPolicy(wxSTC_CARET_EVEN | wxSTC_VISIBLE_STRICT | wxSTC_CARET_SLOP, 1);
     SetYCaretPolicy(wxSTC_CARET_EVEN | wxSTC_VISIBLE_STRICT | wxSTC_CARET_SLOP, 1);
+    SetCaretForeground(*wxWHITE);
 
     // set caret visibility in current line
     SetCaretLineVisible(g_CommonPrefs.caretLineEnable ? true : false);
@@ -198,6 +202,11 @@ void CodeEditor::OnSize(wxSizeEvent& event) {
 }
 
 
+void CodeEditor::OnKeyUp(wxKeyEvent& event)
+{
+    UpdateStatusBar();
+}
+
 void CodeEditor::OnKeyDown(wxKeyEvent& event)
 {
     if (CallTipActive())
@@ -220,15 +229,12 @@ void CodeEditor::OnKeyDown(wxKeyEvent& event)
 
 void CodeEditor::OnMouseDown(wxMouseEvent& event)
 {
-	int stop = 1;
-	int pos = GetInsertionPoint();
 	event.Skip();
 }
 
 void CodeEditor::OnMouseUp(wxMouseEvent& event)
 {
-	int stop = 1;
-	int pos = GetInsertionPoint();
+    UpdateStatusBar();
 	event.Skip();
 }
 
@@ -257,8 +263,8 @@ bool CodeEditor::InitializePrefs(const wxString& name) {
 
     // set margin for line numbers
     SetMarginType(m_LineNrID, wxSTC_MARGIN_NUMBER);
-    StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour("DARK GREY"));
-    StyleSetBackground(wxSTC_STYLE_LINENUMBER, *wxWHITE);
+    StyleSetForeground(wxSTC_STYLE_LINENUMBER, m_pMainFrame->GetAppSettings()->m_foregroundColor);
+    StyleSetBackground(wxSTC_STYLE_LINENUMBER, m_pMainFrame->GetAppSettings()->m_backgroundColor);
     SetMarginWidth(m_LineNrID, g_CommonPrefs.lineNumberEnable ? m_LineNrMargin : 0); // start out not visible
 
     // annotations style
@@ -292,7 +298,7 @@ bool CodeEditor::InitializePrefs(const wxString& name) {
                 StyleSetForeground(Nr, wxColour(curType.foreground));
             }
             if (curType.background.length()) {
-                StyleSetBackground(Nr, wxColour(curType.background));
+                StyleSetBackground(Nr, m_pMainFrame->GetAppSettings()->m_backgroundColor);
             }
             StyleSetBold(Nr, (curType.fontstyle & mySTC_STYLE_BOLD) > 0);
             StyleSetItalic(Nr, (curType.fontstyle & mySTC_STYLE_ITALIC) > 0);
@@ -382,6 +388,11 @@ void CodeEditor::ShowCallTipAt(int position)
     if (CallTipActive())
         CallTipCancel();
     CallTipShow(position, ctString);
+}
+
+void CodeEditor::UpdateStatusBar()
+{
+    m_pMainFrame->SetStatusBar(GetTextLength(), GetLineCount(), GetColumn(GetCurrentPos()), GetCurrentLine() + 1);
 }
 
 void CodeEditor::OnEditClear(wxCommandEvent& WXUNUSED(event)) {
@@ -475,6 +486,12 @@ void CodeEditor::OnCharAdded(wxStyledTextEvent& event) {
             "ifndef?0 include?0 line?0 pragma?0 undef?0";
         AutoCompShow(0, s);
     }*/
+    UpdateStatusBar();
+}
+
+void CodeEditor::OnDocumentModified(wxStyledTextEvent& event)
+{
+    UpdateStatusBar();
 }
 
 void CodeEditor::OnCallTipClick(wxStyledTextEvent& event)

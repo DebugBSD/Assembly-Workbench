@@ -103,7 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS;__WXMSW__;_UNICODE;WXUSINGDLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include;C:\Users\debugg\My Projects\Librerias\rapidjson\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include;../External Libs/rapidjson/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -112,12 +112,11 @@
       <AdditionalLibraryDirectories>$(wxwin)/lib/vc142_x64_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313ud_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_core_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_aui_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_stc_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313ud_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313ud_xml_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
+      <Command>xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase314ud_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_core_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_aui_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_stc_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -147,7 +146,7 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313ud_xml_vc_x64_custom.dll" "$(OutDir)"
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);WXUSINGDLL;wxMSVC_VERSION_AUTO;_CRT_SECURE_NO_WARNINGS;__WXMSW__;_UNICODE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include;C:\Users\debugg\My Projects\Librerias\rapidjson\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(wxwin)/include/msvc;$(wxwin)/include;../External Libs/rapidjson/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -158,24 +157,34 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313ud_xml_vc_x64_custom.dll" "$(OutDir)"
       <AdditionalLibraryDirectories>$(wxwin)/lib/vc142_x64_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_core_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_aui_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_stc_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw313u_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
+      <Command>xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase314u_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_core_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_aui_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_stc_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AppSettings.h" />
     <ClInclude Include="AssemblerBase.h" />
+    <ClInclude Include="AWArtProvider.h" />
+    <ClInclude Include="AWButton.h" />
+    <ClInclude Include="AWMenuBuild.h" />
+    <ClInclude Include="AWMenuDebug.h" />
+    <ClInclude Include="AWMenuEdit.h" />
+    <ClInclude Include="AWMenuFile.h" />
+    <ClInclude Include="AWMenuTools.h" />
     <ClInclude Include="CodeEditor.h" />
     <ClInclude Include="CompilerBase.h" />
+    <ClInclude Include="ConsoleView.h" />
+    <ClInclude Include="CustomFrame.h" />
     <ClInclude Include="EditorsWindow.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="FileSettings.h" />
     <ClInclude Include="FileSettingsDlg.h" />
     <ClInclude Include="FindAndReplaceWindow.h" />
     <ClInclude Include="Git.h" />
+    <ClInclude Include="JsonHelper.h" />
     <ClInclude Include="Languages.h" />
     <ClInclude Include="LinkerBase.h" />
     <ClInclude Include="MASM.h" />
@@ -186,6 +195,8 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClInclude Include="ProjectsWindow.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="SearchModel.h" />
+    <ClInclude Include="SearchModelNode.h" />
     <ClInclude Include="SettingsDialog.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -193,13 +204,24 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AppSettings.cpp" />
+    <ClCompile Include="AWArtProvider.cpp" />
+    <ClCompile Include="AWButton.cpp" />
+    <ClCompile Include="AWMenuBuild.cpp" />
+    <ClCompile Include="AWMenuDebug.cpp" />
+    <ClCompile Include="AWMenuEdit.cpp" />
+    <ClCompile Include="AWMenuFile.cpp" />
+    <ClCompile Include="AWMenuTools.cpp" />
     <ClCompile Include="CodeEditor.cpp" />
+    <ClCompile Include="ConsoleView.cpp" />
+    <ClCompile Include="CustomFrame.cpp" />
     <ClCompile Include="EditorsWindow.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileSettings.cpp" />
     <ClCompile Include="FileSettingsDlg.cpp" />
     <ClCompile Include="FindAndReplaceWindow.cpp" />
     <ClCompile Include="Git.cpp" />
+    <ClCompile Include="JsonHelper.cpp" />
     <ClCompile Include="Languages.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MASM.cpp" />
@@ -208,6 +230,8 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase313u_xml_vc_x64_custom.dll" "$(OutDir)" 
     <ClCompile Include="NewProjectDlg.cpp" />
     <ClCompile Include="Project.cpp" />
     <ClCompile Include="ProjectsWindow.cpp" />
+    <ClCompile Include="SearchModel.cpp" />
+    <ClCompile Include="SearchModelNode.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>

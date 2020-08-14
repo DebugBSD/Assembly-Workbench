@@ -82,8 +82,8 @@ const char* CppWordlist3 =
 // C++
 const char* AsmWordlist1 =
 "mov add div mul sub idiv inc dec shr shl rol ror lea call invoke" 
-"xor movsb movsw movsd cmpsb cmpsw cmpsd scasb scasw scasd stosb"
-"stosw stosd lodsb lodsw lodsd ";
+"xor movsb movsw movsd not cmpsb cmpsw cmpsd scasb scasw scasd stosb"
+"stosw stosd lodsb lodsw lodsd";
 const char* AsmWordlist2 =
 "al ah ax eax rax bl bh bx ebx rbx cl ch cx ecx rcx dl dh dx edx rdx "
 "rdi edi di rsi esi si rbp ebp bp rsp esp sp rflags eflags ";
@@ -233,12 +233,12 @@ const int g_LanguagePrefsSize = WXSIZEOF(g_LanguagePrefs);
 const StyleInfo g_StylePrefs[] = {
     // mySTC_TYPE_DEFAULT
     {"Default",
-    "BLACK", "WHITE",
+    "MEDIUM BLUE", "WHITE",
     "", 10, 0, 0},
 
     // mySTC_TYPE_WORD1
     {"Keyword1",
-    "BLUE", "WHITE",
+    "LIGHT BLUE", "WHITE",
     "", 10, mySTC_STYLE_BOLD, 0},
 
     // mySTC_TYPE_WORD2

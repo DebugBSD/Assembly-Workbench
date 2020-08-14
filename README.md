@@ -1,8 +1,8 @@
 # Assembly-Workbench
 IDE to program in Assembly Language
 
-SETTINGS
---------
+GENERAL SETTINGS
+----------------
 * Colors for every style.
 * Open layout
 * Open last projects and files
@@ -15,11 +15,12 @@ SETTINGS
 BUGS
 ----
 
-* When building projects with whitespaces into the name, it doesn't builds anything.
 * On Windows there is a bug when using wxExecute with environment variables. It doesn't recognise the ml64.exe from the PATH environment variable. So, right now it's hardcoded.
 * We shouldn't ask for save changes when closing the application without any modification in the files.
 * On the settings window we need to pass arrays of strings to paths instead of a single string in one line.
 * We need more control over the environment variables. We need to get/set them for the different kind of assemblers and options.
+* We need to clean the model and the control when finding elements, but I don't know how to do that right now. The application crashes!
+* Some instructions (like XOR) are not detected correctly by the parser of the Scintilla Text Editor. I don't know why. It seems the problem is that there are two XOR (the instruction and the operator) and maybe the editor doesn't know the type.
 
 TODO
 ----
@@ -30,24 +31,39 @@ TODO
 * Integratte GIT/GitHUB/Bitbucket/Any other CVS into the IDE
 * Add the possibility to add/remove/modify files to the project in run time. This means that the editor will check such files and will show a pop up with a message in case some files had been added/removed/modified into the project directory. (look for wxFileSystemWatcher)
 * Add the possibility to save/reload the layout of the IDE and set the default option in the menu.
-* Change paths to files and directories from strings to wxFileName
 * Spanish accents are not supported by the controls of wxWidgets, we need to add support to them.
 * Think about different templates to use when creating new projects/files.
 * Think about how to autodetect the different assemblers and linkers installed into the system.
 * Add a Window which holds a list of all symbols defined in a project or file.
 * Add support to international (Spanish, English)
 * Add general Settings (see section Settings)
-* When building the file/project, save automatically all changes made into files before doing it.
+* Add support to Doxygen.
+* Add support to some kind of unit testing.
+* Execute the Find and Replace tool on other thread (so main thread is not busy) or in the IDLE Event.
 
 Tomorrow
 --------
 
-* Improve the way we store code files.
+* Improve the projects window. I want to add folders and include files to projects.
 * Add Basic Find/Replace tools with windows.
 	* When finding over open files, don't find anything from real file cause you have to find into buffer.
 * Configure the tool chain based on the configuration file.
 * Ensure every file outside the project has an absolute path. When file is absolute, we should set up this configuration on the project file.
-* Implement a Console Log to log the output of the assembler, linker, and compiler.
+* Implement a Console Log to log the output of the assembler, linker, and compiler. When I click on an error on the console, I want to go to the line which caused such an error if possible (some kinds of error are not clickable.
 * Implement Rebuild and Clean.
-* When there is no change in the project, we shouldn't rewrite the project file because. When it does, the order of the files is different.
-* When there is just one project open, whe should build it whether is open a file or not.
+* Integrate the Editor with CDB and add a console to debug the process.
+
+Git/Github integration
+----------------------
+
+* Commit
+* Push
+* Pull
+* Fetch
+* Branch
+* Merge
+* Stash
+* Discard
+* Tags
+* Stage All / Unstage All
+* Stage Selected / Unstage Selected

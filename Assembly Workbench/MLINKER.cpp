@@ -94,8 +94,14 @@ void MLINKER::Link(const wxString& file, FileSettings* pFileSettings)
     wxArrayString errors;
     long res = wxExecute(command, output, errors, wxEXEC_SYNC, &environment);
 
-    if (m_pFrame) m_pFrame->Log(&output);
-    if (m_pFrame) m_pFrame->Log(&errors);
+    m_pFrame->Log(&output);
+    m_pFrame->Log(&errors);
+
+    if (res == 0)
+    {
+        wxString output = "Ok building " + fileOutput;
+        m_pFrame->Log(&output);
+    }
 }
 
 void MLINKER::Link(const wxString& cwd, const wxArrayString& objList, FileSettings* pFileSettings, const wxString &outFile)
@@ -131,8 +137,14 @@ void MLINKER::Link(const wxString& cwd, const wxArrayString& objList, FileSettin
     wxArrayString errors;
     long res = wxExecute(command, output, errors, wxEXEC_SYNC, &environment);
 
-    if (m_pFrame) m_pFrame->Log(&output);
-    if (m_pFrame) m_pFrame->Log(&errors);
+    m_pFrame->Log(&output);
+    m_pFrame->Log(&errors);
+
+    if (res == 0)
+    {
+        wxString output = "Ok building " + outFile;
+        m_pFrame->Log(&output);
+    }
 }
 
 void MLINKER::SetEnvVariables(wxEnvVariableHashMap& envMap)
@@ -140,13 +152,13 @@ void MLINKER::SetEnvVariables(wxEnvVariableHashMap& envMap)
     wxGetEnvMap(&envMap);
     std::string lib;
 
-    // OK - lib =  "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/ATLMFC/lib/x64;C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/lib/x64;C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/lib/um/x64;C:/Program Files (x86)/Windows Kits/10/lib/10.0.18362.0/ucrt/x64;C:/Program Files (x86)/Windows Kits/10/lib/10.0.18362.0/um/x64;";
+    // OK - lib =  "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.27.29110/ATLMFC/lib/x64;C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/lib/x64;C:/Program Files (x86)/Windows Kits/NETFXSDK/4.8/lib/um/x64;C:/Program Files (x86)/Windows Kits/10/lib/10.0.18362.0/ucrt/x64;C:/Program Files (x86)/Windows Kits/10/lib/10.0.18362.0/um/x64;";
 
-    lib = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\ATLMFC\\lib\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\lib\\x64;C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.18362.0\\ucrt\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.18362.0\\um\\x64;";
+    lib = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.27.29110\\ATLMFC\\lib\\x64;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\lib\\x64;C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.18362.0\\ucrt\\x64;C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.18362.0\\um\\x64;";
 
     
-    /*lib =  "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\ATLMFC\\lib\\x64;\
-            C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\lib\\x64;\
+    /*lib =  "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.27.29110\\ATLMFC\\lib\\x64;\
+            C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.27.29110\\lib\\x64;\
             C:\\Program Files (x86)\\Windows Kits\\NETFXSDK\\4.8\\lib\\um\\x64;\
             C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.18362.0\\ucrt\\x64;\
             C:\\Program Files (x86)\\Windows Kits\\10\\lib\\10.0.18362.0\\um\\x64;";*/
@@ -155,7 +167,7 @@ void MLINKER::SetEnvVariables(wxEnvVariableHashMap& envMap)
 
     envMap["Lib"] = lib;
 
-    std::string envPath =  "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.25.28610\\bin\\HostX64\\x64;                         \
+    std::string envPath =  "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.27.29110\\bin\\HostX64\\x64;                         \
                             C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\VC\\VCPackages;                                            \
                             C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow;                   \
                             C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer;\

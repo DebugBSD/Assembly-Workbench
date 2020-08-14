@@ -37,25 +37,19 @@
 /*!
  * Includes
  */
-
-////@begin includes
 #include "wx/splitter.h"
 #include "wx/treectrl.h"
 #include "wx/filename.h"
-////@end includes
 
 /*!
  * Forward declarations
  */
 
-////@begin forward declarations
-////@end forward declarations
 
 /*!
  * Control identifiers
  */
 
-////@begin control identifiers
 #define ID_NEWPROJECTDLG 10000
 #define ID_SPLITTERWINDOW 10001
 #define ID_TREECTRL 10002
@@ -69,7 +63,6 @@
 #define SYMBOL_NEWPROJECTDLG_IDNAME ID_NEWPROJECTDLG
 #define SYMBOL_NEWPROJECTDLG_SIZE wxSize(640, 480)
 #define SYMBOL_NEWPROJECTDLG_POSITION wxDefaultPosition
-////@end control identifiers
 
 
 /*!
@@ -95,10 +88,6 @@ public:
     /// Creates the controls and sizers
     void CreateControls(const wxArrayString& choices);
 
-////@begin NewProjectDlg event handler declarations
-////@end NewProjectDlg event handler declarations
-
-////@begin NewProjectDlg member function declarations
     /// Get Filename
     wxString GetFileName() const { return m_pProjectNameTextCtrl->GetValue()+".awp"; }
     wxString GetDirectory() const { return m_pProjectBaseDirectoryComboBoxCtrl->GetValue(); }
@@ -109,16 +98,13 @@ public:
 
     /// Retrieves icon resources
     wxIcon GetIconResource( const wxString& name );
-////@end NewProjectDlg member function declarations
 
     /// Should we show tooltips?
     static bool ShowToolTips();
 
 private:
-////@begin NewProjectDlg member variables
     class wxTextCtrl* m_pProjectNameTextCtrl;
     class wxComboBox* m_pProjectBaseDirectoryComboBoxCtrl;
-////@end NewProjectDlg member variables
 
 private:
 
