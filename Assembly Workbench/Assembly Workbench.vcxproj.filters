@@ -177,6 +177,9 @@
     <ClInclude Include="AWMenuDebug.h">
       <Filter>Archivos de encabezado\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="JsonHelper.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -265,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="AWMenuDebug.cpp">
       <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonHelper.cpp">
+      <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

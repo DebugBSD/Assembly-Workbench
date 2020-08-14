@@ -119,6 +119,7 @@ MainFrame::MainFrame():
     m_pLinkerBase{nullptr},
     m_pCompilerBase{nullptr},
     m_pGlobalFileSettings{nullptr},
+    m_Config{ new wxConfig("AssemblyWorkbench") },
     m_pArtProvider{ new AWArtProvider() }/*,
     m_pWindowManager{new WindowManager()}*/
 {
@@ -204,17 +205,24 @@ MainFrame::MainFrame():
     this->SetSizer(bSizer11);
     this->Layout();
 
+    // We won't use this anymore until we can close projects ....
     /*wxString lastProjectOpen;
     m_Config->Read("LastProject", &lastProjectOpen);
     if (lastProjectOpen != "")
     {
 
-        m_pProject = new Project();
-        m_pProject->SetFileName(lastProjectOpen);
-        m_pProject->Load();
-        UpdateViews();
-        m_HasProject = true;
-        wxLogWarning("Epa!");
+        Project *pProject = new Project(this);
+        
+        if (pProject->Load(lastProjectOpen) == 0) {
+            m_pProjectWindow->AddProject(pProject);
+            m_Projects.push_back(pProject);
+            wxLogMessage("Open project: ", lastProjectOpen);
+        }
+        else
+        {
+            delete pProject;
+            wxLogError("Opening project: ", lastProjectOpen);
+        }
     }*/
 }
 
@@ -222,6 +230,7 @@ MainFrame::~MainFrame()
 {
     UnInitToolChain();
     //m_pWindowManager->UnInit();
+    delete m_Config;
 
 }
 
@@ -433,6 +442,7 @@ void MainFrame::OpenProject(void)
 
         // Add the project to the vector of projects.
         m_Projects.push_back(pProject);
+        m_Config->Write("LastProject", pProject->GetFileName().GetFullPath());
     }
 }
 

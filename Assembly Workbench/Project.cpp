@@ -31,13 +31,22 @@
  */
 #include "stdafx.h"
 
-#include <wx/xml/xml.h>
+#include <fstream>
+#include <sstream>
 #include <wx/filename.h>
+
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/prettywriter.h>
+#include "JsonHelper.h"
 
 #include "MLINKER.h"
 #include "File.h"
 #include "Project.h"
 #include "Main.h"
+
+
 
 Project::Project(wxWindow* parent):
     m_pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) },
@@ -54,64 +63,42 @@ Project::~Project()
 
 int Project::Load(const wxFileName& fileName)
 {
-    wxXmlDocument doc;
-    if (!doc.Load(fileName.GetFullPath()))
-        return -1;
-
-    // Start processing the XML file.
-    if (doc.GetRoot()->GetName() != "Root")
-        return -2;
-
-    //wxString path, fName, extension;
-    //wxFileName::SplitPath(fileName, &path, &fName, &extension);
-    m_ProjectFile = fileName;
-    //m_ProjectDirectory = path;
-
-    wxXmlNode* child = doc.GetRoot()->GetChildren();
-    while (child)
+    std::ifstream file(fileName.GetFullPath().ToStdString());
+    if (!file.is_open())
     {
-        if (child->GetName() == "Settings")
-        {
-            // We parse the settings
-            wxString content = child->GetNodeContent();
-
-            // Process attributes of tag1.
-            wxString type =
-                child->GetAttribute("type", "Parent");
-
-        }
-        else if (child->GetName() == "Configuration")
-        {
-            // We parse the files
-            wxString type =
-                child->GetAttribute("type", "Windows");
-
-            wxXmlNode* pFilesNode = child->GetChildren();
-            while (pFilesNode)
-            {
-                if (pFilesNode->GetName() == "Name") {
-                    wxString assembler = pFilesNode->GetAttribute("Assembler", "MASM64");
-                    wxString fileType = pFilesNode->GetAttribute("File", "SRC");
-                    wxString sourceFile;
-
-                    wxXmlNode* pContent = pFilesNode->GetChildren();
-                    while (pContent)
-                    {
-                        sourceFile = pContent->GetContent();
-                        pContent = pContent->GetNext();
-                    }
-
-                    File* pFile = new File(m_ProjectFile.GetPath() + wxFileName::GetPathSeparator() + sourceFile, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), this);
-                }
-                pFilesNode = pFilesNode->GetNext();
-            }
-
-        }
-
-        child = child->GetNext();
+        // Handle error
+        return -1;
     }
 
-    m_IsModified = false;
+    std::stringstream fileStream;
+    fileStream << file.rdbuf();
+    std::string contents = fileStream.str();
+    rapidjson::StringStream jsonStr(contents.c_str());
+    rapidjson::Document doc;
+    doc.ParseStream(jsonStr);
+
+    if (!doc.IsObject())
+    {
+        // Handle error
+        return -2;
+    }
+
+    m_ProjectFile = fileName;
+    const rapidjson::Value& fileObjects = doc["Configuration"];
+    if (!fileObjects.IsArray() || fileObjects.Size() < 1)
+    {
+        // Handle error
+        return -3;
+    }
+
+    for (rapidjson::SizeType i = 0; i < fileObjects.Size(); i++)
+    {
+        std::string fileName, type, assembler;
+        JsonHelper::GetString(fileObjects[i], "File", fileName);
+        JsonHelper::GetString(fileObjects[i], "Type", type);
+        JsonHelper::GetString(fileObjects[i], "Type", assembler);
+        File* pFile = new File(m_ProjectFile.GetPath() + wxFileName::GetPathSeparator() + fileName, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), this);
+    }
 
     return 0;
 }
@@ -149,7 +136,7 @@ bool Project::Build()
 {
     wxArrayString objects;
 
-    for (File* pFile:m_Files)
+    for (File* pFile: m_ProjectFiles)
     {
         if (pFile->IsSourceCode())
         {
@@ -177,34 +164,42 @@ void Project::Clean()
 void Project::AddFile(File* pFile)
 {
     m_IsModified = true;
-    m_Files.push_back(pFile);
+    m_ProjectFiles.push_back(pFile);
 }
 
 void Project::Save()
 {
-    // Create a document and add the root node.
-    wxXmlDocument xmlDoc;
+    rapidjson::Document doc;
+    doc.SetObject();
+    JsonHelper::AddString(doc.GetAllocator(), doc, "Root", m_ProjectFile.GetName().ToStdString());
 
-    wxXmlNode* root = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "Root");
-    xmlDoc.SetRoot(root);
-
-    // Add Settings
-    wxXmlNode* fileNode = new wxXmlNode(root, wxXML_ELEMENT_NODE, "Settings");
-    fileNode->AddAttribute("type", "Parent");
-
-    // Add files to the same Configuration
-    wxXmlNode* fileNodeConf = new wxXmlNode(root, wxXML_ELEMENT_NODE, "Configuration");
-    fileNodeConf->AddAttribute("type", "Windows");
-    for (File* pFile : m_Files)
+    rapidjson::Value files(rapidjson::kArrayType);
+    for (File* pFile : m_ProjectFiles)
     {
-        wxXmlNode* name = new wxXmlNode(fileNodeConf, wxXML_ELEMENT_NODE, "Name");
-        name->AddAttribute("Assembler", "MASM64");
-        name->AddAttribute("File", "SRC");
-        wxString srcFile{ GetRelativePathToFile(pFile->GetAbsoluteFileName()) };
-        name->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "", srcFile));
+        rapidjson::Value fileObject(rapidjson::kObjectType);
+        wxString relPath = pFile->GetFile().GetFullPath();
+        wxString r = relPath.SubString(m_ProjectFile.GetPath().size() + 1, relPath.size());
+        JsonHelper::AddString(doc.GetAllocator(), fileObject, "File", r.ToStdString());
+        JsonHelper::AddString(doc.GetAllocator(), fileObject, "Assembler", "MASM64");
+        JsonHelper::AddString(doc.GetAllocator(), fileObject, "Type", "SRC");
+        files.PushBack(fileObject, doc.GetAllocator());
     }
+    doc.AddMember("Configuration", files, doc.GetAllocator());
     
-    xmlDoc.Save(m_ProjectFile.GetFullPath());
+    // Save JSON to string buffer
+    rapidjson::StringBuffer buffer;
+    // Use PrettyWriter for pretty output (otherwise use Writer)
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+    const char* output = buffer.GetString();
+
+    // Write output to file
+    std::string fileName = std::string(m_ProjectFile.GetFullPath());
+    std::ofstream outFile(fileName);
+    if (outFile.is_open())
+    {
+        outFile << output;
+    }
 }
 
 const wxString Project::GetRelativePathToFile(const wxString& absoultePathToFile)

@@ -60,6 +60,7 @@ wxBEGIN_EVENT_TABLE(ProjectsWindow, wxPanel)
     EVT_TREE_ITEM_RIGHT_CLICK(ID_TreeCtrl_Projects_View, ProjectsWindow::OnRightClickOverTreeCtrl)
     EVT_TREE_ITEM_ACTIVATED(ID_TreeCtrl_Projects_View, ProjectsWindow::SelectedElement)
     EVT_MENU(ID_Project_View_Add_New_File, ProjectsWindow::OnPopupNewFile)
+    EVT_MENU(ID_Project_View_Add_New_Folder, ProjectsWindow::OnPopupNewFolder)
 
 wxEND_EVENT_TABLE()
 
@@ -123,8 +124,6 @@ void ProjectsWindow::CreateControls()
 
     MainFrame* pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) };
 
-    m_MenuPopUp = new wxMenu;
-    m_MenuPopUp->Append(ID_Project_View_Add_New_File, "Add New File");                      // Open a new window 
     ProjectsWindow* itemFrame1 = this;
 
     wxBoxSizer* itemBoxSizer1 = new wxBoxSizer(wxVERTICAL);
@@ -159,7 +158,7 @@ bool ProjectsWindow::ShowToolTips()
 void ProjectsWindow::AddProject(Project* pProject)
 {
     /*
-     * TODO: Documentation says that is best practice to add elementos to the tree when user
+     * TODO: Documentation says that is best practice to add elements to the tree when user
      * expands an item and delete them when user collapses the item, but,right now, we just
      * add them.
      * In the future, change this as documentation says.
@@ -167,7 +166,7 @@ void ProjectsWindow::AddProject(Project* pProject)
 
     wxTreeItemId root = m_pTreeCtrl->GetRootItem();
     wxTreeItemId rootProject = m_pTreeCtrl->AppendItem(root, pProject->GetName());
-
+    m_TreeProjects.insert({pProject, new TFolder(pProject->GetName(), rootProject)});
     // Add the rest of the files
     for (File* pFile : pProject->GetFiles())
     {
@@ -256,11 +255,15 @@ void ProjectsWindow::OnRightClickOverTreeCtrl(wxTreeEvent& event)
 
     if (pProject)
     {
+        wxMenu menuPopUp = wxMenu();
+        menuPopUp.Append(ID_Project_View_Add_New_File, "Add New File");
+        menuPopUp.Append(ID_Project_View_Add_New_Folder, "Add New Folder");
+
         m_pSelectedProjectTid = tid;
         m_pSelectedProject = pProject;
         // Now we have detected the project so we can add files.
         wxPoint currentPos = event.GetPoint();
-        m_pTreeCtrl->PopupMenu(m_MenuPopUp, currentPos);
+        m_pTreeCtrl->PopupMenu(&menuPopUp, currentPos);
     }
 }
 
@@ -302,6 +305,10 @@ void ProjectsWindow::OnPopupNewFile(wxCommandEvent& event)
 
 }
 
+void ProjectsWindow::OnPopupNewFolder(wxCommandEvent& event)
+{
+    int stop = 1;
+}
 
 Project* ProjectsWindow::GetProject(const wxString& text)
 {

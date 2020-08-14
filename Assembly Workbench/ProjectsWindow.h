@@ -33,7 +33,11 @@
 #include <wx/panel.h>
 #include <wx/treectrl.h>
 #include <wx/srchctrl.h>
+#include <wx/string.h>
 
+#include <vector>
+
+#include "File.h"
 /*!
  * Forward declarations
  */
@@ -56,11 +60,48 @@ enum {
     // Tree Control IDs
     ID_TreeCtrl_Projects_View = wxID_HIGHEST+1,
     // Add new file to project. We Show a window to create the file.
-    ID_Project_View_Add_New_File
+    ID_Project_View_Add_New_File,
+    ID_Project_View_Add_New_Folder
 };
 /*!
  * ProjectWindow class declaration
  */
+
+class TElement {
+public:
+    TElement(const wxString &name, wxTreeItemId Id, int type):
+        m_Name{ name }, m_id{ Id }, m_Type{ type } {}
+
+    ~TElement(){}
+
+private:
+    wxTreeItemId m_id;
+    wxString m_Name;
+    int m_Type;
+};
+
+class TFile : public TElement{
+public:
+    TFile(class File* pFile, wxTreeItemId Id) :
+        TElement{ pFile->GetFileName(), Id, 0 },
+        m_pFile{pFile}
+    {}
+
+    ~TFile() {}
+private:
+    class File* m_pFile;
+};
+
+class TFolder : public TElement {
+public:
+    TFolder(const wxString &name, wxTreeItemId Id) :
+        TElement{ name, Id, 1 }
+    {}
+
+    ~TFolder() {}
+private:
+    std::vector<TElement*> m_Elements;
+};
 
 class ProjectsWindow : public wxPanel
 {
@@ -102,11 +143,11 @@ private:
 
     class wxSearchCtrl* m_pSearchCtrl;
     class wxTreeCtrl* m_pTreeCtrl;
-    // Menu popup
-    wxMenu* m_MenuPopUp;
 
     // Files container
     std::unordered_map<void*, class File *> m_pTreeFiles;
+
+    std::unordered_map<Project*, TElement*> m_TreeProjects;
 private:
 
     class Project* GetProject(const wxString& text);
@@ -115,6 +156,8 @@ private:
     void SelectedElement(wxTreeEvent& event);
     void OnRightClickOverTreeCtrl(wxTreeEvent& event);
     void OnPopupNewFile(wxCommandEvent& event);
+
+    void OnPopupNewFolder(wxCommandEvent& event);
 
     wxDECLARE_EVENT_TABLE();
 };

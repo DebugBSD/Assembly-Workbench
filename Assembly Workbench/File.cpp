@@ -72,8 +72,6 @@ File::File(const wxFileName& file, AssemblerBase* pAssemblerFile, LinkerBase* pL
     {
         m_FileType = FileType::FT_NONE;
     }
-
-
 }
 
 

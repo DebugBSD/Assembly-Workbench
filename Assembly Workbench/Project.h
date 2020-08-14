@@ -79,10 +79,11 @@ public:
 	void ReBuild() { Clean(); Build(); }
 
     void AddFile(class File* pFile);
-    const std::vector<class File*>& GetFiles() const { return m_Files; }
+    const std::vector<class File*>& GetFiles() const { return m_ProjectFiles; }
 
     wxString GetName() const { return m_ProjectFile.GetName(); }
     wxString GetProjectDirectory() const {return m_ProjectFile.GetPath(); }
+    wxFileName GetFileName() const { return m_ProjectFile; }
     void Save();
 
     const wxString GetRelativePathToFile(const wxString& absoultePathToFile);
@@ -93,9 +94,8 @@ private:
     class MainFrame* m_pMainFrame;
 
     wxFileName m_ProjectFile;
-    //wxString m_ProjectDirectory;
 
-	std::vector<class File*> m_Files;
+	std::vector<class File*> m_ProjectFiles;
 
     class AssemblerBase* m_pAssembler;
     class LinkerBase* m_pLinker;

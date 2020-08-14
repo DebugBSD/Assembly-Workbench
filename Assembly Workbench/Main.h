@@ -33,6 +33,7 @@
 
 // wxWidgets "Hello World" Program
 // For compilers that support precompilation, includes "wx/wx.h".
+#include "wx/config.h"
 #include <wx/aui/framemanager.h>
 #include <wx/aui/aui.h>
 #include <wx/srchctrl.h>
@@ -92,7 +93,7 @@ private:
 
 public:
 #pragma region Public attributes
-
+    wxConfig* m_Config;
 #pragma endregion
 
 #pragma region Public Methods

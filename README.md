@@ -39,8 +39,7 @@ TODO
 * Add general Settings (see section Settings)
 * Add support to Doxygen.
 * Add support to some kind of unit testing.
-* Execute the Find and Replace tool on other thread (so main thread is not busy)
-* Integrate the Editor with CDB and add a console to debug the process.
+* Execute the Find and Replace tool on other thread (so main thread is not busy) or in the IDLE Event.
 
 Tomorrow
 --------
@@ -52,6 +51,7 @@ Tomorrow
 * Ensure every file outside the project has an absolute path. When file is absolute, we should set up this configuration on the project file.
 * Implement a Console Log to log the output of the assembler, linker, and compiler. When I click on an error on the console, I want to go to the line which caused such an error if possible (some kinds of error are not clickable.
 * Implement Rebuild and Clean.
+* Integrate the Editor with CDB and add a console to debug the process.
 
 Git/Github integration
 ----------------------
