@@ -31,8 +31,13 @@
  */
 #pragma once
 
+#include <list>
 #include <vector>
 #include <wx/filename.h>
+#include <wx/treectrl.h>
+#include <wx/xml/xml.h>
+
+#include "File.h"
 
 /*
  * - Directory structure
@@ -61,6 +66,48 @@
  * 
  */
 
+enum {
+    TElementFile = 0,
+    TElementFolder
+};
+
+class TElement {
+public:
+    TElement(const wxString& name, wxTreeItemId Id, int type/*, TElement *root, TElement *parent*/) :
+        m_Name{ name }, m_id{ Id }, m_Type{ type }/*, m_pRoot{ root }, m_pParent{parent}*/ {}
+
+    ~TElement() {}
+
+    /*TElement *m_pRoot;
+    TElement* m_pParent;*/
+    wxTreeItemId m_id;
+    wxString m_Name;
+    int m_Type;
+};
+
+class TFile : public TElement {
+public:
+    TFile(File* pFile, wxTreeItemId Id/*, TElement* root, TElement* parent*/) :
+        TElement{ pFile->GetFileName(), Id, TElementFile/* , root, parent*/},
+        m_pFile{ pFile },
+        m_pCodeEditor{ nullptr }
+    {}
+
+    ~TFile() {}
+    File* m_pFile;
+    class CodeEditor* m_pCodeEditor; // if nullptr, then is not open.
+};
+
+class TFolder : public TElement {
+public:
+    TFolder(const wxString& name, wxTreeItemId Id/*, TElement* root, TElement* parent*/) :
+        TElement{ name, Id, TElementFolder/* , root, parent */}
+    {}
+
+    ~TFolder() {}
+    std::list<TElement*> m_Elements;
+};
+
 
 class Project
 {
@@ -80,6 +127,7 @@ public:
 
     void AddFile(class File* pFile);
     const std::vector<class File*>& GetFiles() const { return m_ProjectFiles; }
+    TElement* GetProjectFiles() { return m_pElements; }
 
     wxString GetName() const { return m_ProjectFile.GetName(); }
     wxString GetProjectDirectory() const {return m_ProjectFile.GetPath(); }
@@ -91,11 +139,19 @@ public:
     bool IsModified() { return m_IsModified; }
 
 private:
+
+    // Parse configuration files recursively
+    void ProcessConfigurationRecursive(wxXmlNode* pNode, const wxString& directoryName, TElement* pRootElement);
+    void SaveConfigurationRecursive(wxXmlNode* pNode, TElement* pRootElement);
+
+private:
+
     class MainFrame* m_pMainFrame;
 
     wxFileName m_ProjectFile;
 
 	std::vector<class File*> m_ProjectFiles;
+    TElement* m_pElements;
 
     class AssemblerBase* m_pAssembler;
     class LinkerBase* m_pLinker;

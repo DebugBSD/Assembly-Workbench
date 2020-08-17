@@ -37,6 +37,7 @@
 
 #include <vector>
 
+#include "Project.h"
 #include "File.h"
 /*!
  * Forward declarations
@@ -66,42 +67,6 @@ enum {
 /*!
  * ProjectWindow class declaration
  */
-
-class TElement {
-public:
-    TElement(const wxString &name, wxTreeItemId Id, int type):
-        m_Name{ name }, m_id{ Id }, m_Type{ type } {}
-
-    ~TElement(){}
-
-private:
-    wxTreeItemId m_id;
-    wxString m_Name;
-    int m_Type;
-};
-
-class TFile : public TElement{
-public:
-    TFile(class File* pFile, wxTreeItemId Id) :
-        TElement{ pFile->GetFileName(), Id, 0 },
-        m_pFile{pFile}
-    {}
-
-    ~TFile() {}
-private:
-    class File* m_pFile;
-};
-
-class TFolder : public TElement {
-public:
-    TFolder(const wxString &name, wxTreeItemId Id) :
-        TElement{ name, Id, 1 }
-    {}
-
-    ~TFolder() {}
-private:
-    std::vector<TElement*> m_Elements;
-};
 
 class ProjectsWindow : public wxPanel
 {
@@ -144,19 +109,21 @@ private:
     class wxSearchCtrl* m_pSearchCtrl;
     class wxTreeCtrl* m_pTreeCtrl;
 
-    // Files container
-    std::unordered_map<void*, class File *> m_pTreeFiles;
-
-    std::unordered_map<Project*, TElement*> m_TreeProjects;
 private:
 
-    class Project* GetProject(const wxString& text);
+    TElement* GetElement(TElement* pRootElement, const wxTreeItemId &elem);
+    void AddItems(const wxTreeItemId& elem, TElement* pITem);
+
+    class Project* GetProject(const wxTreeItemId& elem);
 
     // Tree Events
     void SelectedElement(wxTreeEvent& event);
     void OnRightClickOverTreeCtrl(wxTreeEvent& event);
     void OnPopupNewFile(wxCommandEvent& event);
-
+    void OnItemExpanded(wxTreeEvent& event);
+    void OnItemBeingExpanded(wxTreeEvent& event);
+    void OnEndEditLabel(wxTreeEvent& event);
+    void OnBeginEditLabel(wxTreeEvent& event);
     void OnPopupNewFolder(wxCommandEvent& event);
 
     wxDECLARE_EVENT_TABLE();

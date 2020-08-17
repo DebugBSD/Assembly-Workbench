@@ -42,7 +42,6 @@
 #include "JsonHelper.h"
 
 #include "MLINKER.h"
-#include "File.h"
 #include "Project.h"
 #include "Main.h"
 
@@ -63,41 +62,27 @@ Project::~Project()
 
 int Project::Load(const wxFileName& fileName)
 {
-    std::ifstream file(fileName.GetFullPath().ToStdString());
-    if (!file.is_open())
-    {
-        // Handle error
-        return -1;
-    }
-
-    std::stringstream fileStream;
-    fileStream << file.rdbuf();
-    std::string contents = fileStream.str();
-    rapidjson::StringStream jsonStr(contents.c_str());
-    rapidjson::Document doc;
-    doc.ParseStream(jsonStr);
-
-    if (!doc.IsObject())
-    {
-        // Handle error
+    wxXmlDocument doc;
+    if (!doc.Load(fileName.GetFullPath().ToStdString()))
         return -2;
-    }
+    // Start processing the XML file.
+    if (doc.GetRoot()->GetName() != "Project")
+        return -3;
 
     m_ProjectFile = fileName;
-    const rapidjson::Value& fileObjects = doc["Configuration"];
-    if (!fileObjects.IsArray() || fileObjects.Size() < 1)
-    {
-        // Handle error
-        return -3;
-    }
 
-    for (rapidjson::SizeType i = 0; i < fileObjects.Size(); i++)
+    wxXmlNode* child = doc.GetRoot()->GetChildren();
+    while (child)
     {
-        std::string fileName, type, assembler;
-        JsonHelper::GetString(fileObjects[i], "File", fileName);
-        JsonHelper::GetString(fileObjects[i], "Type", type);
-        JsonHelper::GetString(fileObjects[i], "Type", assembler);
-        File* pFile = new File(m_ProjectFile.GetPath() + wxFileName::GetPathSeparator() + fileName, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), this);
+        if (child->GetName() == "Configuration")
+        {
+            wxXmlNode* configuration = child->GetChildren();
+            m_pElements = new TFolder("Root",0/*, nullptr, nullptr*/);
+            ProcessConfigurationRecursive(configuration, "", m_pElements);
+
+            int stop = 1;
+        }
+        child = child->GetNext();
     }
 
     return 0;
@@ -169,37 +154,21 @@ void Project::AddFile(File* pFile)
 
 void Project::Save()
 {
-    rapidjson::Document doc;
-    doc.SetObject();
-    JsonHelper::AddString(doc.GetAllocator(), doc, "Root", m_ProjectFile.GetName().ToStdString());
-
-    rapidjson::Value files(rapidjson::kArrayType);
-    for (File* pFile : m_ProjectFiles)
+    // Create a document and add the root node.
+    wxXmlDocument xmlDoc;
+    wxXmlNode* pProjectNode = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "Project");
+    pProjectNode->AddAttribute("Name", "TestFGNE");
+    xmlDoc.SetRoot(pProjectNode);
+    // Add some XML.
+    wxXmlNode* pConfigurationNode = new wxXmlNode(pProjectNode, wxXML_ELEMENT_NODE, "Configuration");
+    TFolder* pFolder = static_cast<TFolder*>(m_pElements);
+    for (TElement* pElement : pFolder->m_Elements)
     {
-        rapidjson::Value fileObject(rapidjson::kObjectType);
-        wxString relPath = pFile->GetFile().GetFullPath();
-        wxString r = relPath.SubString(m_ProjectFile.GetPath().size() + 1, relPath.size());
-        JsonHelper::AddString(doc.GetAllocator(), fileObject, "File", r.ToStdString());
-        JsonHelper::AddString(doc.GetAllocator(), fileObject, "Assembler", "MASM64");
-        JsonHelper::AddString(doc.GetAllocator(), fileObject, "Type", "SRC");
-        files.PushBack(fileObject, doc.GetAllocator());
+        SaveConfigurationRecursive(pConfigurationNode, pElement);
     }
-    doc.AddMember("Configuration", files, doc.GetAllocator());
-    
-    // Save JSON to string buffer
-    rapidjson::StringBuffer buffer;
-    // Use PrettyWriter for pretty output (otherwise use Writer)
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
-    doc.Accept(writer);
-    const char* output = buffer.GetString();
 
-    // Write output to file
-    std::string fileName = std::string(m_ProjectFile.GetFullPath());
-    std::ofstream outFile(fileName);
-    if (outFile.is_open())
-    {
-        outFile << output;
-    }
+    // Write the output to a wxString.
+    xmlDoc.Save(m_ProjectFile.GetFullPath());
 }
 
 const wxString Project::GetRelativePathToFile(const wxString& absoultePathToFile)
@@ -222,4 +191,62 @@ const wxString Project::GetRelativePathToFile(const wxString& absoultePathToFile
         relPath = pathToFile + wxFileName::GetPathSeparator() + fileName + '.' + extension;
     }
     return relPath;
+}
+
+void Project::ProcessConfigurationRecursive(wxXmlNode* pNode, const wxString& directoryName, TElement* pRootElement)
+{
+    while (pNode)
+    {
+        if (pNode->GetName() == "Directory")
+        {
+            wxXmlNode* configuration = pNode->GetChildren();
+            wxString dir;
+            pNode->GetAttribute("Name", &dir);
+            TFolder* pFolder = new TFolder(dir,0/*, pRootElement->m_pRoot, pRootElement*/);
+            TFolder* pCurrentFolder = static_cast<TFolder*>(pRootElement);
+            pCurrentFolder->m_Elements.push_front(pFolder);
+            ProcessConfigurationRecursive(configuration, directoryName + "\\" + dir, pFolder);
+
+        }
+        else if (pNode->GetName() == "File")
+        {
+            wxString fileName;
+            wxString assemblerType;
+
+            TFolder* pCurrentFolder = static_cast<TFolder*>(pRootElement);
+
+            pNode->GetAttribute("Name", &fileName);
+            pNode->GetAttribute("AssemblerType", &assemblerType);
+
+            // Check that file exists!!
+            File* pFile = new File(m_ProjectFile.GetPath() + wxFileName::GetPathSeparator() + directoryName + wxFileName::GetPathSeparator() + fileName, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), this);
+
+            TFile* pTFile = new TFile(pFile, 0/*, pRootElement->m_pRoot, pRootElement*/);
+            pCurrentFolder->m_Elements.push_front(pTFile);
+
+            int stop = 1;
+        }
+
+        pNode = pNode->GetNext();
+    }
+}
+
+void Project::SaveConfigurationRecursive(wxXmlNode* pNode, TElement* pRootElement)
+{
+    if (pRootElement->m_Type == 1) // TFolder
+    {
+        wxXmlNode* pDirectory = new wxXmlNode(pNode, wxXML_ELEMENT_NODE, "Directory");
+        pDirectory->AddAttribute("Name", pRootElement->m_Name);
+        TFolder* pFolder = static_cast<TFolder*>(pRootElement);
+        for (TElement* pElement : pFolder->m_Elements)
+        {
+            SaveConfigurationRecursive(pDirectory, pElement);
+        }
+    }
+    else if (pRootElement->m_Type == 0) // TFile
+    {
+        wxXmlNode* pFileNode = new wxXmlNode(pNode, wxXML_ELEMENT_NODE, "File");
+        pFileNode->AddAttribute("AssemblerType", "MASM64");
+        pFileNode->AddAttribute("Name", pRootElement->m_Name);
+    }
 }

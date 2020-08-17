@@ -116,7 +116,8 @@
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_core_vc_x64_custom.dll" "$(OutDir)" /Y /A
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_aui_vc_x64_custom.dll" "$(OutDir)" /Y /A
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_stc_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase314ud_xml_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -161,7 +162,8 @@ xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314ud_propgrid_vc_x64_custom.dll" "$(OutD
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_core_vc_x64_custom.dll" "$(OutDir)" /Y /A
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_aui_vc_x64_custom.dll" "$(OutDir)" /Y /A
 xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_stc_vc_x64_custom.dll" "$(OutDir)" /Y /A
-xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxmsw314u_propgrid_vc_x64_custom.dll" "$(OutDir)" /Y /A
+xcopy "$(wxwin)\lib\vc142_x64_dll\wxbase314u_xml_vc_x64_custom.dll" "$(OutDir)" /Y /A</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

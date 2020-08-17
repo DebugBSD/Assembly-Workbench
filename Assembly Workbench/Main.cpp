@@ -440,6 +440,8 @@ void MainFrame::OpenProject(void)
         // Add the project and files and everything to the main tree.
         if (ctrl) ctrl->AddProject(pProject);
 
+        m_staticTitle->SetLabelText(pProject->GetName());
+
         // Add the project to the vector of projects.
         m_Projects.push_back(pProject);
         m_Config->Write("LastProject", pProject->GetFileName().GetFullPath());

@@ -35,7 +35,6 @@
 #include "File.h"
 #include "CodeEditor.h"
 #include "NewFileDlg.h"
-#include "Project.h"
 #include "wx/wxprec.h"
 
 #ifdef __BORLANDC__
@@ -59,6 +58,10 @@ wxBEGIN_EVENT_TABLE(ProjectsWindow, wxPanel)
     // Tree control events
     EVT_TREE_ITEM_RIGHT_CLICK(ID_TreeCtrl_Projects_View, ProjectsWindow::OnRightClickOverTreeCtrl)
     EVT_TREE_ITEM_ACTIVATED(ID_TreeCtrl_Projects_View, ProjectsWindow::SelectedElement)
+    EVT_TREE_ITEM_EXPANDED(ID_TreeCtrl_Projects_View, ProjectsWindow::OnItemExpanded)
+    EVT_TREE_ITEM_EXPANDING(ID_TreeCtrl_Projects_View, ProjectsWindow::OnItemBeingExpanded)
+    EVT_TREE_BEGIN_LABEL_EDIT(ID_TreeCtrl_Projects_View, ProjectsWindow::OnBeginEditLabel)
+    EVT_TREE_END_LABEL_EDIT(ID_TreeCtrl_Projects_View, ProjectsWindow::OnEndEditLabel)
     EVT_MENU(ID_Project_View_Add_New_File, ProjectsWindow::OnPopupNewFile)
     EVT_MENU(ID_Project_View_Add_New_Folder, ProjectsWindow::OnPopupNewFolder)
 
@@ -137,7 +140,7 @@ void ProjectsWindow::CreateControls()
     m_pSearchCtrl->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     itemBoxSizer2->Add(m_pSearchCtrl, 0, wxGROW | wxALL, 0);
 
-    m_pTreeCtrl = new wxTreeCtrl(itemFrame1, ID_TreeCtrl_Projects_View, wxDefaultPosition, wxSize(100, 100), wxTR_DEFAULT_STYLE | wxNO_BORDER);
+    m_pTreeCtrl = new wxTreeCtrl(itemFrame1, ID_TreeCtrl_Projects_View, wxDefaultPosition, wxSize(100, 100), wxTR_DEFAULT_STYLE | wxNO_BORDER | wxTR_EDIT_LABELS);
     m_pTreeCtrl->SetBackgroundColour(pMainFrame->GetAppSettings()->m_backgroundColor);
     m_pTreeCtrl->SetForegroundColour(pMainFrame->GetAppSettings()->m_foregroundColor);
     m_pTreeCtrl->AddRoot("Projects");
@@ -157,21 +160,25 @@ bool ProjectsWindow::ShowToolTips()
 
 void ProjectsWindow::AddProject(Project* pProject)
 {
-    /*
-     * TODO: Documentation says that is best practice to add elements to the tree when user
-     * expands an item and delete them when user collapses the item, but,right now, we just
-     * add them.
-     * In the future, change this as documentation says.
-     */
 
     wxTreeItemId root = m_pTreeCtrl->GetRootItem();
     wxTreeItemId rootProject = m_pTreeCtrl->AppendItem(root, pProject->GetName());
-    m_TreeProjects.insert({pProject, new TFolder(pProject->GetName(), rootProject)});
-    // Add the rest of the files
-    for (File* pFile : pProject->GetFiles())
+    TElement* pRoot = pProject->GetProjectFiles();
+    pRoot->m_id = rootProject;
+
+    for (TElement* pElem : static_cast<TFolder*>(pRoot)->m_Elements)
     {
-        wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(rootProject, pFile->GetFileName());
-        m_pTreeFiles.insert({ nodeTid.GetID(), pFile });
+        if (pElem->m_Type == TElementFile) // File
+        {
+            wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(rootProject, static_cast<TFile*>(pElem)->m_pFile->GetFileName());
+            pElem->m_id = nodeTid;
+        }
+        else if (pElem->m_Type == TElementFolder) // Folder
+        {
+            wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(rootProject, static_cast<TFolder*>(pElem)->m_Name);
+            m_pTreeCtrl->SetItemHasChildren(nodeTid);
+            pElem->m_id = nodeTid;
+        }
     }
 
     m_pTreeCtrl->Expand(root);
@@ -210,11 +217,17 @@ wxIcon ProjectsWindow::GetIconResource(const wxString& name)
 void ProjectsWindow::SelectedElement(wxTreeEvent& event)
 {
     wxTreeItemId id = event.GetItem();
-    File* pFile = m_pTreeFiles[id.GetID()];
-    if (pFile)
+
+
+    TElement* pRoot = m_pMainFrame->GetProjects()[0]->GetProjectFiles();
+
+    TElement* pCurrentElement = GetElement(pRoot, id);
+    if (pCurrentElement->m_Type == TElementFile)
     {
+        File* pFile = static_cast<TFile*>(pCurrentElement)->m_pFile;
+
         wxAuiNotebook* dockWindows = m_pMainFrame->GetWindow();
-        
+
         for (size_t i = 0; i < dockWindows->GetPageCount(); i++)
         {
             CodeEditor* pWindow = m_pMainFrame->GetCodeEditor(pFile);
@@ -233,6 +246,8 @@ void ProjectsWindow::SelectedElement(wxTreeEvent& event)
         dockWindows->AddPage(pCodeEditor, pFile->GetFileName());
 
         dockWindows->Thaw();
+
+        int stop = 1;
     }
 }
 
@@ -242,23 +257,20 @@ void ProjectsWindow::OnRightClickOverTreeCtrl(wxTreeEvent& event)
     // We need to find the project based on the file.
     wxTreeItemId tid = event.GetItem();
     wxString text = m_pTreeCtrl->GetItemText(tid);
-    Project* pProject{ GetProject(text) };
-    while (!pProject && tid.IsOk())
-    {
-        tid = m_pTreeCtrl->GetItemParent(tid);
-        if (tid.IsOk())
-        {
-            text = m_pTreeCtrl->GetItemText(tid);
-            pProject = GetProject(text);
-        }
-    }
-
+    Project* pProject{ GetProject(tid) };
+    
     if (pProject)
     {
+        TElement* pCurrentElement = GetElement(pProject->GetProjectFiles(),tid);
+        if (pCurrentElement == nullptr && pProject->GetProjectFiles()->m_id == tid)
+            pCurrentElement = pProject->GetProjectFiles();
+
         wxMenu menuPopUp = wxMenu();
         menuPopUp.Append(ID_Project_View_Add_New_File, "Add New File");
-        menuPopUp.Append(ID_Project_View_Add_New_Folder, "Add New Folder");
-
+        if (pCurrentElement->m_Type == TElementFolder)
+        {
+            menuPopUp.Append(ID_Project_View_Add_New_Folder, "Add New Folder");
+        }
         m_pSelectedProjectTid = tid;
         m_pSelectedProject = pProject;
         // Now we have detected the project so we can add files.
@@ -298,27 +310,157 @@ void ProjectsWindow::OnPopupNewFile(wxCommandEvent& event)
 
     dockWindows->Thaw();
 
-    //m_pWindowManager->Update();
-
     wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(m_pSelectedProjectTid, file);
-    m_pTreeFiles.insert({ nodeTid.GetID(), pFile });
 
 }
 
 void ProjectsWindow::OnPopupNewFolder(wxCommandEvent& event)
 {
-    int stop = 1;
+    wxTreeItemId newFolderId = m_pTreeCtrl->AppendItem(m_pSelectedProjectTid, "New Folder");
+    TElement* pElement = GetElement(m_pSelectedProject->GetProjectFiles(), m_pSelectedProjectTid);
+    if (pElement == nullptr && m_pSelectedProject->GetProjectFiles()->m_id == m_pSelectedProjectTid)
+        pElement = m_pSelectedProject->GetProjectFiles();
+    if (pElement != nullptr)
+    {
+        static_cast<TFolder*>(pElement)->m_Elements.push_back(new TFolder("New Folder", newFolderId/*, pElement->m_pRoot, pElement*/));
+        m_pTreeCtrl->EditLabel(newFolderId);
+    }
 }
 
-Project* ProjectsWindow::GetProject(const wxString& text)
+TElement* ProjectsWindow::GetElement(TElement *pRootElement, const wxTreeItemId& elem)
+{
+    for (TElement* pElem : static_cast<TFolder*>(pRootElement)->m_Elements)
+    {
+        if (pElem->m_id == elem)
+        {
+            return pElem;
+        }
+        else if (pElem->m_Type == TElementFolder)
+        {
+            TElement* pChildren = GetElement(pElem, elem);
+            if (pChildren == nullptr)
+                continue;
+            else
+                return pChildren;
+        }
+        else if (pElem->m_Type == TElementFile)
+        {
+            continue;
+        }
+    }
+
+    return nullptr;
+}
+
+void ProjectsWindow::AddItems(const wxTreeItemId& elem, TElement* pITem)
+{
+    for (TElement* pElem : static_cast<TFolder*>(pITem)->m_Elements)
+    {
+        if (pElem->m_Type == TElementFile) // File
+        {
+            wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(elem, static_cast<TFile*>(pElem)->m_pFile->GetFileName());
+            pElem->m_id = nodeTid;
+        }
+        else if (pElem->m_Type == TElementFolder) // Folder
+        {
+            wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(elem, static_cast<TFolder*>(pElem)->m_Name);
+            m_pTreeCtrl->SetItemHasChildren(nodeTid);
+            pElem->m_id = nodeTid;
+        }
+    }
+}
+
+Project* ProjectsWindow::GetProject(const wxTreeItemId& elem)
 {
     for (Project* pProject : m_pMainFrame->GetProjects())
     {
-        if (pProject->GetName() == text)
+        if (pProject->GetProjectFiles()->m_id == elem)
+        {
+            return pProject;
+        }
+        else if (GetElement(pProject->GetProjectFiles(),elem))
         {
             return pProject;
         }
     }
 
     return nullptr;
+}
+
+
+void ProjectsWindow::OnItemExpanded(wxTreeEvent& event)
+{
+    int stop = 1;
+}
+
+void ProjectsWindow::OnItemBeingExpanded(wxTreeEvent& event)
+{
+    wxTreeItemId currentItem = event.GetItem();
+
+    if (m_pTreeCtrl->GetChildrenCount(currentItem) > 0) return;
+
+    TElement *pRoot = m_pMainFrame->GetProjects()[0]->GetProjectFiles();
+
+    TElement* pCurrentElement = GetElement(pRoot,currentItem);
+
+    AddItems(currentItem, pCurrentElement);
+
+    int stop = 1;
+}
+
+void ProjectsWindow::OnEndEditLabel(wxTreeEvent& event)
+{
+    wxTreeItemId currentItem = event.GetItem();
+
+    TElement* pRoot = m_pMainFrame->GetProjects()[0]->GetProjectFiles();
+    TElement* pElement = GetElement(pRoot,currentItem);
+    if(pElement != nullptr)
+    {
+        if (pElement->m_Type == TElementFolder)
+        {
+            // Rename folder
+            wxString folderName = pElement->m_Name;
+            wxString destName = event.GetLabel();
+            // Get Path ...
+            /*TElement* pParent = pElement->m_pParent;
+            wxString relPath;
+            while (pParent != nullptr)
+            {
+                relPath = pParent->m_Name + wxFileName::GetPathSeparator() + relPath;
+                pParent = pParent->m_pParent;
+            }*/
+
+            //bool res = wxRenameFile(wxT("d:\\old"), wxT("d:\\new"));
+            int stop = 1;
+        }
+        else if (pElement->m_Type == TElementFile)
+        {
+            // Rename file
+            /* TODO */
+        }
+        else
+        {
+
+        }
+    }
+
+}
+
+void ProjectsWindow::OnBeginEditLabel(wxTreeEvent& event)
+{
+    wxTreeItemId currentItem = event.GetItem();
+    if (currentItem == m_pTreeCtrl->GetRootItem())
+    {
+        event.Veto();
+    }
+    else
+    {
+        for (Project* pProject : m_pMainFrame->GetProjects())
+        {
+            if (pProject->GetProjectFiles()->m_id == currentItem)
+            {
+                event.Veto();
+            }
+        }
+    }
 }

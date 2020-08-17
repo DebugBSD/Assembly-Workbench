@@ -45,6 +45,7 @@ Tomorrow
 --------
 
 * Improve the projects window. I want to add folders and include files to projects.
+	Use SetItemData()/GetItemData() to set and get data related to the itemId. More info: https://docs.wxwidgets.org/3.1/classwx_tree_item_data.html
 * Add Basic Find/Replace tools with windows.
 	* When finding over open files, don't find anything from real file cause you have to find into buffer.
 * Configure the tool chain based on the configuration file.
