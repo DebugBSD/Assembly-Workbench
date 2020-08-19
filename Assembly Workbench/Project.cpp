@@ -120,24 +120,27 @@ int Project::Create(const wxFileName& fileName)
 bool Project::Build()
 {
     wxArrayString objects;
+    std::vector<File*> files;
 
-    for (File* pFile: m_ProjectFiles)
+    GetFiles(files, m_pElements);
+
+    for (File* pFile : files)
     {
         if (pFile->IsSourceCode())
         {
             wxString path, fileName, extension;
             wxString obj{ pFile->GetAbsoluteFileName() };
             wxFileName::SplitPath(obj, &path, &fileName, &extension);
-            objects.Add("\"" + path + wxFileName::GetPathSeparator() + fileName + ".obj\"");
-            pFile->Assemble();
-            pFile->Compile();
+            objects.Add("\"" + GetProjectDirectory() + wxFileName::GetPathSeparator() + "Build" + wxFileName::GetPathSeparator() +  fileName + ".obj\"");
+            pFile->Assemble(GetProjectDirectory() + wxFileName::GetPathSeparator() + "Build" + wxFileName::GetPathSeparator());
+            //pFile->Compile();
         }
     }
 
     // TODO: Add support tyo multiple linkers.
     // Link time
     MLINKER* pLinker = static_cast<MLINKER*>(m_pMainFrame->GetLinker());
-    pLinker->Link(m_ProjectFile.GetPath(), objects, m_pMainFrame->GetFileSettings(), m_ProjectFile .GetName()+".exe");
+    pLinker->Link(m_ProjectFile.GetPath(), objects, m_pMainFrame->GetFileSettings(), m_ProjectFile.GetName()+".exe");
 
 	return false;
 }
@@ -146,10 +149,27 @@ void Project::Clean()
 {
 }
 
+void Project::GetFiles(std::vector<File*>& fileList, TElement* pRootElement)
+{
+    for (TElement* pElem : static_cast<TFolder*>(pRootElement)->m_Elements)
+    {
+        if (pElem->m_Type == TElementFile)
+        {
+            File* pFile = static_cast<TFile*>(pElem)->m_pFile;
+            if(pFile->IsSourceCode())
+                fileList.push_back(pFile);
+        }
+        else if (pElem->m_Type == TElementFolder)
+        {
+            GetFiles(fileList, pElem);
+        }
+    }
+}
+
 void Project::AddFile(File* pFile)
 {
     m_IsModified = true;
-    m_ProjectFiles.push_back(pFile);
+    //m_ProjectFiles.push_back(pFile);
 }
 
 void Project::Save()

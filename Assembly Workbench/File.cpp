@@ -45,8 +45,6 @@ File::File(const wxFileName& file, AssemblerBase* pAssemblerFile, LinkerBase* pL
     m_pProject{pProject},
     m_pFileSettings{pFileSettings}
 {
-    if (m_pProject) m_pProject->AddFile(this);
-
     wxString extension = m_FileName.GetExt();
     if (extension == "asm")
     {
@@ -79,11 +77,11 @@ File::~File()
 {
 }
 
-void File::Assemble()
+void File::Assemble(const wxString& destDir)
 {
     if (m_pAssembler && m_FileName.GetFullPath() != "" && IsSourceCode())
     {
-        m_pAssembler->AssembleFile(GetAbsoluteFileName(), m_pFileSettings);
+        m_pAssembler->AssembleFile(GetAbsoluteFileName(), m_pFileSettings, destDir);
     }
 }
 

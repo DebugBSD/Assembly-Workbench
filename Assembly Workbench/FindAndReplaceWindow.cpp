@@ -329,7 +329,7 @@ void FindAndReplaceWindow::OnFindAllBtnClicked(wxCommandEvent& event)
     std::vector<wxStyledTextCtrl*> bufferedFiles;
     std::vector<CodeEditor*> openFiles;
     std::unordered_map < std::pair<int, int>, wxString, pair_hash> elementsFound;
-
+#if 0
     switch (itemComboBox6Strings.Index(m_WhereToFind->GetStringSelection()))
     {
     case 0: // All Projects
@@ -400,6 +400,7 @@ void FindAndReplaceWindow::OnFindAllBtnClicked(wxCommandEvent& event)
 
         break;
     }
+#endif
     // 2º Open and search the pattern into the files or buffers (CodeEDitor*)
     m_searchModel->Init();
 

@@ -37,6 +37,7 @@
 #include "FileSettings.h"
 #include <wx/arrstr.h>
 #include <wx/utils.h> 
+#include <wx/filename.h>
 
  /*
   * MASM Options
@@ -77,12 +78,11 @@ void MASM::Clean(const wxString& file, FileSettings* pFileSettings)
 {
 }
 
-void MASM::AssembleFile(const wxString& file, FileSettings* pFileSettings)
+void MASM::AssembleFile(const wxString& file, FileSettings* pFileSettings, const wxString& destDir)
 {
     // Check if everything is okay.
     if (file != "")
     {
-
         wxExecuteEnv environment;
         // Get the environment variables.
         pFileSettings->GetAssemblerEnvironmentSettings(environment.env);
@@ -94,9 +94,17 @@ void MASM::AssembleFile(const wxString& file, FileSettings* pFileSettings)
         // Assemble file.
         // TODO: Move to settings panel.
         std::filesystem::path filepath{ file.ToStdString() };
-        std::string fileInput{ "/c " + filepath.filename().string() };
-        std::string fileOutput{ "/Fo " + filepath.filename().stem().string() + ".obj" };
+        std::string fileInput{ "/c \"" + file + "\""};
+        std::string fileOutput;
 
+        wxFileName fName{ file };
+
+        if (destDir == "")
+            fileOutput = "/Fo \"" + fName.GetName() + ".obj\"";
+        else
+            fileOutput = "/Fo \"" + destDir + wxFileName::GetPathSeparator() + fName.GetName() + ".obj\"";
+
+        // This must be the current working directory of the project or the directory where the file is stored into.
         environment.cwd = filepath.parent_path().string();
 
         // Options 

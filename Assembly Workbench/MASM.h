@@ -46,7 +46,7 @@ public:
 
     void Clean(const wxString& file, class FileSettings* pFileSettings) override;
 
-    void AssembleFile(const wxString&file, class FileSettings* pFileSettings) override;
+    void AssembleFile(const wxString&file, class FileSettings* pFileSettings, const wxString& destDir) override;
 
 private:
     class MainFrame* m_pFrame;

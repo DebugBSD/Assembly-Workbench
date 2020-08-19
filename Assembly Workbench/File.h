@@ -52,7 +52,7 @@ public:
 
     void Clean();
 
-    void Assemble(); // Just for assembly files.
+    void Assemble(const wxString& destDir = ""); // Just for assembly files.
 
 	void Compile(); // For C/C++ files.
 
@@ -78,8 +78,6 @@ public:
     bool IsSourceCode() { return m_FileType == FileType::FT_ASSEMBLER_SOURCE || m_FileType == FileType::FT_CPP_SOURCE || m_FileType == FileType::FT_C_SOURCE; }
 
 private:
-
-    // Use wxFileName instead of wxString
     wxFileName m_FileName;
 
     FileType m_FileType;

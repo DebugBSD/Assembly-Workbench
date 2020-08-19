@@ -125,8 +125,9 @@ public:
 
 	void ReBuild() { Clean(); Build(); }
 
+    void GetFiles(std::vector<File*>&fileList, TElement *pRootElement);
+
     void AddFile(class File* pFile);
-    const std::vector<class File*>& GetFiles() const { return m_ProjectFiles; }
     TElement* GetProjectFiles() { return m_pElements; }
 
     wxString GetName() const { return m_ProjectFile.GetName(); }
