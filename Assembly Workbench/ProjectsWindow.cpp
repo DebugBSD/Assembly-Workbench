@@ -355,15 +355,6 @@ void ProjectsWindow::OnPopupDeleteFolder(wxCommandEvent& event)
     TElement* pElement = GetElement(m_pSelectedProject->GetProjectFiles(), m_pSelectedProjectTid);
     if (pElement != nullptr && pElement->m_Type == TElementFolder)
     {
-#if 0
-        File* pFile = static_cast<TFile*>(pElement)->m_pFile;
-        // We should check if file is open before removing it from directory
-        if (wxRemoveFile(pFile->GetAbsoluteFileName()))
-        {
-            m_pTreeCtrl->Delete(pElement->m_id);
-            delete pElement;
-        }
-#endif
         // Rename folder
         wxString folderName = pElement->m_Name;
 
@@ -387,7 +378,16 @@ void ProjectsWindow::OnPopupDeleteFolder(wxCommandEvent& event)
         if (wxDir::GetAllFiles(folder, &files))
         {
             // We should ask about deleting contents from directory before removing the directory.
-            /*TODO*/
+            int res = wxMessageBox(_("This forlder is not empty. Do you want to continue?"), _("Please confirm"), wxYES_NO, this);
+            if (res == wxYES) // We save the file before closing it
+            {
+                if (wxDir::Remove(folder, wxPATH_RMDIR_RECURSIVE))
+                {
+                    // We have to delete the contents of the directory.
+                    m_pTreeCtrl->Delete(pElement->m_id);
+                    delete pElement;
+                }
+            }
         }
         else
         {
