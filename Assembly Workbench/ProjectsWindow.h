@@ -62,7 +62,9 @@ enum {
     ID_TreeCtrl_Projects_View = wxID_HIGHEST+1,
     // Add new file to project. We Show a window to create the file.
     ID_Project_View_Add_New_File,
-    ID_Project_View_Add_New_Folder
+    ID_Project_View_Add_New_Folder,
+    ID_Project_View_Delete_File,
+    ID_Project_View_Delete_Folder
 };
 /*!
  * ProjectWindow class declaration
@@ -108,6 +110,7 @@ private:
 
     class wxSearchCtrl* m_pSearchCtrl;
     class wxTreeCtrl* m_pTreeCtrl;
+    bool m_NewFolder;
 
 private:
 
@@ -125,6 +128,8 @@ private:
     void OnEndEditLabel(wxTreeEvent& event);
     void OnBeginEditLabel(wxTreeEvent& event);
     void OnPopupNewFolder(wxCommandEvent& event);
+    void OnPopupDeleteFolder(wxCommandEvent& event);
+    void OnPopupDeleteFile(wxCommandEvent& event);
 
     wxDECLARE_EVENT_TABLE();
 };

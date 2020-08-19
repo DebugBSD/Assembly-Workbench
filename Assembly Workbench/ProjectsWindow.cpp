@@ -36,6 +36,7 @@
 #include "CodeEditor.h"
 #include "NewFileDlg.h"
 #include "wx/wxprec.h"
+#include <wx/dir.h>
 
 #ifdef __BORLANDC__
 #pragma hdrstop
@@ -64,6 +65,8 @@ wxBEGIN_EVENT_TABLE(ProjectsWindow, wxPanel)
     EVT_TREE_END_LABEL_EDIT(ID_TreeCtrl_Projects_View, ProjectsWindow::OnEndEditLabel)
     EVT_MENU(ID_Project_View_Add_New_File, ProjectsWindow::OnPopupNewFile)
     EVT_MENU(ID_Project_View_Add_New_Folder, ProjectsWindow::OnPopupNewFolder)
+    EVT_MENU(ID_Project_View_Delete_File, ProjectsWindow::OnPopupDeleteFile)
+    EVT_MENU(ID_Project_View_Delete_Folder, ProjectsWindow::OnPopupDeleteFolder)
 
 wxEND_EVENT_TABLE()
 
@@ -115,6 +118,7 @@ ProjectsWindow::~ProjectsWindow()
 
 void ProjectsWindow::Init()
 {
+    m_NewFolder = false;
 }
 
 
@@ -218,10 +222,12 @@ void ProjectsWindow::SelectedElement(wxTreeEvent& event)
 {
     wxTreeItemId id = event.GetItem();
 
-
+    Project* pProject{ m_pMainFrame->GetProjects()[0] };
     TElement* pRoot = m_pMainFrame->GetProjects()[0]->GetProjectFiles();
 
     TElement* pCurrentElement = GetElement(pRoot, id);
+    if (pCurrentElement == nullptr && pProject->GetProjectFiles()->m_id == id)
+        pCurrentElement = pProject->GetProjectFiles();
     if (pCurrentElement->m_Type == TElementFile)
     {
         File* pFile = static_cast<TFile*>(pCurrentElement)->m_pFile;
@@ -239,6 +245,7 @@ void ProjectsWindow::SelectedElement(wxTreeEvent& event)
 
         CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
         pCodeEditor->LoadFile(pFile->GetAbsoluteFileName());
+        static_cast<TFile*>(pCurrentElement)->m_pCodeEditor = pCodeEditor;
         m_pMainFrame->AddFile(pFile, pCodeEditor);
 
         dockWindows->Freeze();
@@ -267,10 +274,16 @@ void ProjectsWindow::OnRightClickOverTreeCtrl(wxTreeEvent& event)
 
         wxMenu menuPopUp = wxMenu();
         menuPopUp.Append(ID_Project_View_Add_New_File, "Add New File");
-        if (pCurrentElement->m_Type == TElementFolder)
+        if (pCurrentElement && pCurrentElement->m_Type == TElementFolder)
         {
             menuPopUp.Append(ID_Project_View_Add_New_Folder, "Add New Folder");
+            menuPopUp.Append(ID_Project_View_Delete_Folder, "Delete Folder");
         }
+        else if(pCurrentElement && pCurrentElement->m_Type == TElementFile)
+        {
+            menuPopUp.Append(ID_Project_View_Delete_File, "Delete File");
+        }
+
         m_pSelectedProjectTid = tid;
         m_pSelectedProject = pProject;
         // Now we have detected the project so we can add files.
@@ -300,7 +313,6 @@ void ProjectsWindow::OnPopupNewFile(wxCommandEvent& event)
     File* pFile = new File(path + wxFileName::GetPathSeparator() + file, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), m_pSelectedProject);
 
     CodeEditor* pCodeEditor = new CodeEditor(dockWindows, pFile);
-
     pCodeEditor->SaveFile(pFile->GetFile().GetFullPath());
     m_pMainFrame->AddFile(pFile, pCodeEditor);
 
@@ -311,6 +323,16 @@ void ProjectsWindow::OnPopupNewFile(wxCommandEvent& event)
     dockWindows->Thaw();
 
     wxTreeItemId nodeTid = m_pTreeCtrl->AppendItem(m_pSelectedProjectTid, file);
+    TElement* pCurrentElement = GetElement(m_pSelectedProject->GetProjectFiles(), m_pSelectedProjectTid);
+    if (pCurrentElement == nullptr && m_pSelectedProject->GetProjectFiles()->m_id == m_pSelectedProjectTid)
+        pCurrentElement = m_pSelectedProject->GetProjectFiles();
+    if (pCurrentElement != nullptr)
+    {
+        TFile* pTFile = new TFile(pFile, nodeTid, pCurrentElement->m_pRoot, pCurrentElement);
+        static_cast<TFolder*>(pCurrentElement)->m_Elements.push_front(pTFile);
+        pTFile->m_pCodeEditor = pCodeEditor;
+        pTFile->m_pFile = pFile;
+    }
 
 }
 
@@ -322,8 +344,74 @@ void ProjectsWindow::OnPopupNewFolder(wxCommandEvent& event)
         pElement = m_pSelectedProject->GetProjectFiles();
     if (pElement != nullptr)
     {
-        static_cast<TFolder*>(pElement)->m_Elements.push_back(new TFolder("New Folder", newFolderId/*, pElement->m_pRoot, pElement*/));
+        static_cast<TFolder*>(pElement)->m_Elements.push_back(new TFolder("New Folder", newFolderId, pElement->m_pRoot, pElement));
         m_pTreeCtrl->EditLabel(newFolderId);
+        m_NewFolder = true;
+    }
+}
+
+void ProjectsWindow::OnPopupDeleteFolder(wxCommandEvent& event)
+{
+    TElement* pElement = GetElement(m_pSelectedProject->GetProjectFiles(), m_pSelectedProjectTid);
+    if (pElement != nullptr && pElement->m_Type == TElementFolder)
+    {
+#if 0
+        File* pFile = static_cast<TFile*>(pElement)->m_pFile;
+        // We should check if file is open before removing it from directory
+        if (wxRemoveFile(pFile->GetAbsoluteFileName()))
+        {
+            m_pTreeCtrl->Delete(pElement->m_id);
+            delete pElement;
+        }
+#endif
+        // Rename folder
+        wxString folderName = pElement->m_Name;
+
+        // Get Path ...
+        TElement* pParent = pElement->m_pParent;
+        wxString relPath;
+        while (pParent != nullptr && pParent->m_Name != "Root")
+        {
+            relPath = pParent->m_Name + wxFileName::GetPathSeparator() + relPath;
+            pParent = pParent->m_pParent;
+        }
+
+        wxString folder = m_pMainFrame->GetProjects()[0]->GetProjectDirectory() + wxFileName::GetPathSeparator() + relPath + wxFileName::GetPathSeparator() + folderName;
+
+        wxFileName fName = folder;
+
+        fName.Normalize();
+
+        folder = fName.GetFullPath();
+        wxArrayString files;
+        if (wxDir::GetAllFiles(folder, &files))
+        {
+            // We should ask about deleting contents from directory before removing the directory.
+            /*TODO*/
+        }
+        else
+        {
+            if (wxDir::Remove(folder))
+            {
+                m_pTreeCtrl->Delete(pElement->m_id);
+                delete pElement;
+            }
+        }
+    }
+}
+
+void ProjectsWindow::OnPopupDeleteFile(wxCommandEvent& event)
+{
+    TElement* pElement = GetElement(m_pSelectedProject->GetProjectFiles(), m_pSelectedProjectTid);
+    if (pElement != nullptr && pElement->m_Type == TElementFile)
+    {
+        File *pFile = static_cast<TFile*>(pElement)->m_pFile;
+        // We should check if file is open before removing it from directory
+        if (wxRemoveFile(pFile->GetAbsoluteFileName()))
+        {
+            m_pTreeCtrl->Delete(pElement->m_id);
+            delete pElement;
+        }
     }
 }
 
@@ -404,8 +492,6 @@ void ProjectsWindow::OnItemBeingExpanded(wxTreeEvent& event)
     TElement* pCurrentElement = GetElement(pRoot,currentItem);
 
     AddItems(currentItem, pCurrentElement);
-
-    int stop = 1;
 }
 
 void ProjectsWindow::OnEndEditLabel(wxTreeEvent& event)
@@ -421,22 +507,62 @@ void ProjectsWindow::OnEndEditLabel(wxTreeEvent& event)
             // Rename folder
             wxString folderName = pElement->m_Name;
             wxString destName = event.GetLabel();
+            if (destName == "")
+                destName = folderName;
+
             // Get Path ...
-            /*TElement* pParent = pElement->m_pParent;
+            TElement* pParent = pElement->m_pParent;
             wxString relPath;
-            while (pParent != nullptr)
+            while (pParent != nullptr && pParent->m_Name != "Root")
             {
                 relPath = pParent->m_Name + wxFileName::GetPathSeparator() + relPath;
                 pParent = pParent->m_pParent;
-            }*/
+            }
 
-            //bool res = wxRenameFile(wxT("d:\\old"), wxT("d:\\new"));
-            int stop = 1;
+            wxString sourceDirectory = m_pMainFrame->GetProjects()[0]->GetProjectDirectory() + wxFileName::GetPathSeparator() + relPath + wxFileName::GetPathSeparator() + folderName;
+            wxString destinationDirectory = m_pMainFrame->GetProjects()[0]->GetProjectDirectory() + wxFileName::GetPathSeparator() + relPath + wxFileName::GetPathSeparator() + destName;
+
+            if (pElement->m_Name == "New Folder" && !wxFileName::DirExists(sourceDirectory) && !wxFileName::DirExists(destinationDirectory))
+            {
+                // Its new directory
+                bool res = wxFileName::Mkdir(destinationDirectory);
+                if (res)
+                {
+                    pElement->m_Name = destName;
+                }
+            }
+            else
+            {
+                bool res = wxRenameFile(sourceDirectory, destinationDirectory);
+                if (res)
+                {
+                    pElement->m_Name = destName;
+                }
+            }
+
+            // Now, we should rename all files which are under this directory.
         }
         else if (pElement->m_Type == TElementFile)
         {
             // Rename file
-            /* TODO */
+            wxString fileName = pElement->m_Name;
+            wxString destFileName = event.GetLabel();
+            if (destFileName == "")
+                destFileName = fileName;
+
+            if (destFileName == fileName) return;
+
+            File* pFile = static_cast<TFile*>(pElement)->m_pFile;
+
+            bool res = wxRenameFile(pFile->GetFile().GetFullPath(), pFile->GetFile().GetPath() + wxFileName::GetPathSeparator() + destFileName);
+            if (res)
+            {
+                wxString pathToFile = pFile->GetFile().GetPath();
+                pFile->SetFile(pathToFile + wxFileName::GetPathSeparator() + destFileName);
+                pElement->m_Name = destFileName;
+            }
+
+            int stop = 1;
         }
         else
         {

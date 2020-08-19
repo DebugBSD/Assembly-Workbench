@@ -73,13 +73,13 @@ enum {
 
 class TElement {
 public:
-    TElement(const wxString& name, wxTreeItemId Id, int type/*, TElement *root, TElement *parent*/) :
-        m_Name{ name }, m_id{ Id }, m_Type{ type }/*, m_pRoot{ root }, m_pParent{parent}*/ {}
+    TElement(const wxString& name, wxTreeItemId Id, int type, TElement *root, TElement *parent) :
+        m_Name{ name }, m_id{ Id }, m_Type{ type }, m_pRoot{ root }, m_pParent{parent} {}
 
     ~TElement() {}
 
-    /*TElement *m_pRoot;
-    TElement* m_pParent;*/
+    TElement *m_pRoot;
+    TElement* m_pParent;
     wxTreeItemId m_id;
     wxString m_Name;
     int m_Type;
@@ -87,8 +87,8 @@ public:
 
 class TFile : public TElement {
 public:
-    TFile(File* pFile, wxTreeItemId Id/*, TElement* root, TElement* parent*/) :
-        TElement{ pFile->GetFileName(), Id, TElementFile/* , root, parent*/},
+    TFile(File* pFile, wxTreeItemId Id, TElement* root, TElement* parent) :
+        TElement{ pFile->GetFileName(), Id, TElementFile , root, parent},
         m_pFile{ pFile },
         m_pCodeEditor{ nullptr }
     {}
@@ -100,8 +100,8 @@ public:
 
 class TFolder : public TElement {
 public:
-    TFolder(const wxString& name, wxTreeItemId Id/*, TElement* root, TElement* parent*/) :
-        TElement{ name, Id, TElementFolder/* , root, parent */}
+    TFolder(const wxString& name, wxTreeItemId Id, TElement* root, TElement* parent) :
+        TElement{ name, Id, TElementFolder, root, parent}
     {}
 
     ~TFolder() {}

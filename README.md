@@ -25,6 +25,10 @@ BUGS
 TODO
 ----
 
+* Funcionalidades:
+	* Renombrar directorios.
+	* Compilar proyectos - Mover Objetos al directorio Build.
+	* Agregar dependencias en los settings (librerias, ficheros de cabecera, ... )
 * Make available the possibility of update settings for files and projects from Settings Window.
 * Think about how to integrate git/github into Assembly Workbench
 * Add Github/Git window to control the changes

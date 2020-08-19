@@ -77,7 +77,7 @@ int Project::Load(const wxFileName& fileName)
         if (child->GetName() == "Configuration")
         {
             wxXmlNode* configuration = child->GetChildren();
-            m_pElements = new TFolder("Root",0/*, nullptr, nullptr*/);
+            m_pElements = new TFolder("Root",0, nullptr, nullptr);
             ProcessConfigurationRecursive(configuration, "", m_pElements);
 
             int stop = 1;
@@ -202,7 +202,7 @@ void Project::ProcessConfigurationRecursive(wxXmlNode* pNode, const wxString& di
             wxXmlNode* configuration = pNode->GetChildren();
             wxString dir;
             pNode->GetAttribute("Name", &dir);
-            TFolder* pFolder = new TFolder(dir,0/*, pRootElement->m_pRoot, pRootElement*/);
+            TFolder* pFolder = new TFolder(dir,0, pRootElement->m_pRoot, pRootElement);
             TFolder* pCurrentFolder = static_cast<TFolder*>(pRootElement);
             pCurrentFolder->m_Elements.push_front(pFolder);
             ProcessConfigurationRecursive(configuration, directoryName + "\\" + dir, pFolder);
@@ -221,7 +221,7 @@ void Project::ProcessConfigurationRecursive(wxXmlNode* pNode, const wxString& di
             // Check that file exists!!
             File* pFile = new File(m_ProjectFile.GetPath() + wxFileName::GetPathSeparator() + directoryName + wxFileName::GetPathSeparator() + fileName, m_pMainFrame->GetAssembler(), m_pMainFrame->GetLinker(), m_pMainFrame->GetCompiler(), m_pMainFrame->GetFileSettings(), this);
 
-            TFile* pTFile = new TFile(pFile, 0/*, pRootElement->m_pRoot, pRootElement*/);
+            TFile* pTFile = new TFile(pFile, 0, pRootElement->m_pRoot, pRootElement);
             pCurrentFolder->m_Elements.push_front(pTFile);
 
             int stop = 1;
