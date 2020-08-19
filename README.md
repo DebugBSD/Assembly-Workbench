@@ -26,7 +26,6 @@ TODO
 ----
 
 * Funcionalidades:
-	* Renombrar directorios.
 	* Compilar proyectos - Mover Objetos al directorio Build.
 	* Agregar dependencias en los settings (librerias, ficheros de cabecera, ... )
 * Make available the possibility of update settings for files and projects from Settings Window.
