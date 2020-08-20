@@ -81,7 +81,9 @@ private:
     void OnExitProgram(wxCloseEvent& event);
     void OnEdit(wxCommandEvent& event);
     void OnModifySettings(wxCommandEvent &event);
-
+    void OnMenuView(wxCommandEvent& event);
+    void OnMenuProject(wxCommandEvent& event);
+    void OnMenuHelp(wxCommandEvent& event);
     // Project Menu
     void OnProjectPreferences(wxCommandEvent& event);
 
@@ -206,11 +208,6 @@ private:
     class AWButton* m_pBuildBtn;
     class AWButton* m_pSettingsBtn;
     class AWButton* m_pCodeEditorBtn;
-
-    // Popup menus
-    class AWMenuFile* m_pMenuFile;
-    class AWMenuEdit* m_pMenuEdit;
-
 #pragma endregion
 
 #pragma region Private Methods
@@ -231,9 +228,12 @@ enum
     ID_Size,
     ID_Menu_File,
     ID_Menu_Edit,
+    ID_Menu_View,
+    ID_Menu_Project,
     ID_Menu_Build,
-    ID_Menu_Tools,
     ID_Menu_Debug,
+    ID_Menu_Tools,
+    ID_Menu_Help,
     ID_New_File,
     ID_New_Project,
     ID_Clone,

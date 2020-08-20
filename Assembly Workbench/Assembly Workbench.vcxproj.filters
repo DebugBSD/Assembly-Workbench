@@ -108,9 +108,6 @@
     <ClInclude Include="CompilerBase.h">
       <Filter>Archivos de encabezado\Compiler</Filter>
     </ClInclude>
-    <ClInclude Include="FileSettings.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="Git.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
@@ -180,6 +177,18 @@
     <ClInclude Include="JsonHelper.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="FileSettings.h">
+      <Filter>Archivos de encabezado\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="AWMenuHelp.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="AWMenuProject.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="AWMenuView.h">
+      <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -199,9 +208,6 @@
     </ClCompile>
     <ClCompile Include="MLINKER.cpp">
       <Filter>Archivos de origen\Linker</Filter>
-    </ClCompile>
-    <ClCompile Include="FileSettings.cpp">
-      <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="Git.cpp">
       <Filter>Archivos de origen</Filter>
@@ -271,6 +277,18 @@
     </ClCompile>
     <ClCompile Include="JsonHelper.cpp">
       <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSettings.cpp">
+      <Filter>Archivos de origen\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="AWMenuHelp.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="AWMenuProject.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="AWMenuView.cpp">
+      <Filter>Archivos de origen\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -54,7 +54,7 @@ public:
 
     void Assemble(const wxString& destDir = ""); // Just for assembly files.
 
-	void Compile(); // For C/C++ files.
+	void Compile(const wxString& destDir = ""); // For C/C++ files.
 
 	void Link(); // For object files. (ASM objects and C/C++ objects)
 

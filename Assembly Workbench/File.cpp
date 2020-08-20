@@ -85,7 +85,7 @@ void File::Assemble(const wxString& destDir)
     }
 }
 
-void File::Compile()
+void File::Compile(const wxString& destDir)
 {
     if (m_pCompiler && m_FileName.GetFullPath() != "" && IsSourceCode())
     {

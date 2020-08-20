@@ -14,18 +14,13 @@ private:
 
     class wxBoxSizer* m_pSizer;
 
-    class AWButton* m_pProjectSettingsBtn;
     class AWButton* m_pApplicationSettingsBtn;
 
     long lastX;
     long lastY;
 
-    //class ProjectSettingsView* m_pProjectSettingsView;
-    //class AppSettingsView* m_pAppSettingsView;
-
 private:
 
-    void OnProjectSettings(wxCommandEvent& event);
     void OnApplicationSettings(wxCommandEvent& event);
 
     wxDECLARE_EVENT_TABLE();
@@ -34,7 +29,6 @@ private:
 
 enum
 {
-    ID_MENU_EDIT_PROJECT_SETTINGS,
     ID_MENU_EDIT_APPLICATION_SETTINGS
 };
 

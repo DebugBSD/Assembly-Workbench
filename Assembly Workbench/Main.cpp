@@ -62,12 +62,13 @@
 
 #include "AWMenuFile.h"
 #include "AWMenuEdit.h"
+#include "AWMenuView.h"
+#include "AWMenuProject.h"
 #include "AWMenuBuild.h"
-#include "AWMenuTools.h"
 #include "AWMenuDebug.h"
+#include "AWMenuTools.h"
+#include "AWMenuHelp.h"
 
-// Toolchain of Microsoft
-// NOTE: Right now is hardcoded. In the future, will be autodetected.
 #include "MASM.h"
 #include "MLINKER.h"
 #include "AWButton.h"
@@ -91,9 +92,12 @@ wxBEGIN_EVENT_TABLE(MainFrame, CustomFrame)
 
     EVT_BUTTON(ID_Menu_File, MainFrame::OnMenuFile)
     EVT_BUTTON(ID_Menu_Edit, MainFrame::OnMenuEdit)
+    EVT_BUTTON(ID_Menu_View, MainFrame::OnMenuView)
+    EVT_BUTTON(ID_Menu_Project, MainFrame::OnMenuProject)
     EVT_BUTTON(ID_Menu_Build, MainFrame::OnMenuBuild)
-    EVT_BUTTON(ID_Menu_Tools, MainFrame::OnMenuTools)
     EVT_BUTTON(ID_Menu_Debug, MainFrame::OnMenuDebug)
+    EVT_BUTTON(ID_Menu_Tools, MainFrame::OnMenuTools)
+    EVT_BUTTON(ID_Menu_Help, MainFrame::OnMenuHelp)
     EVT_AUINOTEBOOK_PAGE_CHANGED(ID_TAB_MANAGER, MainFrame::OnPageChanged)
 
     EVT_CLOSE(MainFrame::OnExitProgram)
@@ -274,6 +278,77 @@ void MainFrame::OnMenuFile(wxCommandEvent& event)
 
 void MainFrame::OnMenuEdit(wxCommandEvent& event)
 {
+    wxString projectName;
+    wxString projectDirectory;
+    wxPoint pos = m_pEditBtn->GetScreenPosition();
+    pos.y += m_pEditBtn->GetSize().y + 5;
+    AWMenuEdit menu = AWMenuEdit(NULL, wxID_ANY, pos, wxDefaultSize, 0, wxEmptyString);
+    int option = menu.ShowModal();
+    if (option == ID_MENU_EDIT_APPLICATION_SETTINGS)
+    {
+        int stop = 1;
+    }
+    /*else if (option == ID_MENU_FILE_NEW_PROJECT)
+    {
+        NewProject();
+    }*/
+}
+
+void MainFrame::OnMenuView(wxCommandEvent& event)
+{
+    wxString projectName;
+    wxString projectDirectory;
+    wxPoint pos = m_pViewBtn->GetScreenPosition();
+    pos.y += m_pViewBtn->GetSize().y + 5;
+    AWMenuView menu = AWMenuView(NULL, wxID_ANY, pos, wxDefaultSize, 0, wxEmptyString);
+    int option = menu.ShowModal();
+    if (option == ID_MENU_VIEW_FILES_BTN)
+    {
+        int stop = 1;
+    }
+    else if (option == ID_MENU_VIEW_FUNCTIONS_BTN)
+    {
+        int stop = 1;
+    }
+    else if (option == ID_MENU_VIEW_VARIABLES_BTN)
+    {
+        int stop = 1;
+    }
+    else if (option == ID_MENU_VIEW_OPCODES_BTN)
+    {
+        int stop = 1;
+    }
+
+}
+
+void MainFrame::OnMenuProject(wxCommandEvent& event)
+{
+    wxString projectName;
+    wxString projectDirectory;
+    wxPoint pos = m_pProjectBtn->GetScreenPosition();
+    pos.y += m_pProjectBtn->GetSize().y + 5;
+    AWMenuProject menu = AWMenuProject(NULL, wxID_ANY, pos, wxDefaultSize, 0, wxEmptyString);
+    int option = menu.ShowModal();
+    if (option == ID_MENU_ASSEMBLER_BTN)
+    {
+        int stop = 1;
+    }
+    else if (option == ID_MENU_COMPILER_BTN)
+    {
+        int stop = 1;
+    }
+    else if (option == ID_MENU_LINKER_BTN)
+    {
+        int stop = 1;
+    }
+    else if (option == ID_MENU_PREFERENCES_BTN)
+    {
+        int stop = 1;
+    }
+}
+
+void MainFrame::OnMenuHelp(wxCommandEvent& event)
+{
 }
 
 void MainFrame::OnMenuBuild(wxCommandEvent& event)
@@ -402,7 +477,7 @@ void MainFrame::SaveCurrent(void)
             }
             else
             {
-                if (!pCodeEditor->SaveFile(pFile->GetAbsoluteFileName()))
+                if (pFile && !pCodeEditor->SaveFile(pFile->GetAbsoluteFileName()))
                 {
                     wxLogError("Cannot save current contents in file '%s'.", saveFileDialog.GetPath());
                     return;
@@ -619,8 +694,7 @@ void MainFrame::OnModifySettings(wxCommandEvent& event)
 
 void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 {
-#if 0
-    wxAuiNotebook* ctrl = static_cast<wxAuiNotebook*>(m_pWindowManager->GetPane("notebook_content").window);
+    wxAuiNotebook* ctrl = m_auinotebook5;
     if (ctrl)
     {
         CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
@@ -634,7 +708,6 @@ void MainFrame::OnProjectPreferences(wxCommandEvent& event)
 
         }
     }
-#endif
 }
 
 void MainFrame::BuildSolution(void)
@@ -811,12 +884,12 @@ wxSizer* MainFrame::InitFrameButtons()
     {
         {&m_pFileBtn, ID_Menu_File, wxT("File"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pEditBtn, ID_Menu_Edit, wxT("Edit"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pViewBtn, wxID_ANY, wxT("View"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pProjectBtn, wxID_ANY, wxT("Project"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pViewBtn, ID_Menu_View, wxT("View"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pProjectBtn, ID_Menu_Project, wxT("Project"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pBuildMenuBtn, ID_Menu_Build, wxT("Build"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pDebugBtn, ID_Menu_Debug, wxT("Debug"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {&m_pToolsBtn, ID_Menu_Tools, wxT("Tools"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
-        {&m_pHelpBtn, wxID_ANY, wxT("Help"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
+        {&m_pHelpBtn, ID_Menu_Help, wxT("Help"), wxDefaultPosition, m_pAppSettings->m_menuSize, wxBORDER_NONE | wxBU_EXACTFIT},
         {NULL, -1, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1), 0}
     };
 
@@ -960,8 +1033,9 @@ wxSizer* MainFrame::InitViews()
 //          Copy
 //          Paste
 //          ---------------------------------------
-//          Settings (wxDialog)
+//          Global Settings
 //              Editor
+//          File Settings
 //      View
 //          Files 
 //          Functions

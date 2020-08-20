@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "AWMenuEdit.h"
+#include "AWMenuView.h"
+
 #include <Windows.h>
 #include <WinUser.h>
 
@@ -18,11 +19,14 @@
 #define HID_USAGE_GENERIC_MOUSE USHORT(0x02)
 #endif
 
-wxBEGIN_EVENT_TABLE(AWMenuEdit, wxDialog)
-EVT_BUTTON(ID_MENU_EDIT_APPLICATION_SETTINGS, AWMenuEdit::OnApplicationSettings)
+wxBEGIN_EVENT_TABLE(AWMenuView, wxDialog)
+EVT_BUTTON(ID_MENU_VIEW_FILES_BTN, AWMenuView::OnViewFiles)
+EVT_BUTTON(ID_MENU_VIEW_FUNCTIONS_BTN, AWMenuView::OnViewFunctions)
+EVT_BUTTON(ID_MENU_VIEW_VARIABLES_BTN, AWMenuView::OnViewVariables)
+EVT_BUTTON(ID_MENU_VIEW_OPCODES_BTN, AWMenuView::OnViewOpcodes)
 wxEND_EVENT_TABLE()
 
-AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name) : wxDialog(parent, id, wxEmptyString, pos, size, style)
+AWMenuView::AWMenuView(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name) : wxDialog(parent, id, wxEmptyString, pos, size, style)
 {
 
 	MainFrame* pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) };
@@ -48,7 +52,10 @@ AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 		wxBitmap icon;
 	} menuButtons[] =
 	{
-		{&m_pApplicationSettingsBtn, ID_MENU_EDIT_APPLICATION_SETTINGS, wxT(" Application Settings"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pMenuViewFilesBtn, ID_MENU_VIEW_FILES_BTN, wxT(" Files"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_create_new_folder_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pMenuViewFunctionsBtn, ID_MENU_VIEW_FUNCTIONS_BTN, wxT(" Functions"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_create_new_folder_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pMenuViewVariablesBtn, ID_MENU_VIEW_VARIABLES_BTN, wxT(" Variables"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pMenuViewOpcodesBtn, ID_MENU_VIEW_OPCODES_BTN, wxT(" Opcodes"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
 		{NULL, -1, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1), 0}
 	};
 
@@ -71,11 +78,12 @@ AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 	SetSizerAndFit(m_pSizer);
 }
 
-AWMenuEdit::~AWMenuEdit()
+AWMenuView::~AWMenuView()
 {
 }
 
-WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lparam) {
+WXLRESULT AWMenuView::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lparam)
+{
 	if (message == WM_INPUT) {
 		unsigned size = sizeof(RAWINPUT);
 		static RAWINPUT raw[sizeof(RAWINPUT)];
@@ -95,6 +103,7 @@ WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lp
 				{
 					//if (m_pProjectSettingsView == nullptr && m_pAppSettingsView == nullptr)
 					//{
+					if (IsModal()) // Is not visible cause is not created
 						EndModal(-1);
 					//}
 				}
@@ -115,7 +124,22 @@ WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lp
 #endif
 }
 
-void AWMenuEdit::OnApplicationSettings(wxCommandEvent& event)
+void AWMenuView::OnViewFiles(wxCommandEvent& event)
 {
-	EndModal(ID_MENU_EDIT_APPLICATION_SETTINGS);
+	EndModal(ID_MENU_VIEW_FILES_BTN);
+}
+
+void AWMenuView::OnViewFunctions(wxCommandEvent& event)
+{
+	EndModal(ID_MENU_VIEW_FUNCTIONS_BTN);
+}
+
+void AWMenuView::OnViewVariables(wxCommandEvent& event)
+{
+	EndModal(ID_MENU_VIEW_VARIABLES_BTN);
+}
+
+void AWMenuView::OnViewOpcodes(wxCommandEvent& event)
+{
+	EndModal(ID_MENU_VIEW_OPCODES_BTN);
 }

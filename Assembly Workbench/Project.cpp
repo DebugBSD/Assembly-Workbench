@@ -133,11 +133,10 @@ bool Project::Build()
             wxFileName::SplitPath(obj, &path, &fileName, &extension);
             objects.Add("\"" + GetProjectDirectory() + wxFileName::GetPathSeparator() + "Build" + wxFileName::GetPathSeparator() +  fileName + ".obj\"");
             pFile->Assemble(GetProjectDirectory() + wxFileName::GetPathSeparator() + "Build" + wxFileName::GetPathSeparator());
-            //pFile->Compile();
+            pFile->Compile();
         }
     }
 
-    // TODO: Add support tyo multiple linkers.
     // Link time
     MLINKER* pLinker = static_cast<MLINKER*>(m_pMainFrame->GetLinker());
     pLinker->Link(m_ProjectFile.GetPath(), objects, m_pMainFrame->GetFileSettings(), m_ProjectFile.GetName()+".exe");

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "AWMenuEdit.h"
+#include "AWMenuProject.h"
 #include <Windows.h>
 #include <WinUser.h>
 
@@ -18,11 +18,14 @@
 #define HID_USAGE_GENERIC_MOUSE USHORT(0x02)
 #endif
 
-wxBEGIN_EVENT_TABLE(AWMenuEdit, wxDialog)
-EVT_BUTTON(ID_MENU_EDIT_APPLICATION_SETTINGS, AWMenuEdit::OnApplicationSettings)
+wxBEGIN_EVENT_TABLE(AWMenuProject, wxDialog)
+EVT_BUTTON(ID_MENU_ASSEMBLER_BTN, AWMenuProject::OnMenuAssembler)
+EVT_BUTTON(ID_MENU_COMPILER_BTN, AWMenuProject::OnMenuCompiler)
+EVT_BUTTON(ID_MENU_LINKER_BTN, AWMenuProject::OnMenuLiner)
+EVT_BUTTON(ID_MENU_PREFERENCES_BTN, AWMenuProject::OnMenuPreferences)
 wxEND_EVENT_TABLE()
 
-AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name) : wxDialog(parent, id, wxEmptyString, pos, size, style)
+AWMenuProject::AWMenuProject(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, const wxString& name) : wxDialog(parent, id, wxEmptyString, pos, size, style)
 {
 
 	MainFrame* pMainFrame{ static_cast<MainFrame*>(wxTheApp->GetTopWindow()) };
@@ -48,7 +51,10 @@ AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 		wxBitmap icon;
 	} menuButtons[] =
 	{
-		{&m_pApplicationSettingsBtn, ID_MENU_EDIT_APPLICATION_SETTINGS, wxT(" Application Settings"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pMenuAssemblerBtn, ID_MENU_ASSEMBLER_BTN, wxT(" Assembler"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_create_new_folder_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pMenuCompilerBtn, ID_MENU_COMPILER_BTN, wxT(" Compiler"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_create_new_folder_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pMenuLinkerBtn, ID_MENU_LINKER_BTN, wxT(" Linker"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
+		{&m_pMenuPreferencesBtn, ID_MENU_PREFERENCES_BTN, wxT(" Preferences"), wxDefaultPosition, pMainFrame->GetAppSettings()->m_menuSize, wxBORDER_NONE | wxBU_LEFT, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_folder_open_white_18dp.png", wxBITMAP_TYPE_ANY)},
 		{NULL, -1, wxEmptyString, wxPoint(-1, -1), wxSize(-1, -1), 0}
 	};
 
@@ -71,11 +77,12 @@ AWMenuEdit::AWMenuEdit(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 	SetSizerAndFit(m_pSizer);
 }
 
-AWMenuEdit::~AWMenuEdit()
+AWMenuProject::~AWMenuProject()
 {
 }
 
-WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lparam) {
+WXLRESULT AWMenuProject::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lparam)
+{
 	if (message == WM_INPUT) {
 		unsigned size = sizeof(RAWINPUT);
 		static RAWINPUT raw[sizeof(RAWINPUT)];
@@ -95,6 +102,7 @@ WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lp
 				{
 					//if (m_pProjectSettingsView == nullptr && m_pAppSettingsView == nullptr)
 					//{
+					if (IsModal()) // Is not visible cause is not created
 						EndModal(-1);
 					//}
 				}
@@ -115,7 +123,22 @@ WXLRESULT AWMenuEdit::MSWWindowProc(WXUINT message, WXWPARAM wparam, WXLPARAM lp
 #endif
 }
 
-void AWMenuEdit::OnApplicationSettings(wxCommandEvent& event)
+void AWMenuProject::OnMenuAssembler(wxCommandEvent& event)
 {
-	EndModal(ID_MENU_EDIT_APPLICATION_SETTINGS);
+	EndModal(ID_MENU_ASSEMBLER_BTN);
+}
+
+void AWMenuProject::OnMenuCompiler(wxCommandEvent& event)
+{
+	EndModal(ID_MENU_COMPILER_BTN);
+}
+
+void AWMenuProject::OnMenuLiner(wxCommandEvent& event)
+{
+	EndModal(ID_MENU_LINKER_BTN);
+}
+
+void AWMenuProject::OnMenuPreferences(wxCommandEvent& event)
+{
+	EndModal(ID_MENU_PREFERENCES_BTN);
 }
