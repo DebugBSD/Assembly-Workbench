@@ -55,6 +55,7 @@
 #include "ProjectsWindow.h"
 #include "FindAndReplaceWindow.h"
 #include "ConsoleView.h"
+#include "DebuggerView.h"
 #include "resource.h"
 #include "Main.h"
 #include "File.h"
@@ -98,6 +99,8 @@ wxBEGIN_EVENT_TABLE(MainFrame, CustomFrame)
     EVT_BUTTON(ID_Menu_Debug, MainFrame::OnMenuDebug)
     EVT_BUTTON(ID_Menu_Tools, MainFrame::OnMenuTools)
     EVT_BUTTON(ID_Menu_Help, MainFrame::OnMenuHelp)
+
+    EVT_BUTTON(ID_Debug_CurrentProgram, MainFrame::OnDebugCurrentProgram)
     EVT_AUINOTEBOOK_PAGE_CHANGED(ID_TAB_MANAGER, MainFrame::OnPageChanged)
 
     EVT_CLOSE(MainFrame::OnExitProgram)
@@ -343,7 +346,18 @@ void MainFrame::OnMenuProject(wxCommandEvent& event)
     }
     else if (option == ID_MENU_PREFERENCES_BTN)
     {
-        int stop = 1;
+        wxAuiNotebook* ctrl = m_auinotebook5;
+        if (ctrl)
+        {
+            CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
+            if (pCodeEditor && pCodeEditor->GetFile())
+            {
+                FileSettingsDlg Settings = FileSettingsDlg(nullptr, wxID_ANY, "File Settings", wxDefaultPosition, wxSize(640, 480), SYMBOL_FILESETTINGS_STYLE, pCodeEditor->GetFile()->GetFileSettings());
+
+                Settings.ShowModal();
+
+            }
+        }
     }
 }
 
@@ -691,25 +705,6 @@ void MainFrame::OnModifySettings(wxCommandEvent& event)
     }
 }
 
-
-void MainFrame::OnProjectPreferences(wxCommandEvent& event)
-{
-    wxAuiNotebook* ctrl = m_auinotebook5;
-    if (ctrl)
-    {
-        CodeEditor* pCodeEditor = static_cast<CodeEditor*>(ctrl->GetCurrentPage());
-        if (pCodeEditor && pCodeEditor->GetFile())
-        {
-            FileSettingsDlg* pSettings = new FileSettingsDlg(nullptr, wxID_ANY, "File Settings", wxDefaultPosition, wxSize(640, 480), SYMBOL_FILESETTINGS_STYLE, pCodeEditor->GetFile()->GetFileSettings());
-
-            pSettings->ShowModal();
-
-            pSettings->Destroy();
-
-        }
-    }
-}
-
 void MainFrame::BuildSolution(void)
 {
 
@@ -955,7 +950,7 @@ wxSizer* MainFrame::InitToolbar()
         {&m_pSaveBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_save_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Save"},
         {&m_pUndoBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_undo_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Undo"},
         {&m_pRedoBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_redo_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Redo"},
-        {&m_pPlayBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_play_arrow_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Play"},
+        {&m_pPlayBtn, ID_Debug_CurrentProgram, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_play_arrow_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Play"},
         {&m_pBuildBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_build_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Build"},
         {&m_pSettingsBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_settings_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Settings"},
         {&m_pCodeEditorBtn, wxID_ANY, wxT("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_code_white_18dp.png"), wxDefaultPosition, m_pAppSettings->m_tbIconsSize, wxNO_BORDER | wxBU_EXACTFIT | wxBU_NOTEXT, "Code editor"},
@@ -996,6 +991,10 @@ wxSizer* MainFrame::InitViews()
     // Find and Replace view
     //m_pFindAndReplaceView = new FindAndReplaceWindow(m_auinotebook5);
     //m_auinotebook5->AddPage(m_pFindAndReplaceView, wxT("Find And Replace"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_message_white_18dp.png", wxBITMAP_TYPE_ANY));
+
+    // Debugger view
+    //m_pDebuggerView = new DebuggerView(m_auinotebook5);
+    //m_auinotebook5->AddPage(m_pDebuggerView, wxT("Debugger"), false, wxBitmap("C:/Users/debugg/My Projects/LevelEditor/World Editor Interfaces/icons/1x/baseline_message_white_18dp.png", wxBITMAP_TYPE_ANY));
 
     // BUG: wxAuiManager from wxAuiNotebook doesn't works as expected or maybe I don't understand how is supposed to work
     /*wxString auiPerspective;
@@ -1154,5 +1153,44 @@ void MainFrame::OnPageChanged(wxAuiNotebookEvent& event)
                 m_staticTitle->SetLabelText(fileName.GetFullName());
             }
         }
+    }
+}
+
+void MainFrame::OnDebugCurrentProgram(wxCommandEvent& event)
+{
+    if (!m_Files.empty() || !m_Projects.empty())
+    {
+        // Get current window or maybe current project and we debugg him.
+        CodeEditor* pCodeEditor = GetCodeEditorFromWindow(m_auinotebook5->GetCurrentPage());
+        if (pCodeEditor)
+        {
+            File* pFile = pCodeEditor->GetFile();
+            if (pFile != nullptr)
+            {
+                if (pFile->GetProject())
+                {
+                    // We debug the project.
+                    //m_pDebuggerView->InitDebugSession("echo.exe");
+                    //m_pDebuggerView->InitDebugSession("C:\\Users\\debugg\\My Projects\\Assembly\\AWProjects\\FGNE\\FGNE.exe");
+                    wxProcess *process = new wxProcess(this, ID_CDBProcess);
+
+                    // We have to call to wincdb.exe which is located into - "\"C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\cdb.exe""
+                    wxString pathToDebugger = "\"C:\\Program Files (x86)\\Windows Kits\\10\\Debuggers\\x64\\windbg.exe\"";
+                    wxString p = pathToDebugger + " \"C:\\Users\\debugg\\My Projects\\Assembly\\AWProjects\\FGNE\\FGNE.exe\"";
+
+                    long pid = wxExecute(p, wxEXEC_ASYNC, process);
+                    if (pid == 0) // Some error happened
+                    {
+                        delete process;
+                    }
+                }
+                else
+                {
+                    // We debug the program.
+                }
+            }
+        }
+
+        int stop = 1;
     }
 }

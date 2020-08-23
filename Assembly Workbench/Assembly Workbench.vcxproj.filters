@@ -67,6 +67,9 @@
     <Filter Include="Archivos de origen\ArtProvider">
       <UniqueIdentifier>{718f6bee-6f8a-4b13-9198-5f2ee0c7d958}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Debugger">
+      <UniqueIdentifier>{9e73ed76-44fd-40b4-89db-fcadacac375e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -156,9 +159,6 @@
     <ClInclude Include="AWArtProvider.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="ConsoleView.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="AWMenuFile.h">
       <Filter>Archivos de encabezado\Controls</Filter>
     </ClInclude>
@@ -188,6 +188,12 @@
     </ClInclude>
     <ClInclude Include="AWMenuView.h">
       <Filter>Archivos de encabezado\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleView.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="DebuggerView.h">
+      <Filter>Archivos de encabezado\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -257,9 +263,6 @@
     <ClCompile Include="AWArtProvider.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleView.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
     <ClCompile Include="AWMenuFile.cpp">
       <Filter>Archivos de origen\Controls</Filter>
     </ClCompile>
@@ -289,6 +292,12 @@
     </ClCompile>
     <ClCompile Include="AWMenuView.cpp">
       <Filter>Archivos de origen\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleView.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="DebuggerView.cpp">
+      <Filter>Archivos de origen\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

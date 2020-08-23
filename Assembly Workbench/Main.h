@@ -84,14 +84,14 @@ private:
     void OnMenuView(wxCommandEvent& event);
     void OnMenuProject(wxCommandEvent& event);
     void OnMenuHelp(wxCommandEvent& event);
-    // Project Menu
-    void OnProjectPreferences(wxCommandEvent& event);
 
     void OnMaximizeBtn(wxCommandEvent& event);
     void OnMinimizeBtn(wxCommandEvent& event);
 
     // Page changed
     void OnPageChanged(wxAuiNotebookEvent& event);
+
+    void OnDebugCurrentProgram(wxCommandEvent& event);
 
 public:
 #pragma region Public attributes
@@ -194,6 +194,7 @@ private:
     class ComponentSystemView* m_pComponentSystemView;
     class ProjectsWindow* m_pProjectWindow;
     class FindAndReplaceWindow* m_pFindAndReplaceView;
+    class DebuggerView* m_pDebuggerView;
     wxSearchCtrl* pSearchCtrl;
 
 
@@ -259,6 +260,7 @@ enum
     ID_Build_Rebuild_Solution,
     ID_Build_Clean_Solution,
     ID_Debug_LaunchWinDbg,
+    ID_Debug_CurrentProgram,
     ID_Tools_Command_Line,
     ID_Tools_Hex_Editor,
     ID_Tools_CVS,
